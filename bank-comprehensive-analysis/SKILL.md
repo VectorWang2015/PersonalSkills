@@ -97,7 +97,7 @@ tags: [bank, comprehensive-analysis, investment, financial-report]
 
 > "是否需要将以上分析保存为本地 Markdown 文件？"
 
-- 若用户确认，保存到 `books/kan-tou-yin-hang/analyses/` 目录
+- 若用户确认，保存到 `reports/<报告期>/` 目录
 - 文件名格式：`<银行名称>-<报告期>-全面分析.md`
 - 若用户拒绝，跳过
 

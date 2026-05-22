@@ -33,4 +33,4 @@ tags: [healthcare, hospital, clinic, valuation, DCF, medical]
 
 ## 保存分析结果
 
-分析完成后主动询问用户是否保存为 Markdown 文件到 `books/yi-liao-gu-zhi/analyses/`。
+分析完成后主动询问用户是否保存为 Markdown 文件到 `reports/<报告期>/`。
