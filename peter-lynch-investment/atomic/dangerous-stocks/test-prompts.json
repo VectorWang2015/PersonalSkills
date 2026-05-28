@@ -1,0 +1,35 @@
+{
+  "skill": "dangerous-stocks",
+  "prompts": [
+    {
+      "text": "这只AI股票最近很火，大家都说会涨十倍，能买吗？",
+      "should_trigger": true,
+      "reason": "热门行业热门股——第1种应避开的危险股票"
+    },
+    {
+      "text": "有人跟我说这家公司是'下一个茅台'，值得投资吗？",
+      "should_trigger": true,
+      "reason": "被吹捧为'下一个XX'——第2种危险股票"
+    },
+    {
+      "text": "这家公司一直在收购各种不相关的业务，但股价一直在涨",
+      "should_trigger": true,
+      "reason": "多元恶化的早期信号——第3种危险股票"
+    },
+    {
+      "text": "我朋友在券商做分析师，他推荐的股票能买吗？",
+      "should_trigger": false,
+      "reason": "信息来源问题，不直接触发6条避开清单"
+    },
+    {
+      "text": "这家公司90%的收入来自华为一个客户，风险大吗？",
+      "should_trigger": true,
+      "reason": "过度依赖大客户——第5种危险股票"
+    },
+    {
+      "text": "某公司叫'前沿量子智能科技集团'，做芯片的，值得研究吗？",
+      "should_trigger": true,
+      "reason": "名字花里胡哨——第6种危险股票，但也可能不适合中文语境"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "skill": "sell-timing-guide",
+  "prompts": [
+    {
+      "text": "我持有的一只快速增长型公司股票涨了50%，该卖吗？",
+      "should_trigger": true,
+      "reason": "卖出时机决策，需对照该类型卖出信号"
+    },
+    {
+      "text": "我买的股票跌了30%，要不要割肉？",
+      "should_trigger": true,
+      "reason": "下跌卖出决策，需检查基本面是否恶化"
+    },
+    {
+      "text": "这只周期股存货增加了50%，这是什么信号？",
+      "should_trigger": true,
+      "reason": "周期型关键卖出信号——存货增加"
+    },
+    {
+      "text": "现在大盘3200点，是不是该清仓了？",
+      "should_trigger": false,
+      "reason": "宏观/指数级别的时机判断，林奇不预测市场"
+    },
+    {
+      "text": "公司高管都在减持，是不是也该卖了？",
+      "should_trigger": true,
+      "reason": "内部人卖出是稳定增长型的卖出信号之一"
+    },
+    {
+      "text": "我刚买入这只股票两周，怎么判断什么时候该卖？",
+      "should_trigger": false,
+      "reason": "买入后刚两周，应关注持有理由而非急于卖出"
+    }
+  ]
+}

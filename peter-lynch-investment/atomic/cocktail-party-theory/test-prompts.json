@@ -1,0 +1,35 @@
+{
+  "skill": "cocktail-party-theory",
+  "prompts": [
+    {
+      "text": "最近朋友圈全在聊股票，连我从不炒股的姨妈都开始推荐股票了，是不是该卖了？",
+      "should_trigger": true,
+      "reason": "典型的第四阶段信号——人人推荐股票"
+    },
+    {
+      "text": "现在市场情绪怎么样？是不是到底了？",
+      "should_trigger": true,
+      "reason": "直接询问市场情绪阶段判断"
+    },
+    {
+      "text": "最近公司午餐会上没人讨论股票了，这是什么信号？",
+      "should_trigger": true,
+      "reason": "第一阶段信号——无人关注"
+    },
+    {
+      "text": "上证指数明天会涨还是跌？",
+      "should_trigger": false,
+      "reason": "短期精确预测，鸡尾酒会理论不提供"
+    },
+    {
+      "text": "大家都在恐慌抛售，我该跟风卖出吗？",
+      "should_trigger": true,
+      "reason": "恐慌期对应第一阶段/第二阶段，是买入而非卖出信号"
+    },
+    {
+      "text": "这只股票的基本面数据帮我分析一下",
+      "should_trigger": false,
+      "reason": "个股基本面分析，不涉及市场情绪"
+    }
+  ]
+}

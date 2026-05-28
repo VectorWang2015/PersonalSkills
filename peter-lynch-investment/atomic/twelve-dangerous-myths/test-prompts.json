@@ -1,0 +1,35 @@
+{
+  "skill": "twelve-dangerous-myths",
+  "prompts": [
+    {
+      "text": "这只股票已经从最高点跌了80%，不可能再跌了吧？",
+      "should_trigger": true,
+      "reason": "触发第1条——'不可能再跌了'"
+    },
+    {
+      "text": "我买入成本是20块，现在跌到15了，我等它涨回20就卖",
+      "should_trigger": true,
+      "reason": "触发第7条——锚定购买价的心理陷阱"
+    },
+    {
+      "text": "当初要是买了特斯拉现在都财富自由了，太后悔了",
+      "should_trigger": true,
+      "reason": "触发第10条——为错过大牛股懊悔"
+    },
+    {
+      "text": "帮我查一下这只股票的股息率",
+      "should_trigger": false,
+      "reason": "纯数据查询"
+    },
+    {
+      "text": "这只股票才3块钱一股，买一万块能买好多股，风险应该不大",
+      "should_trigger": true,
+      "reason": "触发第4条——低价股错觉"
+    },
+    {
+      "text": "这只股票已经跌了70%了，是时候抄底了吧？",
+      "should_trigger": true,
+      "reason": "触发第2条——'你以为见底了'的抄底冲动"
+    }
+  ]
+}

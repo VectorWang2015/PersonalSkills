@@ -1,0 +1,35 @@
+{
+  "skill": "six-stock-types",
+  "prompts": [
+    {
+      "text": "这家公司属于什么类型的股票？它的增长率15%，市值500亿",
+      "should_trigger": true,
+      "reason": "直接询问股票类型分类"
+    },
+    {
+      "text": "我看中了一家公司，但不知道该怎么分析，从哪入手？",
+      "should_trigger": true,
+      "reason": "未分类的公司分析起点应是分类"
+    },
+    {
+      "text": "招行的不良贷款率是多少？",
+      "should_trigger": false,
+      "reason": "具体单一指标查询，不是分类问题"
+    },
+    {
+      "text": "为什么周期型公司和稳定增长型公司不能用同样的策略？",
+      "should_trigger": true,
+      "reason": "涉及不同类型策略差异"
+    },
+    {
+      "text": "茅台的毛利率和净利率分别是多少？",
+      "should_trigger": false,
+      "reason": "纯数据查询"
+    },
+    {
+      "text": "特斯拉现在的市值都快万亿了，你觉得它属于什么类型还能涨吗？",
+      "should_trigger": true,
+      "reason": "判断+分类+增长预期"
+    }
+  ]
+}

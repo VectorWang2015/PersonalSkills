@@ -1,0 +1,35 @@
+{
+  "skill": "portfolio-building",
+  "prompts": [
+    {
+      "text": "我有10万块钱，应该买几只股票比较合适？",
+      "should_trigger": true,
+      "reason": "直接询问持仓数量和资金分配"
+    },
+    {
+      "text": "我的账户里现在有30只股票，是不是太多了？",
+      "should_trigger": true,
+      "reason": "持仓数量评估"
+    },
+    {
+      "text": "怎么分配资金在增长股和防御股之间？",
+      "should_trigger": true,
+      "reason": "组合结构配置问题"
+    },
+    {
+      "text": "这只股票分红很高，我应该买多少？",
+      "should_trigger": false,
+      "reason": "单只股票购买决策，不是组合层面"
+    },
+    {
+      "text": "我的组合里全是科技成长股，要不要加点别的？",
+      "should_trigger": true,
+      "reason": "类型过度集中需要分散"
+    },
+    {
+      "text": "大盘跌了，我是不是该把股票都卖了换成现金？",
+      "should_trigger": true,
+      "reason": "涉及林奇'永远满仓换股不换现金'原则"
+    }
+  ]
+}

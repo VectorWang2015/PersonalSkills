@@ -1,0 +1,35 @@
+{
+  "skill": "peg-valuation",
+  "prompts": [
+    {
+      "text": "这家公司市盈率25倍，增长率30%，贵不贵？",
+      "should_trigger": true,
+      "reason": "直接提供了PE和增长率两个PEG计算参数"
+    },
+    {
+      "text": "市盈率15倍到底是高还是低？",
+      "should_trigger": true,
+      "reason": "需要结合增长率才能判断PE高低"
+    },
+    {
+      "text": "银行股应该用PE还是PB估值？",
+      "should_trigger": false,
+      "reason": "属于银行估值方法论问题，不是PEG计算"
+    },
+    {
+      "text": "这家公司股息率3%，增长率12%，PE是10倍，值得买吗？",
+      "should_trigger": true,
+      "reason": "提供了完整的含股息PEG计算参数"
+    },
+    {
+      "text": "这家公司还没盈利，怎么估值？",
+      "should_trigger": false,
+      "reason": "PEG不适用于无盈利公司，应转其他方法"
+    },
+    {
+      "text": "钢铁股现在市盈率只有5倍，是不是很便宜？",
+      "should_trigger": true,
+      "reason": "需要根据PEG+周期型特征综合判断（可能是陷阱）"
+    }
+  ]
+}

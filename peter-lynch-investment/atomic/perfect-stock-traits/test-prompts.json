@@ -1,0 +1,35 @@
+{
+  "skill": "perfect-stock-traits",
+  "prompts": [
+    {
+      "text": "我发现了一家做废油回收的公司，名字叫绿洁环保，你觉得这家公司怎么样？",
+      "should_trigger": true,
+      "reason": "名字枯燥+业务令人厌恶→触发了13条准则中多条"
+    },
+    {
+      "text": "怎么判断一家公司值不值得深入研究？",
+      "should_trigger": true,
+      "reason": "直接询问研究前的筛选标准"
+    },
+    {
+      "text": "机构投资者根本不关注这只股票，分析师也没人跟踪，是不是有问题？",
+      "should_trigger": true,
+      "reason": "符合准则第5条——可能是好信号而非坏信号"
+    },
+    {
+      "text": "这家公司市盈率是多少？",
+      "should_trigger": false,
+      "reason": "纯定量查询，不是定性筛选"
+    },
+    {
+      "text": "阿里巴巴是不是一家好公司？",
+      "should_trigger": true,
+      "reason": "'好公司'判断应先用13条准则定性筛查"
+    },
+    {
+      "text": "帮我算一下招商银行的ROE",
+      "should_trigger": false,
+      "reason": "纯财务数据计算"
+    }
+  ]
+}
