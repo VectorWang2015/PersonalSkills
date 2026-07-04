@@ -1,0 +1,22 @@
+[
+  {
+    "prompt": "帮我下载 600219 南山铝业最新年报和最近一期定期报告",
+    "should_trigger": true,
+    "reason": "明确要求按股票代码下载年报和定期报告"
+  },
+  {
+    "prompt": "从巨潮拉一下 002901 大博医疗的最新财报 PDF，并转成 TXT",
+    "should_trigger": true,
+    "reason": "明确要求从巨潮下载财报并转换文本"
+  },
+  {
+    "prompt": "301078 孩子王最新季报和年报帮我下载到 raw/reports",
+    "should_trigger": true,
+    "reason": "明确要求下载年报和季报到项目归档目录"
+  },
+  {
+    "prompt": "分析 raw/reports/2026Q1/南山铝业-2026Q1.txt 这份财报",
+    "should_trigger": false,
+    "reason": "用户要求分析已下载报告，不是下载财报"
+  }
+]

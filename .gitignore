@@ -12,3 +12,5 @@ Thumbs.db
 # Temp
 *.tmp
 *.bak
+.worktrees/
+__pycache__/
