@@ -182,6 +182,15 @@ def merge_continued_tables(tables: list[dict[str, Any]]) -> list[dict[str, Any]]
     return merged
 
 
+def assign_merged_table_ids(tables: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    assigned: list[dict[str, Any]] = []
+    for idx, table in enumerate(tables, 1):
+        current = dict(table)
+        current["table_id"] = f"merged_table_{idx:04d}"
+        assigned.append(current)
+    return assigned
+
+
 def normalized_row_label(row: list[Any]) -> str | None:
     for cell in row:
         if isinstance(cell, str) and cell.strip():
@@ -412,11 +421,9 @@ def extract_with_pymupdf(pdf_path: Path, out_dir: Path) -> dict[str, Any]:
             page_tables.append(table_id)
             chunks.append({"chunk_id": table_id, "type": "table", "source_file": pdf_path.name, "section": section, "page_start": page_no, "page_end": page_no, "title": table_title, "content_markdown": markdown_table(rows), "content_json_path": f"tables/{table_id}.json", "keywords": [k for k in KEYWORDS if k in text]})
         write_json(out_dir / "pages" / f"page_{page_no:03d}.json", {"page": page_no, "section": section, "title": page_title, "unit": page_unit, "text": text, "tables": page_tables})
-    merged_tables = merge_continued_tables(tables_meta)
-    for idx, table in enumerate(merged_tables, 1):
-        merged_id = f"merged_table_{idx:04d}"
-        table = dict(table)
-        table["table_id"] = merged_id
+    merged_tables = assign_merged_table_ids(merge_continued_tables(tables_meta))
+    for table in merged_tables:
+        merged_id = table["table_id"]
         write_csv(out_dir / "tables_merged" / f"{merged_id}.csv", table["rows"])
         write_text(out_dir / "tables_merged" / f"{merged_id}.md", markdown_table(table["rows"]))
         write_json(out_dir / "tables_merged" / f"{merged_id}.json", table)
@@ -442,6 +449,47 @@ def validate_outputs(parsed: dict[str, Any], out_dir: Path, source_name: str | N
     return checks
 
 
+def build_analysis_context(parsed: dict[str, Any], checks: list[dict[str, Any]]) -> str:
+    source_file = parsed.get("source_file") or "unknown"
+    tables = parsed.get("tables") or []
+    merged_tables = parsed.get("merged_tables") or []
+    chunks = parsed.get("chunks") or []
+    failed = sum(1 for check in checks if check.get("status") == "fail")
+    warned = sum(1 for check in checks if check.get("status") == "warn")
+    lines = [
+        "# Analysis Context",
+        "",
+        f"- source_file: {source_file}",
+        f"- raw tables: {len(tables)}",
+        f"- merged tables: {len(merged_tables)}",
+        f"- chunks: {len(chunks)}",
+        f"- validation checks: {len(checks)}",
+        f"- validation failed: {failed}",
+        f"- validation warnings: {warned}",
+        "",
+        "## Downstream Usage",
+        "",
+        "Use `tables_merged/` first for financial statement analysis. Fall back to `tables/` only for page-level traceability or when a merged table is missing.",
+        "Read `validation/validation_report.md` before using key figures. If any check fails, quote the failed check and treat related figures as provisional.",
+        "Use `chunks.jsonl` for retrieval context and `document.md` for narrative sections; do not use narrative text as the sole source for financial numbers.",
+        "",
+        "## Key Tables",
+        "",
+    ]
+    key_titles = set(TITLE_PATTERNS)
+    key_rows = [table for table in merged_tables if table.get("title") in key_titles]
+    if not key_rows:
+        lines.append("- No titled key tables found. Use `chunks.jsonl` keywords plus `tables_merged/` metadata to locate needed tables.")
+    for table in key_rows:
+        table_id = table.get("table_id")
+        title = table.get("title") or "untitled"
+        page_start = table.get("page_start")
+        page_end = table.get("page_end")
+        flags = ", ".join(table.get("quality_flags") or []) or "none"
+        lines.append(f"- {title}: `tables_merged/{table_id}.json` pages {page_start}-{page_end}; flags: {flags}")
+    return "\n".join(lines) + "\n"
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("pdf")
@@ -449,10 +497,12 @@ def main() -> None:
     args = parser.parse_args()
     out_dir = Path(args.out)
     parsed = extract_with_pymupdf(Path(args.pdf), out_dir)
+    parsed["source_file"] = Path(args.pdf).name
     checks = validate_outputs(parsed, out_dir, Path(args.pdf).name)
     failed = sum(1 for c in checks if c.get("status") == "fail")
     warned = sum(1 for c in checks if c.get("status") == "warn")
     write_text(out_dir / "parse_report.md", f"# Parse Report\n\n- parser: hybrid v3 (PyMuPDF extraction with bbox title/unit, conservative continuation merges, confidence proxy, validation gate; Camelot/pdfplumber benchmark remains available via extract_tables.py)\n- raw tables: {len(parsed['tables'])}\n- merged tables: {len(parsed['merged_tables'])}\n- chunks: {len(parsed['chunks'])}\n- validation checks: {len(checks)}\n- validation failed: {failed}\n- validation warnings: {warned}\n")
+    write_text(out_dir / "analysis_context.md", build_analysis_context(parsed, checks))
 
 
 if __name__ == "__main__":

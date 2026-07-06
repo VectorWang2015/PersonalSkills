@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "scripts"))
-from parse_financial_pdf import assign_title_by_bbox, confidence_proxy, infer_table_unit, merge_continued_tables, normalize_table_section
+from parse_financial_pdf import assign_merged_table_ids, assign_title_by_bbox, build_analysis_context, confidence_proxy, infer_table_unit, merge_continued_tables, normalize_table_section
 
 
 def test_title_uses_table_bbox_proximity():
@@ -48,3 +48,28 @@ def test_cross_page_non_recurring_items_merge():
 def test_statement_section_and_confidence_are_normalized():
     assert normalize_table_section("合并现金流量表", "五、其他综合收益的税后净额") == "二、财务报表"
     assert confidence_proxy([["项目", "2025"], ["营业收入", 100.0]], ["项目", "2025"], [1, 2, 3, 4]) > 0
+
+
+def test_analysis_context_points_downstream_skills_to_merged_validated_tables():
+    parsed = {
+        "source_file": "测试公司-2025年报.pdf",
+        "tables": [{"table_id": "table_0001"}],
+        "merged_tables": [
+            {"table_id": "merged_table_0001", "title": "合并资产负债表", "page_start": 10, "page_end": 12, "quality_flags": ["cross_page_merged"]},
+            {"table_id": "merged_table_0002", "title": "合并利润表", "page_start": 13, "page_end": 14, "quality_flags": []},
+        ],
+        "chunks": [{"chunk_id": "text_0001"}],
+    }
+    checks = [{"check": "pct_change", "status": "pass"}, {"check": "cash_ending_tie_out", "status": "pass"}]
+    context = build_analysis_context(parsed, checks)
+    assert "validation failed: 0" in context
+    assert "Use `tables_merged/` first" in context
+    assert "tables_merged/merged_table_0001.json" in context
+    assert "合并资产负债表" in context
+
+
+def test_assign_merged_table_ids_matches_written_file_names():
+    tables = [{"table_id": "table_0007", "title": "合并资产负债表", "rows": []}]
+    assigned = assign_merged_table_ids(tables)
+    assert assigned[0]["table_id"] == "merged_table_0001"
+    assert tables[0]["table_id"] == "table_0007"

@@ -99,6 +99,7 @@ Required output structure:
 annual_report_parsed/
   document.md
   document.json
+  analysis_context.md
   chunks.jsonl
   tables/table_0001.csv
   tables/table_0001.json
@@ -115,6 +116,19 @@ Table JSON must include `table_id`, `source_file`, `page_start`, `page_end`, `ti
 Merged table JSON must keep the same fields and may add `merged_from`. It must preserve `page_start/page_end` across the merged range.
 
 Chunk JSONL must separate text chunks and table chunks. Every chunk must include `chunk_id`, `type`, `source_file`, `section`, `page_start`, `page_end`, and retrieval keywords when available. Table chunks must link to `tables/table_xxxx.json`.
+
+`analysis_context.md` is the handoff file for downstream analysis skills. It summarizes validation status, tells agents to prefer `tables_merged/`, lists key financial tables with paths and page ranges, and warns when validation checks fail.
+
+## Downstream Analysis Handoff
+
+When another skill analyzes a parsed report directory, pass the directory path and require the downstream skill to read files in this order:
+
+1. `analysis_context.md` for source, validation status, and key table paths.
+2. `validation/validation_report.md` to confirm whether figures are usable or provisional.
+3. `tables_merged/*.json` for numeric statements and table-derived ratios.
+4. `chunks.jsonl` and `document.md` for management discussion, risk factors, business description, and narrative context.
+
+Do not ask downstream analysis skills to infer figures from `document.md` if a table JSON exists.
 
 ## Command Examples
 
