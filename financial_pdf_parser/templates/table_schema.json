@@ -1,0 +1,16 @@
+{
+  "table_id": "table_0001",
+  "source_file": "annual_report.pdf",
+  "page_start": 8,
+  "page_end": 9,
+  "title": "主要会计数据和财务指标",
+  "section": "第二节 公司简介和主要财务指标",
+  "unit": "元",
+  "parser": "camelot_lattice",
+  "confidence": 0.86,
+  "columns": ["项目", "2025年", "2024年调整前", "2024年调整后"],
+  "rows": [],
+  "notes": [],
+  "bbox": [0, 0, 0, 0],
+  "quality_flags": []
+}
