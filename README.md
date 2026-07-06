@@ -4,6 +4,30 @@
 
 ## 技能
 
+## 标准工作流
+
+面向真实财报分析时，优先使用以下流水线：
+
+```text
+财报获取 → PDF结构化解析 → 行业/方法论分析 → 报告导出
+```
+
+1. 财报获取：使用 `cninfo-report-downloader` 下载 A 股年报、季报、半年报到 `raw/reports/<报告期>/`。
+2. PDF结构化解析：使用 `financial-pdf-parser` 将 PDF 转为 `document.md`、`chunks.jsonl`、`tables_merged/`、`validation/`、`analysis_context.md`。
+3. 分析入口选择：按行业进入 `financial-statement-analysis`、`bank-comprehensive-analysis`、`insurance-comprehensive-analysis`、`consumer-analysis`、`healthcare-valuation` 或 `peter-lynch-investment`。
+4. 报告导出：聚合分析 skill 完成后询问用户是否保存 Markdown 到 `reports/<报告期>/`。
+
+### 解析目录作为统一输入
+
+所有财报分析入口都应优先接受 `financial-pdf-parser` 的输出目录，而不是直接读取 PDF 长文本。下游分析时按以下顺序取数：
+
+1. `analysis_context.md`：报告来源、校验状态、关键表路径。
+2. `validation/validation_report.md`：判断关键数据是否可直接使用。
+3. `tables_merged/*.json`：财务数字、表格计算、页码追溯的首选来源。
+4. `chunks.jsonl` / `document.md`：业务描述、管理层讨论、风险因素等文本上下文。
+
+如 validation 存在失败项，相关数字必须在分析报告中标为“待核实”，不能静默引用。
+
 ### bank-comprehensive-analysis
 
 银行财报全面分析。输入季报/年报数据，按 12 个原子方法论自动编排分析流水线，输出结构化综合报告。来源：《看透银行》（价投谷子地, 2021）。
@@ -44,6 +68,10 @@
 
 工具型 skill。输入 A 股股票代码，从巨潮资讯自动下载最新年度报告完整版和最近一期非年报定期报告，保存为 PDF/TXT 到项目归档目录。
 
+### financial-pdf-parser
+
+工具型 skill。将 A 股年报、季报、半年报 PDF 解析为结构化文本、表格、校验报告和下游分析上下文。推荐作为所有财报分析 skill 的前置步骤。
+
 ### book2skill
 
 元技能。使用 RIA-TV++ 流水线将一本书蒸馏为一组可独立调用的 AI skill。
@@ -51,3 +79,15 @@
 ## 安装
 
 克隆到 opencode 技能的发现路径（如 `<project>/.opencode/skills/`），重启 opencode 即可使用。
+
+本仓库的标准安装方式是让 `.opencode/skills/<skill-name>` 指向 `skills/<skill-name>`。例如：
+
+```bash
+ln -s ../../skills/financial-pdf-parser .opencode/skills/financial-pdf-parser
+```
+
+新主机使用 `financial-pdf-parser` 前需准备 Python 3.11+ 环境并安装核心依赖：
+
+```bash
+python -m pip install pymupdf pymupdf4llm pdfplumber camelot-py opencv-python
+```

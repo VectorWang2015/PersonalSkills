@@ -76,7 +76,15 @@ If TXT conversion fails because `pdfplumber` is unavailable or a PDF is malforme
 
 ## After Download
 
-After a successful download, ask the user whether to continue into analysis. Recommended entry points:
+After a successful download, ask the user whether to continue into parsing and analysis.
+
+Recommended next step for PDFs:
+
+```bash
+python .opencode/skills/financial-pdf-parser/scripts/parse_financial_pdf.py raw/reports/<报告期>/<公司>-<报告期>.pdf --out reports/parsed/<公司>-<报告期>
+```
+
+After parsing succeeds, pass the parsed directory to the relevant analysis entry point:
 
 - 普通非金融公司：`financial-statement-analysis`
 - 消费公司：`consumer-analysis`
