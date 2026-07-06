@@ -16,8 +16,19 @@ tags: [bank, comprehensive-analysis, investment, financial-report]
 
 分析前必须确认：
 1. **银行名称 + 报告期**（如"招商银行 2026Q1"）
-2. **财报数据来源**（PDF/TXT 文件路径，或用户直接粘贴的关键数据）
+2. **财报数据来源**（优先为 `financial-pdf-parser` 生成的解析目录；也可为 PDF/TXT 文件路径，或用户直接粘贴的关键数据）
 3. 如果仅提供报表截图/摘要，提醒用户补充关键指标（净息差、不良率、RORWA 等）
+
+## 解析目录输入兼容
+
+当用户提供 `financial-pdf-parser` 输出目录时，先读取：
+
+1. `analysis_context.md`：确认报告来源、校验失败/警告数量、关键表路径。
+2. `validation/validation_report.md`：若存在失败校验，相关指标必须标为待核实。
+3. `tables_merged/*.json`：用于资产负债表、利润表、现金流量表及资本/风险相关表的数字来源。
+4. `chunks.jsonl` / `document.md`：用于业务结构、管理层讨论、风险因素、监管资本披露等文本定位。
+
+银行指标如净息差、不良率、拨备覆盖率、资本充足率不一定在三大报表中，需在 `chunks.jsonl` 检索关键词后回到对应表 JSON 或页码核对。
 
 ## 执行流水线
 

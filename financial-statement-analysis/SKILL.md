@@ -16,8 +16,19 @@ tags: [financial-analysis, comprehensive-analysis, investment, financial-report,
 
 分析前必须确认：
 1. **公司名称 + 报告期**（如"贵州茅台 2025Q1"）
-2. **财报数据来源**（PDF/TXT 文件路径，或用户直接粘贴的关键数据）
+2. **财报数据来源**（优先为 `financial-pdf-parser` 生成的解析目录；也可为 PDF/TXT 文件路径，或用户直接粘贴的关键数据）
 3. 如果仅提供报表截图/摘要，提醒用户补充关键指标（ROE、毛利率、现金收入比率等）
+
+## 解析目录输入兼容
+
+当用户提供 `financial-pdf-parser` 输出目录时，先读取：
+
+1. `analysis_context.md`：确认报告来源、校验失败/警告数量、关键表路径。
+2. `validation/validation_report.md`：若存在失败校验，相关指标只能作为待核实数据使用，并在报告中标注。
+3. `tables_merged/*.json`：优先用于所有财务数字和比率计算；只有追溯页级来源时才回到 `tables/`。
+4. `chunks.jsonl` / `document.md`：只用于业务描述、管理层讨论、风险因素等文本信息。
+
+不得仅凭 `document.md` 的长文本数字做财务结论；核心财务表必须引用表格 JSON 的页码和表名。
 
 ## 执行流水线
 

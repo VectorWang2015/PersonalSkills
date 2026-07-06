@@ -7,6 +7,10 @@ description: 基于彼得·林奇《彼得·林奇的成功投资》的完整投
 
 基于彼得·林奇《One Up on Wall Street》蒸馏的8个原子技能，覆盖投资全流程。
 
+## 输入兼容
+
+如用户提供 `financial-pdf-parser` 解析目录，先读取 `analysis_context.md` 和 `validation/validation_report.md`，再用 `tables_merged/*.json` 提取营收、利润、现金、资产负债等定量数据；用 `chunks.jsonl` 和 `document.md` 提取产品、渠道、竞争格局、管理层讨论和风险因素。不要只凭 PDF 长文本或 OCR 文本做林奇框架判断。
+
 ## 编排逻辑
 
 ```

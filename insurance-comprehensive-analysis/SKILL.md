@@ -16,8 +16,19 @@ tags: [insurance, comprehensive-analysis, investment, financial-report]
 
 分析前必须确认：
 1. **保险公司名称 + 报告期**（如"中国平安 2025年报"）
-2. **财报数据来源**（PDF/TXT 文件路径，或用户直接粘贴的关键数据）
+2. **财报数据来源**（优先为 `financial-pdf-parser` 生成的解析目录；也可为 PDF/TXT 文件路径，或用户直接粘贴的关键数据）
 3. 如果仅提供报表截图/摘要，提醒用户补充关键指标（内含价值、新业务价值、营运利润等）
+
+## 解析目录输入兼容
+
+当用户提供 `financial-pdf-parser` 输出目录时，先读取：
+
+1. `analysis_context.md`：确认报告来源、校验失败/警告数量、关键表路径。
+2. `validation/validation_report.md`：三大报表校验失败时，相关会计数据只能作为待核实数据使用。
+3. `tables_merged/*.json`：用于利润表、资产负债表、现金流量表等通用财务数据。
+4. `chunks.jsonl` / `document.md`：检索内含价值、NBV、剩余边际、营运利润、偿付能力等保险专属披露。
+
+保险核心指标很多不在通用三大表内；找到文本线索后必须回到表格 JSON 或页码核对，不得只引用叙述性长文本。
 
 ## 执行流水线
 

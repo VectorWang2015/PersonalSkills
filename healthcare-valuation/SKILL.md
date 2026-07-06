@@ -12,6 +12,10 @@ tags: [healthcare, hospital, clinic, valuation, DCF, medical]
 
 聚合 skill，医疗机构估值分析的唯一入口。按机构类型分发 9 个原子 skill。
 
+## 输入要求
+
+优先接受 `financial-pdf-parser` 生成的解析目录。若用户只给 PDF，先解析再分析。使用解析目录时先读 `analysis_context.md` 和 `validation/validation_report.md`，财务数字以 `tables_merged/*.json` 为准，医院/门诊/长期照护等业务叙述用 `chunks.jsonl` 和 `document.md` 补充。
+
 ## 执行流水线
 
 ```
