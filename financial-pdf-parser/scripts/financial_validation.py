@@ -1,6 +1,18 @@
 from __future__ import annotations
 
+import re
 from typing import Any
+
+
+def _clean_numeric(s: str) -> str:
+    """Strip Chinese footnote markers and other non-numeric annotations from numeric strings."""
+    s = s.replace("%", "").replace("％", "").replace(",", "")
+    # Strip footnote markers like 注1, 注2, 注, 注1， etc.
+    s = re.sub(r'注\d*[，,]*', '', s)
+    # Strip other common annotations
+    s = s.strip()
+    match = re.search(r'[-+]?\d+(?:\.\d+)?', s)
+    return match.group(0) if match else s
 
 
 def pct_change(current: float, previous: float) -> float | None:
@@ -14,7 +26,7 @@ def validate_pct_change(current: float, previous: float, reported: str | float, 
     if calculated is None:
         return {"check": "pct_change", "status": "skip", "reason": "previous_zero"}
     if isinstance(reported, str):
-        reported_value = float(reported.replace("%", "").replace("％", ""))
+        reported_value = float(_clean_numeric(reported))
     else:
         reported_value = float(reported)
     ok = abs(calculated - reported_value) <= tolerance

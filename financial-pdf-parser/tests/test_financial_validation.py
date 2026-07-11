@@ -2,12 +2,18 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "scripts"))
-from financial_validation import validate_balance_sheet
+from financial_validation import validate_balance_sheet, validate_pct_change
 from parse_financial_pdf import ValidationIndex
 
 
 def test_financial_validation():
     assert validate_balance_sheet(100, 40, 60)["status"] == "pass"
+
+
+def test_validation_handles_pct_change_with_trailing_label_text():
+    check = validate_pct_change(100.0, 86.5, "15.61营业收入", tolerance=0.1)
+
+    assert check["status"] == "pass"
 
 
 def test_validation_prefers_annual_table_when_labels_have_unit_suffix():
