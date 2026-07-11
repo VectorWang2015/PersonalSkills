@@ -1,0 +1,80 @@
+{
+  "skill": "equity-valuation-comprehensive-analysis",
+  "prompts": [
+    {
+      "text": "请基于中证1000 Stage2 Top10 候选池，对 301101 明月镜片、600750 华润江中、603992 松霖科技等10只股票做估值框架，不要给买卖建议，输出保守/基准/乐观合理市值区间。",
+      "should_trigger": true,
+      "reason": "明确要求二级市场股票估值框架和三情景合理市值区间"
+    },
+    {
+      "text": "明月镜片2025年净利润1.93亿元，零有息负债、高现金储备，近视防控和高折镜片增长不错。请判断该用PE、PEG还是DCF估值。",
+      "should_trigger": true,
+      "reason": "单只股票估值方法选择，涉及成长股PE/PEG/DCF分流"
+    },
+    {
+      "text": "华润江中利润增长但收入下滑，经营现金流高于净利润，适合用FCF yield还是简化DCF？",
+      "should_trigger": true,
+      "reason": "要求判断股票估值主方法和交叉验证方法"
+    },
+    {
+      "text": "松霖科技年报解析有pct_change校验失败，但2026Q1修复明显。估值时这些数据怎么处理？DCF能不能做主方法？",
+      "should_trigger": true,
+      "reason": "涉及parser caveat传播、估值输入可靠性和DCF适用性判断"
+    },
+    {
+      "text": "涛涛车业、润丰股份、匠心家居这些出口制造企业估值时，关税、汇率、客户集中和营运资本风险怎么反映到估值区间？",
+      "should_trigger": true,
+      "reason": "出口制造股票估值分型和风险折扣处理"
+    },
+    {
+      "text": "大博医疗和南微医学集采后修复，应该用恢复年利润PE还是DCF？请给三情景估值。",
+      "should_trigger": true,
+      "reason": "医疗器械修复型股票估值，要求方法选择和三情景"
+    },
+    {
+      "text": "现在没有实时股价、当前市值、股本和同行估值数据。基于已有公司报告，哪些估值输出可以给，哪些必须标为数据缺口？",
+      "should_trigger": true,
+      "reason": "股票估值输出边界和数据缺口处理是本skill核心规则"
+    },
+    {
+      "text": "纳微科技还在修复期，应该用PEG、PE还是正常化PE？不要只按利润增速机械套公式。",
+      "should_trigger": true,
+      "reason": "要求判断成长/修复股票的估值方法和PEG边界"
+    },
+    {
+      "text": "这家公司PE只有5倍，是不是一定很便宜？它是强周期化工股。",
+      "should_trigger": true,
+      "reason": "周期股低PE陷阱是股票估值的重要触发场景"
+    },
+    {
+      "text": "银行股为什么不能直接用EV/EBITDA？应该看PB还是PE？",
+      "should_trigger": true,
+      "reason": "金融股股票估值分支，要求避免普通企业倍数误用"
+    },
+    {
+      "text": "请根据已有公司研究报告，为301101明月镜片生成一行估值输入表：primary_method、secondary_method、三情景利润、三情景倍数、risk_discount_notes和data_gaps。",
+      "should_trigger": true,
+      "reason": "从基本面报告生成股票估值输入表属于本skill适用范围"
+    },
+    {
+      "text": "贵州茅台2025年ROE是多少？",
+      "should_trigger": false,
+      "reason": "单一财务指标查询，不需要股票估值框架"
+    },
+    {
+      "text": "招商银行2026Q1不良率变化说明什么？",
+      "should_trigger": false,
+      "reason": "银行资产质量/基本面分析，应使用银行分析相关skill，而非股票估值入口"
+    },
+    {
+      "text": "这只股票明天能涨停吗？",
+      "should_trigger": false,
+      "reason": "短线交易预测和技术面问题，不属于估值分析"
+    },
+    {
+      "text": "帮我分析这家消费公司的品牌力和渠道优势。",
+      "should_trigger": false,
+      "reason": "消费公司基本面竞争力分析，应先使用consumer-analysis；未涉及估值方法或合理区间"
+    }
+  ]
+}

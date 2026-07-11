@@ -1,0 +1,55 @@
+{
+  "skill": "investment-valuation-comprehensive-framework",
+  "prompts": [
+    {
+      "text": "这家公司该用DCF还是相对估值？我不知道怎么选。",
+      "should_trigger": true,
+      "reason": "直接要求估值方法分流，是整书级框架的核心触发场景"
+    },
+    {
+      "text": "Damodaran会怎么处理一家还没盈利但收入高速增长的软件公司估值？",
+      "should_trigger": true,
+      "reason": "涉及Damodaran方法和年轻/亏损公司估值，需要方法分流和top-down DCF思路"
+    },
+    {
+      "text": "这个DCF模型用FCFE但折现率填的是WACC，问题大吗？",
+      "should_trigger": true,
+      "reason": "现金流和折现率一致性审计是本skill的重要触发场景"
+    },
+    {
+      "text": "银行为什么不能直接用EV/EBITDA估值？",
+      "should_trigger": true,
+      "reason": "金融服务企业估值方法选择属于整书框架的特殊情景"
+    },
+    {
+      "text": "我想把Investment Valuation这本书继续拆成股票估值skill，先拆哪些？",
+      "should_trigger": true,
+      "reason": "用户要求整书蒸馏路线和候选原子skill优先级"
+    },
+    {
+      "text": "贵州茅台2025年收入和净利润是多少？",
+      "should_trigger": false,
+      "reason": "这是财务数据查询，不涉及估值方法选择或Damodaran框架"
+    },
+    {
+      "text": "招商银行Q1不良率怎么样？",
+      "should_trigger": false,
+      "reason": "这是银行基本面/资产质量分析，应使用银行分析skill，不是整书估值框架"
+    },
+    {
+      "text": "这只股票明天会不会涨？",
+      "should_trigger": false,
+      "reason": "短线择时和价格预测不属于估值方法论"
+    },
+    {
+      "text": "这家公司PE只有8倍，是不是一定便宜？",
+      "should_trigger": true,
+      "reason": "需要区分相对估值与内在价值，并审计倍数背后的增长/风险/现金流驱动"
+    },
+    {
+      "text": "专利管线应该直接加一个战略溢价吗？",
+      "should_trigger": true,
+      "reason": "涉及real option是否有效及期权价值是否被滥用"
+    }
+  ]
+}

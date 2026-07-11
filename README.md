@@ -14,7 +14,7 @@
 
 1. 财报获取：使用 `cninfo-report-downloader` 下载 A 股年报、季报、半年报到 `raw/reports/<报告期>/`。
 2. PDF结构化解析：使用 `financial-pdf-parser` 将 PDF 转为 `document.md`、`chunks.jsonl`、`tables_merged/`、`validation/`、`analysis_context.md`。
-3. 分析入口选择：按行业进入 `financial-statement-analysis`、`bank-comprehensive-analysis`、`insurance-comprehensive-analysis`、`consumer-analysis`、`healthcare-valuation` 或 `peter-lynch-investment`。
+3. 分析入口选择：按行业进入 `financial-statement-analysis`、`bank-comprehensive-analysis`、`insurance-comprehensive-analysis`、`consumer-analysis`、`healthcare-valuation` 或 `peter-lynch-investment`；若用户明确要求估值方法选择或股票估值区间，使用 `investment-valuation-comprehensive-framework` 或 `equity-valuation-comprehensive-analysis`。
 4. 报告导出：聚合分析 skill 完成后询问用户是否保存 Markdown 到 `reports/<报告期>/`。
 
 ### 解析目录作为统一输入
@@ -64,6 +64,14 @@
 
 **原子方法论（8 个）**: 六种股票类型 / 完美股票特质 / PEG估值 / 卖出时机指南 / 避而不买的股票 / 组合构建 / 鸡尾酒会理论 / 十二条危险谬误
 
+### investment-valuation-comprehensive-framework
+
+Damodaran《Investment Valuation》整书级估值方法分流框架。用于判断估值问题应使用 DCF、相对估值、期权/特殊情景估值、金融服务估值或概率估值，并审计现金流、折现率、增长、终值和风险处理的一致性。
+
+### equity-valuation-comprehensive-analysis
+
+股票估值聚合 skill。面向二级市场股票标的，按成熟稳定股、高ROIC成长股、亏损成长股、周期股、金融股、出口制造、医疗修复和困境股分型，选择 PE/PEG/EV/EBITDA/DCF/PB/DDM 等方法，输出三情景估值区间和关键假设边界。
+
 ### cninfo-report-downloader
 
 工具型 skill。输入 A 股股票代码，从巨潮资讯自动下载最新年度报告完整版和最近一期非年报定期报告，保存为 PDF/TXT 到项目归档目录。
@@ -84,7 +92,11 @@
 
 ```bash
 ln -s ../../skills/financial-pdf-parser .opencode/skills/financial-pdf-parser
+ln -s ../../skills/investment-valuation-comprehensive-framework .opencode/skills/investment-valuation-comprehensive-framework
+ln -s ../../skills/equity-valuation-comprehensive-analysis .opencode/skills/equity-valuation-comprehensive-analysis
 ```
+
+从零部署到另一台机器时，克隆本仓库后，在项目的 `.opencode/skills/` 目录为需要启用的 skill 建立上述相对 symlink，重启 opencode 即可发现。
 
 新主机使用 `financial-pdf-parser` 前需准备 Python 3.11+ 环境并安装核心依赖：
 
