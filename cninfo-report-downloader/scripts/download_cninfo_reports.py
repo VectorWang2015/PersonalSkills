@@ -112,6 +112,23 @@ def announcement_time(item: Dict[str, Any]) -> int:
         return 0
 
 
+def report_year(title: str) -> int:
+    match = re.search(r"(20\d{2})年?", clean_title(title))
+    if not match:
+        return 0
+    return int(match.group(1))
+
+
+def is_correction_title(title: str) -> bool:
+    title = clean_title(title)
+    return any(word in title for word in ("更正", "修订", "修正"))
+
+
+def annual_report_sort_key(item: Dict[str, Any]) -> Tuple[int, bool, int]:
+    title = str(item.get("announcementTitle") or "")
+    return report_year(title), is_correction_title(title), announcement_time(item)
+
+
 def select_newest(items: List[Dict[str, Any]]) -> Dict[str, Any]:
     if not items:
         raise ValueError("没有找到符合条件的公告")
@@ -125,7 +142,9 @@ def select_annual_report(announcements: List[Dict[str, Any]]) -> Dict[str, Any]:
         title = clean_title(str(item.get("announcementTitle") or ""))
         if "年度报告" in title and not any(word in title for word in excluded):
             matches.append(item)
-    return select_newest(matches)
+    if not matches:
+        raise ValueError("没有找到符合条件的公告")
+    return max(matches, key=annual_report_sort_key)
 
 
 def select_latest_periodic_report(announcements: List[Dict[str, Any]]) -> Dict[str, Any]:

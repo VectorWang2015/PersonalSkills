@@ -63,6 +63,8 @@ The script downloads two reports by default:
 - 最新年度报告完整版，不使用摘要、简报、英文版或更正摘要替代。
 - 最近一期非年报定期报告，一季报、半年报、三季报三者中取最新。
 
+“最新年度报告”按报告期年份判断，不按公告发布时间判断。若过去年报的更正后版本晚于最新年报发布，仍应选择报告期最新的年报；只有在同一报告期内，才优先选择更正后/修订版。
+
 Output files:
 
 ```text
@@ -98,5 +100,6 @@ After parsing succeeds, pass the parsed directory to the relevant analysis entry
 | --- | --- |
 | Downloading 年报摘要 as 年报 | Require title contains `年度报告` and excludes `摘要` |
 | Treating 半年度报告 as 年报 | Parse `半年度报告` before generic `年度报告` |
+| Downloading older-year correction as latest annual report | Sort annual reports by report year first, announcement time only within the same year |
 | Inferring market from `orgId` | Infer market from stock code prefix |
 | Skipping TXT status | Report TXT conversion success, skip, or failure explicitly |

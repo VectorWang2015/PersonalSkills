@@ -41,6 +41,29 @@ class CninfoDownloaderTests(unittest.TestCase):
 
         self.assertEqual(selected["announcementTitle"], "2025年年度报告")
 
+    def test_annual_report_prefers_latest_report_year_over_older_correction(self):
+        module = load_module()
+        announcements = [
+            {"announcementTitle": "奕东电子科技股份有限公司2024年年度报告（更正后）", "announcementTime": 1782471000000},
+            {"announcementTitle": "2025年年度报告", "announcementTime": 1777392000000},
+            {"announcementTitle": "2025年年度报告摘要", "announcementTime": 1777392000000},
+        ]
+
+        selected = module.select_annual_report(announcements)
+
+        self.assertEqual(selected["announcementTitle"], "2025年年度报告")
+
+    def test_annual_report_prefers_same_year_correction_over_original(self):
+        module = load_module()
+        announcements = [
+            {"announcementTitle": "2025年年度报告", "announcementTime": 1777392000000},
+            {"announcementTitle": "2025年年度报告（更正后）", "announcementTime": 1782471000000},
+        ]
+
+        selected = module.select_annual_report(announcements)
+
+        self.assertEqual(selected["announcementTitle"], "2025年年度报告（更正后）")
+
     def test_filter_selects_latest_non_annual_periodic_report(self):
         module = load_module()
         announcements = [
