@@ -1,106 +1,135 @@
 # PersonalSkills
 
-高影响力金融书籍蒸馏出的 opencode AI 技能集。供 AI agent 在投资决策场景中调用。
+个人 AI agent skill 集合，按领域分类整理，供 opencode / DSH / Claude Code 等 agent 框架调用。
 
-## 技能
+---
 
-## 标准工作流
+## 目录结构
 
-面向真实财报分析时，优先使用以下流水线：
+```
+PersonalSkills/
+├── academic/          学术写作与论文分析
+├── finance/           金融分析与投资方法论
+└── meta/              元技能：用于生产或管理其他 skill
+```
+
+---
+
+## 学术类 (`academic/`)
+
+### academic-defensive-writing-auditor
+
+检测并改写学术论文中防御性、过度免责、面向审稿人的措辞，同时保留必要的科学审慎表达。
+
+- 覆盖 14 种防御性写作模式（D1–D14）
+- 区分 NECESSARY_CAVEAT / DEFENSIVE / MIXED / CLEAN
+- 输出带严重程度的审计表 + 论文级评分（0–10）+ 优先修改列表
+- 支持 audit-only 和 full-paper-cleanup 两种模式
+
+**安装（推荐）：**
+
+```bash
+npx academic-defensive-writing-auditor
+# 指定目标目录
+npx academic-defensive-writing-auditor --dir ./.agents/skills
+```
+
+**快速调用：**
+
+```text
+Audit this manuscript for defensive writing only.
+Preserve necessary scientific caveats.
+Rank issues by likely reviewer-perception impact.
+```
+
+**14 种模式速览：**
+D1 面向审稿人的预先辩驳 · D2 重复否定性免责 · D3 堆砌保留意见 · D4 为不理想结果辩解 ·
+D5 为未做的实验辩护 · D6 "公平性"自我辩护 · D7 重复"初步/有限范围"标签 ·
+D8 法律式免责措辞 · D9 无关防御性披露 · D10 宣传性补偿形容词 ·
+D11 AI 式自动总结句 · D12 证据边界过度标注 · D13 绝对防御性断言 · D14 重新贴标签式贡献声明
+
+---
+
+### oe-dp-writing-skill
+
+动态定位（DP）/ 船舶保持位置类论文写作指南，面向 *Ocean Engineering* 及相关控制类期刊。
+
+基于 6 篇精读论文整理（Øvereng 2021 OE、Gao 2022 OE、Yuan & Rui 2023 CEE、
+Lee 2020 OE、Sarda 2016 OE、Sui 2024 Remote Sens），覆盖 15 节：
+
+abstract · introduction · notation · materials & methods · results ·
+discussion · conclusion · ML/RL 术语替换表 · 方程 · 表格 · 图形 ·
+引用规范 · 单位 · 可重复性报告规范 · 常见审稿意见
+
+每条规则标注置信度：`[Sample]` 样本观察 · `[Practice]` 通用惯例 · `[Recommend]` 建议
+
+> **注意**：样本中无 JMSE 论文，投稿 JMSE 前请另行核查该期刊指南和近期代表性文章。
+
+---
+
+## 金融类 (`finance/`)
+
+来源于高影响力金融书籍的方法论蒸馏，面向 A 股二级市场投资分析场景。
+
+### 标准财报分析工作流
 
 ```text
 财报获取 → PDF结构化解析 → 行业/方法论分析 → 报告导出
 ```
 
-1. 财报获取：使用 `cninfo-report-downloader` 下载 A 股年报、季报、半年报到 `raw/reports/<报告期>/`。
-2. PDF结构化解析：使用 `financial-pdf-parser` 将 PDF 转为 `document.md`、`chunks.jsonl`、`tables_merged/`、`validation/`、`analysis_context.md`。
-3. 分析入口选择：按行业进入 `financial-statement-analysis`、`bank-comprehensive-analysis`、`insurance-comprehensive-analysis`、`consumer-analysis`、`healthcare-valuation` 或 `peter-lynch-investment`；若用户明确要求估值方法选择或股票估值区间，使用 `investment-valuation-comprehensive-framework` 或 `equity-valuation-comprehensive-analysis`。
-4. 报告导出：聚合分析 skill 完成后询问用户是否保存 Markdown 到 `reports/<报告期>/`。
+1. **cninfo-report-downloader** — 从巨潮资讯下载 A 股年报、季报、半年报 PDF
+2. **financial-pdf-parser** — 将 PDF 解析为结构化文本、表格、校验报告和分析上下文
+3. 按行业选择分析入口（见下表）
+4. 聚合完成后导出 Markdown 报告
 
-### 解析目录作为统一输入
+> 所有分析 skill 优先接受 `financial-pdf-parser` 的输出目录，而非直接读取 PDF 长文本。
+> 如 validation 存在失败项，相关数字必须标为"待核实"，不能静默引用。
 
-所有财报分析入口都应优先接受 `financial-pdf-parser` 的输出目录，而不是直接读取 PDF 长文本。下游分析时按以下顺序取数：
+### 行业分析 skill
 
-1. `analysis_context.md`：报告来源、校验状态、关键表路径。
-2. `validation/validation_report.md`：判断关键数据是否可直接使用。
-3. `tables_merged/*.json`：财务数字、表格计算、页码追溯的首选来源。
-4. `chunks.jsonl` / `document.md`：业务描述、管理层讨论、风险因素等文本上下文。
+| Skill | 来源 | 原子方法论数 | 适用场景 |
+|---|---|---|---|
+| **bank-comprehensive-analysis** | 《看透银行》价投谷子地 2021 | 12 | 银行财报全面分析 |
+| **insurance-comprehensive-analysis** | 《读懂保险股》东先生 2021 | 9 | 保险股年报分析 |
+| **consumer-analysis** | 《吴劲草讲消费行业》吴劲草 2022 | 9 | 消费行业基本面 |
+| **healthcare-valuation** | 《医疗行业估值》郑华 & 涂宏钢 2020 | 9 | 医疗机构 DCF 估值 |
+| **financial-statement-analysis** | 《七步读懂财务报表》 | 7 | 上市公司通用财报 |
+| **peter-lynch-investment** | 《彼得·林奇的成功投资》1989/2000 | 8 | 选股估值卖出时机 |
 
-如 validation 存在失败项，相关数字必须在分析报告中标为“待核实”，不能静默引用。
+### 估值框架 skill
 
-### bank-comprehensive-analysis
+| Skill | 适用场景 |
+|---|---|
+| **investment-valuation-comprehensive-framework** | Damodaran 整书级估值方法分流（DCF / 相对估值 / 期权 / 金融服务 / 概率估值） |
+| **equity-valuation-comprehensive-analysis** | 二级市场按股票类型分发估值方法，输出三情景区间和关键假设边界 |
 
-银行财报全面分析。输入季报/年报数据，按 12 个原子方法论自动编排分析流水线，输出结构化综合报告。来源：《看透银行》（价投谷子地, 2021）。
+---
 
-**原子方法论（12 个）**: 净息差拆解 / 负债成本评估 / 不良贷款生命周期 / 信用减值识别 / RORWA内生性增长 / 银行估值决策树 / 加息降息影响 / 手续费粉饰识别 / 分期利率计算 / 风险加权减值准备率 / 招行护城河分析 / 名义GDP利率锚
-
-### insurance-comprehensive-analysis
-
-保险股全面分析。输入年报数据，按 9 个原子方法论分析保险公司估值。
-
-**原子方法论（9 个）**: 内含价值估值(EV) / 三套准则框架(GAAP/EV/OP) / 苹果树模型 / 剩余边际分析 / 新业务价值(NBV) / 营运利润四因子 / 偿付能力体系 / 保险投资分析 / 保险股估值方法
-
-来源：《读懂保险股》（东先生, 2021）。
-
-### consumer-analysis
-
-消费行业公司基本面分析。按品牌-渠道-供应链三角框架编排 9 个原子方法论。来源：《吴劲草讲消费行业》（吴劲草, 2022）。
-
-### healthcare-valuation
-
-医疗机构估值分析。按机构类型分发 9 个原子方法论，覆盖医院/门诊/长期照护/初创机构的 DCF 估值与财务分析。来源：《医疗行业估值》（郑华 & 涂宏钢, 2020）。
-
-### financial-statement-analysis
-
-上市公司财报全面分析。按七步成诗法编排 7 个原子方法论，自动编排盈利能力→周转效率→杠杆安全→综合判断的分析流水线。来源：《七步读懂财务报表》[^1]。
-
-**原子方法论（7 个）**: 七步成诗法 / 盈利能力分析 / 运营效率分析 / 杠杆评估 / 避雷方法 / 招股书评估 / 综合判断
-
-[^1]: 无公开署名作者信息，系财务分析通识框架。
-
-### peter-lynch-investment
-
-彼得·林奇投资方法论。按 8 个原子方法论覆盖分类、选股、估值、卖出时机、风险回避、组合管理、情绪判断和认知纠偏。来源：《彼得·林奇的成功投资》（Peter Lynch, 1989/2000）。
-
-**原子方法论（8 个）**: 六种股票类型 / 完美股票特质 / PEG估值 / 卖出时机指南 / 避而不买的股票 / 组合构建 / 鸡尾酒会理论 / 十二条危险谬误
-
-### investment-valuation-comprehensive-framework
-
-Damodaran《Investment Valuation》整书级估值方法分流框架。用于判断估值问题应使用 DCF、相对估值、期权/特殊情景估值、金融服务估值或概率估值，并审计现金流、折现率、增长、终值和风险处理的一致性。
-
-### equity-valuation-comprehensive-analysis
-
-股票估值聚合 skill。面向二级市场股票标的，按成熟稳定股、高ROIC成长股、亏损成长股、周期股、金融股、出口制造、医疗修复和困境股分型，选择 PE/PEG/EV/EBITDA/DCF/PB/DDM 等方法，输出三情景估值区间和关键假设边界。
-
-### cninfo-report-downloader
-
-工具型 skill。输入 A 股股票代码，从巨潮资讯自动下载最新年度报告完整版和最近一期非年报定期报告，保存为 PDF/TXT 到项目归档目录。
-
-年报选择以报告期年份为优先级，不以公告发布时间为优先级：例如最新 `2025年年度报告` 应优先于公告时间更晚的 `2024年年度报告（更正后）`。同一报告期内若存在更正后/修订版，则优先下载更正后/修订版。
-
-### financial-pdf-parser
-
-工具型 skill。将 A 股年报、季报、半年报 PDF 解析为结构化文本、表格、校验报告和下游分析上下文。推荐作为所有财报分析 skill 的前置步骤。
+## 元技能 (`meta/`)
 
 ### book2skill
 
-元技能。使用 RIA-TV++ 流水线将一本书蒸馏为一组可独立调用的 AI skill。
+使用 RIA-TV++ 流水线将一本书蒸馏为一组可独立调用的 AI skill。适用于将方法论类书籍系统性提炼为结构化 skill 集合。
+
+---
 
 ## 安装
 
-克隆到 opencode 技能的发现路径（如 `<project>/.opencode/skills/`），重启 opencode 即可使用。
-
-本仓库的标准安装方式是让 `.opencode/skills/<skill-name>` 指向 `skills/<skill-name>`。例如：
+克隆本仓库后，在项目的 `.opencode/skills/`（或 `.agents/skills/`、`.dsh/skills/`）目录为需要启用的 skill 建立相对 symlink：
 
 ```bash
-ln -s ../../skills/financial-pdf-parser .opencode/skills/financial-pdf-parser
-ln -s ../../skills/investment-valuation-comprehensive-framework .opencode/skills/investment-valuation-comprehensive-framework
-ln -s ../../skills/equity-valuation-comprehensive-analysis .opencode/skills/equity-valuation-comprehensive-analysis
+ln -s /path/to/PersonalSkills/<category>/<skill-name> .opencode/skills/<skill-name>
 ```
 
-从零部署到另一台机器时，克隆本仓库后，在项目的 `.opencode/skills/` 目录为需要启用的 skill 建立上述相对 symlink，重启 opencode 即可发现。
+重启 agent 框架即可发现。
 
-新主机使用 `financial-pdf-parser` 前需准备 Python 3.11+ 环境并安装核心依赖：
+`academic-defensive-writing-auditor` 也可直接通过 npx 安装：
+
+```bash
+npx academic-defensive-writing-auditor --dir ./.agents/skills
+```
+
+使用 `financial-pdf-parser` 前需安装 Python 依赖：
 
 ```bash
 python -m pip install pymupdf pymupdf4llm pdfplumber camelot-py opencv-python
