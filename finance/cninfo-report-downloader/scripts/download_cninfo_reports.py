@@ -136,7 +136,7 @@ def select_newest(items: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 
 def select_annual_report(announcements: List[Dict[str, Any]]) -> Dict[str, Any]:
-    excluded = ("摘要", "简报", "英文", "取消", "更正摘要")
+    excluded = ("半年度报告", "摘要", "简报", "英文", "取消", "更正摘要")
     matches = []
     for item in announcements:
         title = clean_title(str(item.get("announcementTitle") or ""))

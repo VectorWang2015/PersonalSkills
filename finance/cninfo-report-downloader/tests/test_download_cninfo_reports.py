@@ -64,6 +64,18 @@ class CninfoDownloaderTests(unittest.TestCase):
 
         self.assertEqual(selected["announcementTitle"], "2025年年度报告（更正后）")
 
+    def test_annual_report_excludes_newer_half_year_report(self):
+        module = load_module()
+        announcements = [
+            {"announcementTitle": "2025年年度报告", "announcementTime": 1777392000000},
+            {"announcementTitle": "2026年年度报告", "announcementTime": 1808928000000},
+            {"announcementTitle": "2026年半年度报告（更正后）", "announcementTime": 1814000000000},
+        ]
+
+        selected = module.select_annual_report(announcements)
+
+        self.assertEqual(selected["announcementTitle"], "2026年年度报告")
+
     def test_filter_selects_latest_non_annual_periodic_report(self):
         module = load_module()
         announcements = [
