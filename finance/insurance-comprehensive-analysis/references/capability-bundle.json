@@ -1,0 +1,229 @@
+{
+  "schema": "book2skill/capability-bundle@1",
+  "bundle_id": "bundle.insurance-comprehensive-analysis-v7",
+  "revision": 7,
+  "created_at": "2026-09-03T14:49:03+08:00",
+  "updated_at": "2026-09-03T14:49:03+08:00",
+  "source_manifest": "source-manifest.json",
+  "lineage": {
+    "derived_from_bundle": "aggregate-v6:33bbfdba83dac6ae085366c53d0babdc21d9db4e19656840d7fb037bcec6505c",
+    "redistillation_comparison": "仅记录四轮聚合留出：第3版轮无技能96.5、第3版95.5、旧部署94.5；第4版轮旧部署96、第4版90、无技能89；第5版轮无技能94.5、旧部署92.5、第5版90.5；第6版轮无技能98、旧部署96、第6版92.5"
+  },
+  "output": {
+    "mode": "single",
+    "promotion_budget": null,
+    "promotion_policy": "只保留一个已发布入口。第7版匿名聚合评测为候选97.5、无skill 96.5、旧实现96，支持根包active；聚合分数不能拆给内部能力，七项内部能力继续保持draft。详见release-evaluation.md。",
+    "router": {
+      "name": "insurance-comprehensive-analysis",
+      "description": "按文档身份、综合金融集团归属、保险三桥、全报告及分红证据层级分析；只输出报告实际支持的口径。"
+    }
+  },
+  "capabilities": [
+    {
+      "capability_id": "cap.insurance-analysis.document-segment-router",
+      "revision": 7,
+      "status": "draft",
+      "card": "capabilities/document-segment-router.md",
+      "promotion": {
+        "promotion_id": "promo.insurance-analysis.document-segment-router-v7",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "综合金融集团首表并列业务利润、集团归属、少数股东和抵销，减少主体混用。",
+        "falsifier": "报告有正式归属勾稽时仍只列业务净利润或将其机械相加。",
+        "portfolio_conflicts": [],
+        "rationale": "针对聚合评测失败修订，未单独验证。"
+      },
+      "destination": "router_only",
+      "delivery_path": null,
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.insurance-analysis.operating-quality",
+      "revision": 7,
+      "status": "draft",
+      "card": "capabilities/operating-quality.md",
+      "promotion": {
+        "promotion_id": "promo.insurance-analysis.operating-quality-v7",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "寿险服务、营运利润至净利润和CSM余额三条桥分别闭合且不混加。",
+        "falsifier": "将CSM余额桥与当期服务或营运利润桥相加，或遗漏报告现成闭合关系。",
+        "portfolio_conflicts": [],
+        "rationale": "第4版聚合结果不能视为本卡独立结果。"
+      },
+      "destination": "router_only",
+      "delivery_path": null,
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.insurance-analysis.value-capital",
+      "revision": 7,
+      "status": "draft",
+      "card": "capabilities/value-capital.md",
+      "promotion": {
+        "promotion_id": "promo.insurance-analysis.value-capital-v7",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "优先列主要保险子公司核心、综合、时点和报告门槛，并控制非任务搜索。",
+        "falsifier": "用集团偿付率替代个体比率或未完整搜索即称缺失。",
+        "portfolio_conflicts": [],
+        "rationale": "第7版仅有包级聚合评测，本卡未单独验证。"
+      },
+      "destination": "router_only",
+      "delivery_path": null,
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.insurance-analysis.profit-release",
+      "revision": 7,
+      "status": "draft",
+      "card": "capabilities/profit-release.md",
+      "promotion": {
+        "promotion_id": "promo.insurance-analysis.profit-release-v7",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "加入成本法宣告确认节点，并固定年度可动用资金表的证据强度。",
+        "falsifier": "把年度资金流入称逐笔银行到账，或猜测其与现金流、投资收益或EV的差额来源。",
+        "portfolio_conflicts": [],
+        "rationale": "第7版仅有包级聚合评测，本卡未单独验证。"
+      },
+      "destination": "router_only",
+      "delivery_path": null,
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.insurance-analysis.investment-alm",
+      "revision": 7,
+      "status": "draft",
+      "card": "capabilities/investment-alm.md",
+      "promotion": {
+        "promotion_id": "promo.insurance-analysis.investment-alm-v7",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "保留投资桥，并用净/综合收益率及分部方向直接证伪泛化结论。",
+        "falsifier": "仍用未来重述代替对当前投资结论的直接反例。",
+        "portfolio_conflicts": [],
+        "rationale": "无逐卡评测。"
+      },
+      "destination": "router_only",
+      "delivery_path": null,
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.insurance-analysis.valuation-scenarios",
+      "revision": 7,
+      "status": "draft",
+      "card": "capabilities/valuation-scenarios.md",
+      "promotion": {
+        "promotion_id": "promo.insurance-analysis.valuation-scenarios-v7",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "只给报告日锚和压力。",
+        "falsifier": "输出倍数情景价格或交易建议。",
+        "portfolio_conflicts": [],
+        "rationale": "沿用硬门，未独立验证。"
+      },
+      "destination": "router_only",
+      "delivery_path": null,
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.insurance-analysis.predictability-gate",
+      "revision": 7,
+      "status": "draft",
+      "card": "capabilities/predictability-gate.md",
+      "promotion": {
+        "promotion_id": "promo.insurance-analysis.predictability-gate-v7",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "证伪点直接挑战归属、CSM、投资或资本上划核心结论。",
+        "falsifier": "三个证伪点仍只是未来重述、新增披露或维护条件。",
+        "portfolio_conflicts": [],
+        "rationale": "第7版仅有包级聚合评测，本卡未单独验证。"
+      },
+      "destination": "router_only",
+      "delivery_path": null,
+      "test_suite": "../test-prompts.json"
+    }
+  ],
+  "relationships": [
+    {
+      "from": "cap.insurance-analysis.document-segment-router",
+      "type": "routes_to",
+      "to": "cap.insurance-analysis.operating-quality",
+      "execution_rationale": "完成全报告扫描与分业后才能分析利润。"
+    },
+    {
+      "from": "cap.insurance-analysis.operating-quality",
+      "type": "composes_with",
+      "to": "cap.insurance-analysis.profit-release",
+      "execution_rationale": "利润桥与母公司分红链组合。"
+    },
+    {
+      "from": "cap.insurance-analysis.value-capital",
+      "type": "composes_with",
+      "to": "cap.insurance-analysis.profit-release",
+      "execution_rationale": "子公司偿付能力约束上划分红。"
+    },
+    {
+      "from": "cap.insurance-analysis.value-capital",
+      "type": "composes_with",
+      "to": "cap.insurance-analysis.investment-alm",
+      "execution_rationale": "投资和资产负债压力同时影响EV、偿付资本和流动性。"
+    },
+    {
+      "from": "cap.insurance-analysis.valuation-scenarios",
+      "type": "depends_on",
+      "to": "cap.insurance-analysis.predictability-gate",
+      "execution_rationale": "缺关键证据时停止压力外推。"
+    }
+  ],
+  "quality": {
+    "required_gates": [
+      "source-manifest-valid",
+      "aggregate-v3-v7-evaluations-recorded",
+      "full-report-search-before-missing",
+      "subsidiary-solvency-table",
+      "parent-dividend-chain",
+      "related-party-dividend-detail",
+      "unreconciled-dividend-residual",
+      "recognized-vs-paid-levels",
+      "life-service-evidence-level",
+      "business-vs-attributable-profit",
+      "three-separate-life-bridges",
+      "declaration-recognition-policy",
+      "annual-available-funds-evidence-level",
+      "cross-basis-dividend-differences",
+      "current-conclusion-falsifiers",
+      "high-information-compact",
+      "profit-bridge-scope-label",
+      "v6-hard-gates-preserved",
+      "compact-followup-no-duplication",
+      "fresh-v7-holdout"
+    ],
+    "passed_gates": [
+      "source-manifest-valid",
+      "aggregate-v3-v7-evaluations-recorded",
+      "full-report-search-before-missing",
+      "subsidiary-solvency-table",
+      "parent-dividend-chain",
+      "related-party-dividend-detail",
+      "unreconciled-dividend-residual",
+      "recognized-vs-paid-levels",
+      "life-service-evidence-level",
+      "business-vs-attributable-profit",
+      "three-separate-life-bridges",
+      "declaration-recognition-policy",
+      "annual-available-funds-evidence-level",
+      "cross-basis-dividend-differences",
+      "current-conclusion-falsifiers",
+      "high-information-compact",
+      "profit-bridge-scope-label",
+      "v6-hard-gates-preserved",
+      "compact-followup-no-duplication",
+      "fresh-v7-holdout"
+    ],
+    "open_issues": [
+      {
+        "issue_id": "issue-internal-card-attribution",
+        "severity": "low",
+        "description": "包括第7版在内的聚合技能分数不能归因到任一内部能力。",
+        "owner": "发布后评测者",
+        "next_action": "七项内部能力继续保持draft；只有新的逐卡隔离评测或消融结果才能改变单卡状态。"
+      }
+    ]
+  }
+}

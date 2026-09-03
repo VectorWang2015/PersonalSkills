@@ -1,6 +1,9 @@
 ---
 name: financial-pdf-parser
 description: Use when parsing Chinese A-share annual, interim, or quarterly report PDFs into structured text, tables, chunks, and validation artifacts before LLM or agent financial analysis.
+metadata:
+  status: active
+  release-record: references/release-evaluation.md
 ---
 
 # Financial PDF Parser
@@ -36,17 +39,19 @@ conda create -n trading_agents python=3.11
 conda activate trading_agents
 ```
 
-Install core dependencies:
+Install the dependency used by the unified parser:
 
 ```bash
-python -m pip install pymupdf pymupdf4llm pdfplumber camelot-py opencv-python
+python -m pip install pymupdf
 ```
 
-Install Docling only when full document structure/OCR-heavy layout parsing is acceptable:
+Install comparison or fallback backends only when you will run the separate benchmark tool:
 
 ```bash
-python -m pip install docling
+python -m pip install pymupdf4llm pdfplumber camelot-py opencv-python
 ```
+
+Install Docling separately when full document structure/OCR-heavy layout parsing is acceptable: `python -m pip install docling`.
 
 System packages only if optional backends are needed:
 
@@ -56,22 +61,22 @@ sudo apt install ghostscript poppler-utils tesseract-ocr tesseract-ocr-chi-sim
 
 ## Recommended Workflow
 
-1. Create an output folder with `document.md`, `document.json`, `chunks.jsonl`, `tables/`, `pages/`, `images/`, `validation/`, and `parse_report.md`.
+1. Create an output folder with `document.md`, `document.json`, `chunks.jsonl`, `tables/`, `tables_merged/`, `pages/`, `validation/`, and `parse_report.md`.
 2. Financial statement pages are table-first: extract tables and provenance before summarizing page text.
 3. Use bbox-proximate text, not whole-page keywords, to assign table title and unit. A table title must come from the nearest title above the table bbox; page-bottom titles belong to the next table.
 4. Use PyMuPDF for page count, text, coordinates, rendering, and fast table detection.
-5. Use Camelot `lattice` for ruled tables; use Camelot `stream` or pdfplumber when tables are borderless or weakly ruled.
+5. The unified `parse_financial_pdf.py` command currently uses PyMuPDF `find_tables`. When it reports table-detection warnings, run `extract_tables.py` manually to compare Camelot or pdfplumber results; no automatic fallback is currently implemented.
 6. Use Docling or PyMuPDF4LLM for integrated Markdown and section reading order, not as the sole source of financial numbers.
 7. Normalize numbers and reconstruct headers before handing tables to an LLM.
 8. Merge cross-page financial statements and disclosure tables such as `非经常性损益项目及金额` into `tables_merged/` and mark `cross_page_merged` plus `continued_table_header_inherited`.
-9. Run financial validations and mark low-confidence tables with `quality_flags`; when a parser has no native confidence, record a conservative structure-based confidence proxy rather than `null`.
+9. Run financial validations and mark low-confidence tables with `quality_flags`; when a parser has no native confidence, record a conservative structure-based confidence proxy rather than `null`. Never satisfy a balance-sheet check by mixing rows from different tables.
 10. Do not pass key financial figures downstream until `validation_report.md` exists and every failed check is either fixed or explicitly flagged.
 
 ## Table Handling
 
 For ordinary text pages, store page text and create text chunks with `page_start`, `page_end`, and `section`.
 
-For ruled tables, prefer Camelot `lattice` or PyMuPDF `page.find_tables()`; keep `bbox`, parser name, page number, and parsing confidence. If PyMuPDF has no native confidence, derive a simple proxy from row consistency, numeric density, and valid bbox.
+The unified parser uses PyMuPDF `page.find_tables()` and records `bbox`, parser name, page number, and a structure-based confidence proxy. Use Camelot `lattice` only through the manual benchmark/fallback command when ruled tables were missed.
 
 For borderless tables, try Camelot `stream`, then pdfplumber with `vertical_strategy="text"` and `horizontal_strategy="text"`.
 
@@ -89,7 +94,7 @@ Always apply:
 - Unit detection: 元, 万元, 亿元, 元/股, %, 人数, 股数.
 - Header reconstruction: multi-level years, 调整前/调整后, 本年比上年增减, quarterly columns.
 - Checks: YoY recomputation, quarterly sums when four-quarter data exists, `资产 = 负债 + 所有者权益/股东权益`, cash-flow ending balance tie-out, recurring/non-recurring profit relation, anomaly detection.
-- Quality gate: `parse_report.md` must report raw table count, merged table count, validation check count, failed checks, warnings, and fallback/tool evidence. Annual reports require at least four core checks; interim reports require at least two; quarterly reports require at least one applicable core check.
+- Quality gate: `parse_report.md` must identify the parser truthfully and report raw table count, merged table count, parser warnings, validation checks, failed checks, and warnings. Annual reports require at least four core checks; interim reports require at least two; quarterly reports require at least one applicable core check.
 
 ## Output Contract
 
@@ -146,9 +151,11 @@ python .opencode/skills/financial-pdf-parser/scripts/parse_financial_pdf.py path
 
 ## Fallback Strategy
 
-- If table count is zero on a financial-statement page, retry with Camelot `stream` and pdfplumber text strategy.
+- If `parse_report.md` or page JSON reports no table on a financial-statement page, run `extract_tables.py` manually on the affected pages with Camelot `stream` and pdfplumber text strategy. The unified parser does not perform this retry automatically.
 - If numbers contain embedded spaces or line breaks, run numeric repair before validation.
 - If title or unit comes only from a page-level guess, mark `title_missing_needs_context` or `unit_missing_needs_context`; do not silently attach a title from a page-bottom next-section heading.
 - If financial statement tables span pages, use merged tables for validation and downstream analysis.
 - If validation fails, do not ask the LLM to guess; save the table with `validation_failed` and inspect debug images.
 - If Docling is slow or too heavy, use it only for Markdown/section context and keep PyMuPDF/Camelot/pdfplumber as numeric sources.
+
+发布状态及其边界见 [release-evaluation.md](references/release-evaluation.md)。

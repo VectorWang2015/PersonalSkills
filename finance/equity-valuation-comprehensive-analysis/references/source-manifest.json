@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "title": "Investment Valuation: Tools and Techniques for Determining the Value of Any Asset",
+  "author": "Aswath Damodaran",
+  "version": "University Edition, Fourth Edition (2025)",
+  "local_paths_redacted": true,
+  "base_directory": null,
+  "source_count": 2,
+  "sources": [
+    {
+      "absolute_path": null,
+      "relative_path": "source/Investment Valuation University Edition_Aswath Damodaran.txt",
+      "sha256": "6431d9dba900fcf5dc00f1f18a4922fb9d27dec2f55e451fb7ae6c8b2d5d30aa",
+      "bytes": 3211271,
+      "format": "txt",
+      "source_id": "src-investment-valuation-4e-text",
+      "role": "primary",
+      "kind": "book",
+      "rights": {
+        "basis": "user-provided",
+        "redistribution": "restricted",
+        "notes": "Used for private source-first distillation; retain only short audit excerpts."
+      },
+      "extraction": {
+        "parser": "publisher-derived plain text",
+        "parser_version": "unknown",
+        "text_artifact": "complete supplied TXT",
+        "locator_scheme": "chapter > named section > immutable TXT line or line range; formula/table/figure identifier when present",
+        "coverage": {
+          "unit": "chapters",
+          "expected_units": 34,
+          "processed_units": 34,
+          "omitted_ranges": [],
+          "notes": "All 34 chapter bodies mapped. Front matter, references and index were inventoried but not promoted as capabilities."
+        }
+      }
+    },
+    {
+      "absolute_path": null,
+      "relative_path": "source/Investment Valuation University Edition_Aswath Damodaran.epub",
+      "sha256": "7fcff68dced4c648d4114a6af4274d26ba7c1cc78d74bae60a2735f7c998aef0",
+      "bytes": 56593171,
+      "format": "epub",
+      "source_id": "src-investment-valuation-4e-epub",
+      "role": "supplementary",
+      "kind": "book",
+      "rights": {
+        "basis": "user-provided",
+        "redistribution": "restricted",
+        "notes": "Used only to verify chapter identity and MathML/alttext for formula-heavy chapters."
+      },
+      "extraction": {
+        "parser": "ZIP inspection plus EPUB XHTML/MathML alttext",
+        "parser_version": "Info-ZIP 6-compatible",
+        "text_artifact": "OPS/c010.xhtml, c011.xhtml, c012.xhtml, c014.xhtml, c015.xhtml, c016.xhtml, c017.xhtml, c021.xhtml, c033.xhtml, c034.xhtml",
+        "locator_scheme": "EPUB OPS XHTML file > element id or MathML alttext",
+        "coverage": {
+          "unit": "chapters",
+          "expected_units": 34,
+          "processed_units": 10,
+          "omitted_ranges": [
+            {
+              "range": "Chapters 1-9, 13, 18-20, 22-32 except 33-34",
+              "reason": "TXT was legible; EPUB was reserved for formula and structure spot checks."
+            }
+          ],
+          "notes": "Supplementary verification, not a second independent edition."
+        }
+      }
+    }
+  ],
+  "manifest_id": "manifest.investment-valuation-4e",
+  "created_at": "2026-09-03T18:00:00+08:00",
+  "updated_at": "2026-09-03T18:00:00+08:00",
+  "work": {
+    "work_id": "work.investment-valuation-4e",
+    "language": "en",
+    "publication_year": 2025,
+    "user_goal": "Blind source-first Stage 0-1.6 distillation for two noncompeting valuation entrypoints with shared canonical capability cards.",
+    "scope": {
+      "included": [
+        "all 34 chapters",
+        "valuation routing",
+        "intrinsic valuation",
+        "relative pricing",
+        "special situations",
+        "formula contracts",
+        "stop conditions"
+      ],
+      "excluded": [
+        "legacy financial skills",
+        "old distillation outputs",
+        "current market parameters",
+        "hard-coded case numbers and historical U.S. empirical thresholds"
+      ]
+    }
+  },
+  "known_gaps": [
+    {
+      "gap_id": "gap-formula-linearization",
+      "description": "TXT linearizes complex equations and some table columns imperfectly.",
+      "impact": "Complex option formulas and long multi-stage expressions should be checked against EPUB MathML before implementation.",
+      "resolution": "EPUB spot checks completed for core chapters; require another formula-level review at compilation."
+    },
+    {
+      "gap_id": "gap-current-inputs",
+      "description": "The book contains point-in-time examples and 2024 market observations.",
+      "impact": "Risk-free rates, ERP, betas, default spreads, multiples, tax rules and regulations cannot be reused as current inputs.",
+      "resolution": "Runtime contracts require dated external inputs or stop with an explicit data gap."
+    }
+  ],
+  "readiness": {
+    "exact_version_identified": true,
+    "integrity_recorded": true,
+    "rights_reviewed": true,
+    "coverage_reviewed": true,
+    "ready_for_distillation": true
+  },
+  "portability_note": "Local paths are redacted. Relative paths identify the supplied source edition but are not required to exist inside the deployed skill."
+}

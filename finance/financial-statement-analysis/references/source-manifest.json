@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "title": "七步读懂财务报表：股票投资的简要财务分析法",
+  "author": "林昌华",
+  "version": "2022年8月第1版第1次印刷；TXT主抽取件+PDF公式复核件",
+  "base_directory": null,
+  "local_paths_redacted": true,
+  "portability_note": "Published copy redacts local paths; source identity is preserved by hashes and neutral relative names.",
+  "source_count": 2,
+  "sources": [
+    {
+      "absolute_path": null,
+      "relative_path": "source-book.txt",
+      "sha256": "9a9961eab48e0393920a4d3b7902a5f0209f58b2e04a827bae2bdfdf8d5539c9",
+      "bytes": 492078,
+      "format": "txt",
+      "source_id": "src-seven-steps-fs-2022-txt",
+      "role": "primary",
+      "kind": "book",
+      "rights": {"basis": "user-provided", "redistribution": "restricted", "notes": "Only minimal evidence excerpts and locators are redistributed."},
+      "extraction": {
+        "parser": "repository-provided-text-extraction",
+        "parser_version": "unknown",
+        "text_artifact": "source-book.txt",
+        "locator_scheme": "PAGE marker > exact source lines; printed page retained where visible",
+        "coverage": {"unit": "pages", "expected_units": 313, "processed_units": 313, "omitted_ranges": [], "notes": "Full structural review; deep evidence extraction focused on the three statements, chapters 5-10, 13-15 and afterword."}
+      }
+    },
+    {
+      "absolute_path": null,
+      "relative_path": "source-book.pdf",
+      "sha256": "d3159953f79c2f946cea20b4a18b599e11abbea835db3739c77638f9f2cff4df",
+      "bytes": 8240941,
+      "format": "pdf",
+      "source_id": "src-seven-steps-fs-2022-pdf",
+      "role": "supplementary",
+      "kind": "book",
+      "rights": {"basis": "user-provided", "redistribution": "restricted", "notes": "Used only to verify formulas and the ROE interval typo."},
+      "extraction": {
+        "parser": "pdftotext",
+        "parser_version": "system-version-unrecorded",
+        "text_artifact": "formula-spot-check",
+        "locator_scheme": "PDF physical page > printed page/table/formula",
+        "coverage": {"unit": "pages", "expected_units": 329, "processed_units": 43, "omitted_ranges": [{"range": "PDF physical pages 1-103 and 147-329", "reason": "Primary TXT was legible; PDF used for targeted verification."}], "notes": "Confirmed DuPont formula and the impossible printed interval 20% < ROE <= 15%."}
+      }
+    }
+  ],
+  "manifest_id": "manifest.seven-steps-fs-2022-portable",
+  "created_at": "2026-09-03T13:34:23+08:00",
+  "updated_at": "2026-09-03T13:34:23+08:00",
+  "work": {
+    "work_id": "work.seven-steps-financial-statements",
+    "language": "zh-CN",
+    "publication_year": 2022,
+    "user_goal": "Provide a source-traceable, executable financial-statement analysis router without universalizing author case thresholds.",
+    "scope": {"included": ["basis and comparison", "three-statement linkage", "DuPont", "cash earnings quality", "turnover", "leverage", "anomaly triage"], "excluded": ["personalized investment advice", "financial-enterprise analysis", "prospectus due diligence", "fraud attestation"]}
+  },
+  "known_gaps": [
+    {"gap_id": "gap-ocr-tables", "description": "Some extracted tables have reversed columns or CID glyph loss.", "impact": "Case table values are not used as mechanical truth.", "resolution": "Use readable prose formulas and PDF spot checks."},
+    {"gap_id": "gap-roe-band-typo", "description": "The book prints an impossible ROE interval.", "impact": "The four-band classification cannot be compiled.", "resolution": "Reject universal band rules and compare drivers/context instead."},
+    {"gap_id": "gap-current-standards", "description": "Accounting standards and line-item meanings change by period and jurisdiction.", "impact": "Current filings may not match the book's labels.", "resolution": "Verify current standard and filing definitions at runtime."}
+  ],
+  "readiness": {"exact_version_identified": true, "integrity_recorded": true, "rights_reviewed": true, "coverage_reviewed": true, "ready_for_distillation": true}
+}

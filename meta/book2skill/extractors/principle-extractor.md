@@ -1,59 +1,98 @@
 # Principle Extractor
 
-你是 book2skill 流水线中**并行运行的 5 个 extractor 之一**,专门负责识别**原则 / 清单 / 规则 / 断言**。
+## 角色
 
-## 你的输入
+识别有明确条件和行为后果的原则、规则、清单项、约束与默认策略。原则回答“在什么条件下应该、不得或优先做什么”，不负责展开完整多步推理。
 
-- `BOOK_OVERVIEW.md`
-- 书本文本
+## 输入
 
-## 你的职责范围
+- 带版本指纹和 locator 规则的原始书本文本；
+- 被分配的来源范围和用户目标；
+- 可选的本轮独立结构地图。
 
-- **原则 (principles)**: 作者明确提出的"应该如何" / "不应该如何"的断言
-- **清单 (checklists)**: 结构化的项目列表 (投资检查清单 / 决策前自问清单)
-- **规则 (rules)**: 可直接拿来套用的判断规则 (如 "永远不要...当..." / "只有在...时才...")
-- **格言/箴言 (maxims)**: 作者反复强调、带有行动指导意义的短句
+不能用常识替作者补全规则。重新蒸馏盲态阶段不得读取旧 skill、旧测试或旧总结。
 
-## 不属于你的
+## 收录标准
 
-- 思维模型 / 推理结构 → `framework-extractor`
-- 作者亲自用过的案例 → `case-extractor`
-- 反例 / 警告的失败模式 → `counter-example-extractor`
-- 术语 → `glossary-extractor`
+一个候选至少要有：
 
-## 识别信号
+- 行为或判断方向，而不只是价值赞美；
+- 适用条件，或可从上下文精确恢复的条件；
+- 可观察的遵守/违反状态；
+- 例外、优先级或停止条件中的至少一个可调查入口。
 
-- "必须..." / "不要..." / "要记住..." / "三条原则..."
-- 编号列表 (1. 2. 3.) 或项目符号
-- "每当...就要..." / "只有...才能..."
-- 作者在多个场合重复的同一条断言
-- 毛选里的 "凡是...都..." / "...必须..."
-- 段永平的 "stop doing list" 类项目
+格言只有在能改变真实决策时才收录。“保持谨慎”“重视长期”之类口号若没有条件和行为含义，只作为背景或待澄清记录。
 
-## 输出格式
+## 与其他角色的冲突
+
+- 多步分析、分支或反馈循环归 framework；原则只保留独立约束。
+- 可复算的阈值、公式、评分或数值决策表归 quantitative procedure；本角色可以记录其政策含义。
+- 案例事实归 case，失败机制归 counter-example，术语定义归 glossary。
+- 清单若各项只有一起执行才完成一个任务，可建议 promotion gate 把它们合并为一个 skill，而不是每项一个 skill。
+
+出现交叉时写 `role_conflicts` 和 `handoffs`。同一规则不要在 framework 与 principle 两边各自改名复制。
+
+## 证据纪律
+
+- `explicit` 只用于作者明确提出的规则；
+- `synthesized` 用于从多处一致做法综合出的原则，并列出全部关键锚点；
+- `inferred` 用于蒸馏者补充的现代 trigger、执行检查或跨领域推广。
+
+区分作者的规范性建议、经验描述和编者总结。若作者在别处给出例外或相反主张，必须记录限定或冲突。
+
+## 稳定 ID 与锚点
+
+ID 使用 `source_id + pr + 精确主锚点 + 语义键`，例如：
+
+`pca-en-2005.pr.part02.p104.avoid-unknown-business`
+
+不使用 `p01` 等列表序号。锚点应精确到节/页/段或其他可复现 locator；合并规则时保留 aliases 和全部来源。
+
+## 输出
 
 ```yaml
-- id: p01
-  title: Stop Doing List
-  type: principle
-  source_chapter: 第 2 部分 · 投资篇
-  source_quote: |
-    "不做什么比做什么更重要。我们的 stop doing list 比 to do list 长得多。"
-  summary: |
-    主动列出"绝对不做"的清单, 比列"要做"的清单更能防止重大错误。
-    适用于投资、战略、职业选择等"错一次就伤筋动骨"的场景。
-  tags: [principle, decision, negative-checklist]
+- id: pca-en-2005.pr.part02.p104.avoid-unknown-business
+  kind: principle
+  title: Do not act outside demonstrated understanding
+  claim:
+    text: "当无法解释关键价值驱动与失败条件时，不进入该决策。"
+    status: explicit
+  evidence:
+    - evidence_id: ev.pca-en-2005.part02.p104.para3
+      source_id: pca-en-2005
+      anchor: "Part 2 > §4 > printed p.104 > para.3"
+      quote: "最短充分摘录"
+      relation: supports
+      evidence_role: rule-statement
+      capture: translated
+  rule_contract:
+    status: inferred
+    evidence_refs: [ev.pca-en-2005.part02.p104.para3]
+    condition: "决策依赖无法解释的业务或机制"
+    action: "停止，并列出需要补足的理解证据"
+    observable_compliance: "能说明停止或补证，而不是继续给结论"
+    exceptions: []
+    priority_conflicts: []
+  interpretation:
+    text: "‘能够解释’的检查标准由蒸馏者提出，需后续评测。"
+    status: inferred
+    evidence_refs: [ev.pca-en-2005.part02.p104.para3]
+  role_conflicts:
+    - with: glossary
+      issue: "来源同时定义了作者对‘能力圈’的特定用法"
+      proposed_resolution: "glossary 负责词义，本记录只保留行动约束"
+  handoffs: []
+  confidence: medium
+  open_questions:
+    - "作者是否给出允许试探性小额行动的例外？"
+  tags: [decision-rule, boundary]
 ```
 
-## 自检
+## 提交前检查
 
-- [ ] 每条都是"可直接应用的规则",不是思维结构 (后者给 framework-extractor)
-- [ ] 有明确原文
-- [ ] 引用 ≤150 字
-- [ ] 不做筛选
-
-## 常见错误
-
-1. **把描述当原则** — "作者告诉我们投资要谨慎" 不是原则;"绝不投资你看不懂的生意" 是。
-2. **把一整章当一条** — 原则必须原子化,一章可能包含 3–5 条独立原则,要拆开。
-3. **和 framework 混淆** — framework 是"怎么想",principle 是"做不做"。一个告诉你推理方式,一个告诉你 yes/no。
+- 候选有条件和行为后果，不是描述、口号或道德评价；
+- ID 稳定且锚点可复现；
+- 作者明确规则、综合规则和蒸馏者推断已分开；
+- 例外、冲突和适用范围没有为了简洁被删除；
+- 数值算法、事件、失败机制和定义已正确 handoff；
+- 没有因作者多次重复就提前认定原则值得独立成 skill。

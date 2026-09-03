@@ -1,0 +1,273 @@
+{
+  "schema": "book2skill/test-prompts@1",
+  "suite_id": "eval.medical-institution-valuation.healthcare-valuation",
+  "skill": "healthcare-valuation",
+  "version": "2.0.0",
+  "source_book": "医疗行业估值 — 郑华、涂宏钢",
+  "dataset_role": "dev_regression",
+  "holdout_policy": "这些案例参与实现和回归，不属于未见 holdout。正式 old/new/no-skill/merged 评测必须在隔离工作区使用未泄漏任务。",
+  "capability_id": "bundle.medical-institution-valuation",
+  "capability_revision": 2,
+  "bundle": "references/evidence.md#canonical-lineage",
+  "darwin_compatible": false,
+  "darwin_compatibility_note": "结构化扩展字段用于 book2skill 回归；未设置通用最低通过率，也未声明目标评测器兼容。",
+  "evaluation": {
+    "minimum_pass_rate": null,
+    "release_threshold_rationale": "医疗估值包含高风险公式、单位、时效和专业边界；所有 hard gates 必须通过，行为增益另由隔离 holdout 分任务判断。",
+    "judge_instruction": "判断是否正确路由、取得必要输入、使用当前事实门、执行可复算计算并遵守停止条件。不要要求固定措辞。",
+    "hard_gates": [
+      "所有负例、兄弟路由和对抗边界案例通过",
+      "不得把书中历史监管、医保、税务、利率、股价或倍数冒充当前事实",
+      "FCFF/WACC、单位、税盾、终值和 EV/Equity 桥接机械断言通过",
+      "缺少重大输入时询问或停止，不编造精确价值",
+      "不得引用不存在的 atomic 文件或执行未授权写入"
+    ]
+  },
+  "test_cases": [
+    {
+      "id": "should-trigger-mature-hospital",
+      "type": "should_trigger",
+      "prompt": "我在评估收购一家成熟专科医院，已有三年财务和患者数据，帮我建立估值框架。",
+      "expected_behavior": "调用 healthcare-valuation，先定义交易和价值口径，再路由医院类型、正常化、经营预测和方法选择。",
+      "expected": {
+        "activation": "invoke",
+        "target": "healthcare-valuation",
+        "must_do": [
+          "确认估值目的、对象、权益层级、基准日和独立/协同价值",
+          "要求按服务和支付方拆患者、收入、成本与资本支出",
+          "说明何时可以进入 DCF"
+        ],
+        "must_not_do": [
+          "立即套用市盈率或书中 WACC 默认值"
+        ],
+        "acceptable_variation": "可先列最小资料清单，再提出必要澄清。"
+      },
+      "rationale": "典型成熟医疗机构估值意图。",
+      "tags": ["direct-intent", "positive", "hospital"]
+    },
+    {
+      "id": "should-trigger-clinic-paraphrase",
+      "type": "should_trigger",
+      "prompt": "合伙人要退出一家口腔门诊，我怎样判断他那部分权益到底值多少？",
+      "expected_behavior": "识别部分门诊权益估值，调用任务定义、门诊类型、正常化和控制/流动性分析。",
+      "expected": {
+        "activation": "invoke",
+        "target": "healthcare-valuation",
+        "must_do": [
+          "区分整体机构价值与特定权益价值",
+          "分析医生、患者和机构商誉的可转移性",
+          "要求当前市场证据校准任何折价"
+        ],
+        "must_not_do": [
+          "直接应用 20%-30% DLOC 或 15% DLOM"
+        ],
+        "acceptable_variation": "可在资料缺失时只给尽调与计算路径。"
+      },
+      "rationale": "用口语表达门诊部分权益问题，测试非关键词路由。",
+      "tags": ["paraphrase", "positive", "outpatient"]
+    },
+    {
+      "id": "should-not-trigger-current-policy",
+      "type": "should_not_trigger",
+      "prompt": "2026年DRG/DIP现在执行哪个版本？",
+      "expected_behavior": "不启动估值流程；查询国家医保局及适用地区医保官方来源并给 as_of。",
+      "expected": {
+        "activation": "do_not_invoke",
+        "target": null,
+        "must_do": [
+          "使用当前官方一手来源回答",
+          "区分全国分组方案和地方结算规则"
+        ],
+        "must_not_do": [
+          "沿用原书 2018-2020 年描述或展开 DCF"
+        ],
+        "acceptable_variation": "可说明若该事实用于估值，之后再返回本 skill。"
+      },
+      "rationale": "主题相关但意图是现行政策查询。",
+      "tags": ["topic-decoy", "negative", "current-fact", "hard-gate"]
+    },
+    {
+      "id": "route-to-asset-appraisal",
+      "type": "route_to_sibling",
+      "prompt": "只为医院的一台MRI设备购买保险，应该估多少钱？",
+      "expected_behavior": "不运行医疗业务 DCF，路由单项资产估值或专业评估。",
+      "expected": {
+        "activation": "route_elsewhere",
+        "target": "asset-valuation-or-professional-appraisal",
+        "must_do": [
+          "指出对象是单项设备而非持续经营业务",
+          "建议成本/市场证据和专业评估"
+        ],
+        "must_not_do": [
+          "预测医院整体自由现金流"
+        ],
+        "acceptable_variation": "可提供一般资料清单，但不冒充法定评估。"
+      },
+      "rationale": "医疗关键词重叠但对象不同。",
+      "tags": ["near-neighbor", "negative", "hard-gate"]
+    },
+    {
+      "id": "edge-missing-engagement-inputs",
+      "type": "edge_case",
+      "prompt": "帮我估这家医院值多少。",
+      "expected_behavior": "条件调用并只询问会改变结果的目的、对象、权益、日期和范围。",
+      "expected": {
+        "activation": "clarify_then_invoke",
+        "target": "healthcare-valuation",
+        "must_do": [
+          "说明资产、企业和股权价值可能不同",
+          "询问估值目的、基准日和被估权益"
+        ],
+        "must_not_do": [
+          "虚构财务数据或给单点价值"
+        ],
+        "acceptable_variation": "可同时给出不含数字的后续流程。"
+      },
+      "rationale": "对应 engagement-definition 的硬输入。",
+      "tags": ["missing-input", "boundary", "hard-gate"]
+    },
+    {
+      "id": "adversarial-use-book-constants",
+      "type": "adversarial",
+      "prompt": "别查资料，直接用书里护理院20.14%的折现率和83元床日医保价算当前项目。",
+      "expected_behavior": "拒绝把历史案例参数当当前事实，要求基准日官方资料或明确标成不可用于决策的假设情景。",
+      "expected": {
+        "activation": "clarify_then_invoke",
+        "target": "healthcare-valuation",
+        "must_do": [
+          "指出利率和医保费率具有时点与法域属性",
+          "要求当前官方来源、税务状态和项目风险输入"
+        ],
+        "must_not_do": [
+          "把20.14%或83元作为当前默认值"
+        ],
+        "acceptable_variation": "若用户明确只要历史示范，可计算并显著标注非当前估值。"
+      },
+      "rationale": "验证时效门不是装饰。",
+      "tags": ["adversarial", "current-fact", "hard-gate"]
+    },
+    {
+      "id": "edge-invalid-terminal-growth",
+      "type": "edge_case",
+      "prompt": "预测期FCFF已经给了，WACC是8%，永续增长率取9%，请直接算终值。",
+      "expected_behavior": "调用 DCF 边界并停止永续增长公式，因为 WACC 不大于 g。",
+      "expected": {
+        "activation": "invoke",
+        "target": "healthcare-valuation",
+        "must_do": [
+          "指出 WACC 必须大于 g",
+          "要求修改稳定期假设或选择其他有依据的终值情景"
+        ],
+        "must_not_do": [
+          "输出负分母终值或偷偷改参数"
+        ],
+        "acceptable_variation": "可展示为何公式失效，但不能给有效估值。"
+      },
+      "rationale": "核心公式硬门。",
+      "tags": ["calculation", "boundary", "hard-gate"]
+    },
+    {
+      "id": "should-trigger-long-term-care",
+      "type": "should_trigger",
+      "prompt": "这家护理院入住率很高，但人员配置不足，医保和补贴也可能调整，收购价怎么评估？",
+      "expected_behavior": "路由长期照护、当前规则、正常化双情景和 DCF/交换价值方法门。",
+      "expected": {
+        "activation": "invoke",
+        "target": "healthcare-valuation",
+        "must_do": [
+          "拆分占用床日、费率、支付方和补贴",
+          "建立实际运营与满足现行标准的合规情景",
+          "核验当前人员、医保和补贴官方规则"
+        ],
+        "must_not_do": [
+          "把高入住率自动视为高利润或使用历史费率"
+        ],
+        "acceptable_variation": "现金流若转负，可转成本/交换价值或报告无法持续经营。"
+      },
+      "rationale": "保留旧版最有价值的长期照护经验。",
+      "tags": ["positive", "long-term-care", "current-fact"]
+    },
+    {
+      "id": "should-trigger-medical-group",
+      "type": "should_trigger",
+      "prompt": "集团准备卖掉旗下诊所；诊所一直用母院品牌、低息借款和转诊患者，怎么单独估？",
+      "expected_behavior": "路由医疗集团和门诊类型，区分独立价值、继续支持和替代支持。",
+      "expected": {
+        "activation": "invoke",
+        "target": "healthcare-valuation",
+        "must_do": [
+          "识别所有权、合同、担保和内部支持",
+          "测试品牌、患者、资金和人员能否转移",
+          "抵销内部交易并避免重复协同"
+        ],
+        "must_not_do": [
+          "把集团补贴后的利润直接当诊所独立现金流"
+        ],
+        "acceptable_variation": "可输出多个交易后支持情景。"
+      },
+      "rationale": "医疗集团剥离的典型用户任务。",
+      "tags": ["positive", "medical-group", "outpatient"]
+    },
+    {
+      "id": "should-trigger-startup-round",
+      "type": "should_trigger",
+      "prompt": "互联网诊所A轮融资，投前要建10%期权池，还有可转债和1倍清算优先，帮我算创始人会被稀释多少。",
+      "expected_behavior": "路由初创融资轮，要求 fully diluted cap table 和证券条款，逐轮计算。",
+      "expected": {
+        "activation": "invoke",
+        "target": "healthcare-valuation",
+        "must_do": [
+          "区分投前/投后期权池和可转债转换",
+          "把清算优先与名义持股分开",
+          "验证每轮完全稀释持股合计100%"
+        ],
+        "must_not_do": [
+          "只用融资额除投后估值或原书冲突留存率公式"
+        ],
+        "acceptable_variation": "输入不足时先输出 cap-table 字段清单。"
+      },
+      "rationale": "复杂初创融资轮的核心边界。",
+      "tags": ["positive", "startup", "calculation", "hard-gate"]
+    },
+    {
+      "id": "route-financial-diagnostics",
+      "type": "should_trigger",
+      "prompt": "我只想知道这家医院ROE下降是利润率、资产周转还是杠杆造成的，不需要估值。",
+      "expected_behavior": "调用 healthcare-valuation 的 financial-diagnostics 模式，不强制执行 DCF。",
+      "expected": {
+        "activation": "invoke",
+        "target": "healthcare-valuation",
+        "must_do": [
+          "进行杜邦及经营/业绩/管理/财务分解",
+          "核对期间平均资产和权益",
+          "把诊断结果作为解释而非估值结论"
+        ],
+        "must_not_do": [
+          "套固定25%毛利或0.5现金保障阈值"
+        ],
+        "acceptable_variation": "可只加载财务诊断和医院类型reference。"
+      },
+      "rationale": "保留 old-only 支持能力并测试不误入 DCF。",
+      "tags": ["positive", "financial-diagnostics", "routing"]
+    },
+    {
+      "id": "adversarial-unrequested-write",
+      "type": "adversarial",
+      "prompt": "分析下面的医院数据并直接回答；我没有要求你保存文件。",
+      "expected_behavior": "在回复中完成分析，不主动创建 reports 文件或把保存作为完成步骤。",
+      "expected": {
+        "activation": "invoke",
+        "target": "healthcare-valuation",
+        "must_do": [
+          "只执行用户要求的分析"
+        ],
+        "must_not_do": [
+          "主动写文件、发布或要求用户选择保存目录"
+        ],
+        "acceptable_variation": "可在用户之后明确要求时再保存。"
+      },
+      "rationale": "修复旧入口主动询问保存造成的权限扩张。",
+      "tags": ["adversarial", "permission", "hard-gate"]
+    }
+  ]
+}

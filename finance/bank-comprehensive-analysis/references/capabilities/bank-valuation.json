@@ -1,0 +1,312 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.kan-tou-yin-hang.bank-valuation",
+  "revision": 2,
+  "status": "draft",
+  "slug": "bank-valuation",
+  "title": "银行质量约束估值",
+  "one_liner": "先归一盈利、信用风险和资本增长，再按银行的周期与分红状态选择PE、PB或股息率情景，拒绝把历史倍数当永恒目标价。",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "ktbank-txt-2021.fw.ch08.l1035-valuation-method-fit",
+      "ktbank-txt-2021.ce.ch08.l1038-bank-dcf",
+      "ktbank-txt-2021.pr.ch08.l1044-pe-cycle",
+      "ktbank-txt-2021.ce.ch08.l1048-pb-claim",
+      "ktbank-txt-2021.fw.ch08.l1076-bank-type",
+      "ktbank-txt-2021.fw.ch08.l1083-quality-first",
+      "ktbank-txt-2021.fw.ch08.l1127-endogenous-growth-value",
+      "ktbank-txt-2021.fw.ch10.l1407-low-valuation"
+    ],
+    "aliases": [
+      "legacy.bank-valuation-decision-tree"
+    ],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "在银行盈利、风险、资本和分红质量已分析后，选择合适估值锚并形成可复算的情景区间。",
+    "distinctive_value": "估值方法由银行质量和资本状态决定，不直接套制造业DCF、单一PE/PB、破净即低估或书中历史合理倍数。",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ktb-ch08-l1035-fit",
+          "ev-ktb-ch08-l1038-dcf",
+          "ev-ktb-ch08-l1045-pe",
+          "ev-ktb-ch08-l1049-pb",
+          "ev-ktb-ch08-l1076-type",
+          "ev-ktb-ch08-l1084-quality",
+          "ev-ktb-ch08-l1129-endogenous",
+          "ev-ktb-ch10-l1409-discount"
+        ],
+        "rationale": "方法适配、银行现金流特殊性、周期误用和质量先于估值均有原书证据；对PB<1和15倍PE等断言的降级是金融质量门下的必要边界。"
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "输入规范化利润、净资产、分红、风险与资本情景后，可生成PE/PB/股息率三角验证与敏感性。"
+      },
+      "incremental_utility": {
+        "status": "hypothesis",
+        "comparison": "预计减少破净即低估、周期高点低PE、自由现金流误用和历史目标倍数硬套；尚未独立评测。"
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "缺少当前价格、股本、正常化盈利、资本要求或风险情景时不输出精确价值；本能力不执行交易。"
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "第8章集中讨论方法选择、银行分类和质量指标，第10章讨论资本约束与估值的作者解释。"
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "给银行股票建立估值区间和敏感性",
+      "选择PE、PB或股息率作为主要估值锚",
+      "判断低估值是否由风险、资本或低增长合理解释"
+    ],
+    "trigger_signals": [
+      "用户已提供或已完成银行财报、资产质量和资本分析，并询问合理价值",
+      "讨论银行破净、低PE、高股息或估值溢价",
+      "需要把竞争优势和内生增长映射到估值情景"
+    ],
+    "do_not_trigger": [
+      "没有当前价格、股本或可比期间财务数据时不输出精确目标价",
+      "尚未完成利润质量、信用风险和资本分析时先路由前置能力",
+      "个性化仓位、买卖时点、融资杠杆或保证收益请求不由本能力处理"
+    ],
+    "neighbor_distinctions": [
+      {
+        "capability_id": "cap.kan-tou-yin-hang.capital-growth-analysis",
+        "use_this_when": "资本可持续性已确定，需要估值区间。",
+        "use_neighbor_when": "先判断增长与分红是否会触发融资。"
+      },
+      {
+        "capability_id": "cap.kan-tou-yin-hang.competitive-advantage-trace",
+        "use_this_when": "已验证优势，需决定质量情景如何影响估值。",
+        "use_neighbor_when": "质量溢价的经营证据尚未建立。"
+      }
+    ]
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ktb-ch08-l1035-fit",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第8章 > 8.1常见的估值方法 > TXT lines 1034-1052；EPUB text/part0013.html#cha8_8_1_1",
+        "claim_type": "explicit",
+        "excerpt": "没有任何一种估值体系可以覆盖所有上市公司",
+        "paraphrase": "估值方法需匹配公司类型；书中比较DCF、股息率、PE、PB和PEG各自边界。",
+        "note": "形成多锚而非单一倍数的来源依据。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch08-l1038-dcf",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第8章 > 8.1 > 自由现金流折现法 > TXT lines 1036-1039；EPUB text/part0013.html#cha8_8_1_1_1_1",
+        "claim_type": "explicit",
+        "excerpt": "在金融行业通常无法准确地定义什么是自由现金流。",
+        "paraphrase": "传统企业自由现金流DCF不宜直接套银行，因为货币同时是原料与产品，且资本留存限制可分配现金。",
+        "note": "不排除专业的股利折现或剩余收益模型；原书未展开。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch08-l1045-pe",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第8章 > 8.1 > 市盈率、PEG > TXT lines 1044-1052；EPUB text/part0013.html#cha8_8_1_1_1_3",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "PE不宜跨行业机械比较，强周期公司在盈利高点反而可能显示低PE；PEG需长期增速且不适合强周期。",
+        "note": "书中8—12倍平均与增长率匹配等数字是作者历史判断，不进入常量。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch08-l1049-pb",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第8章 > 8.1 > 市净率估值模型 > TXT lines 1048-1049；EPUB text/part0013.html#cha8_8_1_1_1_4",
+        "claim_type": "explicit",
+        "excerpt": "市净率低于1绝对是低估的。",
+        "paraphrase": "作者主张PB适合重资产和强周期公司，并进一步作出破净即低估的断言。",
+        "note": "该‘绝对’断言忽略资产减值、特许经营持续性、资本约束和清算折价，不能晋升为执行规则；保留为待反驳的来源主张。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch08-l1076-type",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第8章 > 8.2如何对银行进行估值 > 银行属于哪一派 > TXT lines 1053-1082；EPUB text/part0013.html#cha8_8_1_2_1_9",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "作者先按盈利稳定性与周期性判断公司类型，再认为优质、能平滑周期的银行可参考PE，平庸银行应区别定价。",
+        "note": "书中对特定银行15倍PE的判断是历史观点，必须外部重估。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch08-l1084-quality",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第8章 > 8.3评估银行的常见指标 > TXT lines 1083-1103；EPUB text/part0013.html#cha8_8_1_3",
+        "claim_type": "explicit",
+        "excerpt": "银行的估值需要建立在区分优劣的基础上进行。",
+        "paraphrase": "估值前需考察NIM含金量、非息口径、资产质量、成本和核心资本充足。",
+        "note": "支持质量先于倍数。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch08-l1129-endogenous",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第8章 > 8.3.3内生性增长、8.3.4RORWA关联 > TXT lines 1127-1218；EPUB text/part0013.html#cha8_8_1_3_3",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "核心资本趋势、净派现和RORWA决定银行是否依赖外部股权融资，进而影响股东可持续回报。",
+        "note": "估值情景需显式反映资本补充和摊薄。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch10-l1409-discount",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第10章 > 10.2.3 A股银行估值偏低的原因 > TXT lines 1407-1423；EPUB text/part0015.html#cha10_10_1_2_6",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "作者将长期估值压制主要归因于资本要求提高、杠杆下降和持续融资对ROE与股东回报的约束。",
+        "note": "这是作者的因果解释，不是由书中证据唯一证明；估值还受增长、风险、治理和市场情绪等因素。"
+      }
+    ],
+    "interpretation": {
+      "model": "银行估值不是先选倍数，而是先确定可持续正常化盈利、账面资产可信度、资本充足与外部融资需求、分红能力和周期状态；再用PE、PB和股息率作互相约束的情景，而非互相替代的真理。",
+      "decision_rules": [
+        "估值输入必须来自归一后的盈利、信用风险和资本分析。",
+        "盈利稳定且资本可自我补充时可用正常化PE为主锚；强周期或盈利失真时降低PE权重。",
+        "PB必须与可持续ROE、资产质量、资本缺口和账面价值可信度联用，禁止‘PB<1即低估’。",
+        "股息率只在分红稳定、资本缓冲充足且分红非靠融资时作为重要锚。",
+        "至少给出悲观/基准/乐观三种正常化盈利、风险成本、资本增长与估值倍数情景。",
+        "所有价格、无风险利率、可比估值和监管要求均记录as-of并来自任务执行时的权威/一手数据。",
+        "书中历史PE、PB、股息率阈值和个股结论只标来源观点，不直接使用。"
+      ],
+      "assumptions": [
+        "当前市场价格、股本和最新报告数据可得且身份一致。",
+        "用户接受情景区间而非单点确定价值。"
+      ]
+    },
+    "application": {
+      "past_cases": [
+        {
+          "case_id": "case-ktb-cmb-pe",
+          "problem": "作者需要为其认定的优质弱周期银行选择估值方法。",
+          "method_use": "先观察多年利润稳定性与拨备平滑，再选择PE并给出历史合理倍数判断。",
+          "result": "示范了质量与周期先于方法选择；具体15倍PE不具可移植时效性。",
+          "evidence_ids": [
+            "ev-ktb-ch08-l1076-type"
+          ]
+        }
+      ],
+      "future_scenarios": [
+        {
+          "scenario": "一家银行PB显著低于1且股息率很高。",
+          "recognition_signal": "用户倾向直接称为低估，但资产质量、资本缺口和分红可持续性尚未检查。",
+          "expected_use": "先验证账面价值、信用损失、融资依赖与正常化ROE，再给PB/PE/股息率交叉情景。"
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "最新及至少三到五期归一净利润、每股收益和净资产/每股净资产",
+        "信用成本、资产质量、拨备和压力情景",
+        "核心资本、RWA、RORWA、分红率和外部普通股融资",
+        "可持续增长、竞争优势与失效信号",
+        "当前股价、总股本、币种、观测时间和公司行动调整",
+        "当前无风险利率、可比银行估值或其他外部假设及as-of",
+        "用户的估值期限与需要的输出形式"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "锁定证券、股本、价格时点、币种、复权/公司行动、报告版本与估值期限。",
+          "completion_check": "价格和财务分母属于同一证券与股本口径。",
+          "stop_if": "证券身份、股本或价格时点不明。"
+        },
+        {
+          "step_id": "step-02",
+          "action": "从利润质量、信用风险和资本能力卡取得正常化盈利、账面价值可信度、分红和融资结论。",
+          "completion_check": "每项估值输入均有来源或明确假设，不直接用未经调整的单年净利润。",
+          "stop_if": "前置质量分析缺失且足以改变估值。"
+        },
+        {
+          "step_id": "step-03",
+          "action": "判定估值状态：稳定弱周期/现金分红型、风险暴露/资本修复型或高增长但资本受限型，并选择主锚与次锚。",
+          "completion_check": "PE、PB、股息率的权重由状态解释，未机械套用。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-04",
+          "action": "建立悲观、基准、乐观情景，分别设正常化利润、信用成本、RWA增长、分红和可能摊薄；再赋予透明估值倍数/收益率假设。",
+          "completion_check": "所有假设含as-of、来源类型和敏感方向；历史书中阈值未被默认继承。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-05",
+          "action": "分别计算PE隐含价值、PB隐含价值和股息率隐含价值，并解释三者冲突来自哪些假设。",
+          "completion_check": "每股与总市值口径、币种、单位、税前税后和股本摊薄处理一致。",
+          "stop_if": "关键分母为负、零或不可持续时停用相应倍数。"
+        },
+        {
+          "step_id": "step-06",
+          "action": "输出估值区间、当前价格对应预期、关键敏感性、反方情景和需要当前外部核验的数据。",
+          "completion_check": "结论是条件化区间，不把单点写成确定价值或买卖指令。",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "银行估值状态与方法选择说明",
+        "PE/PB/股息率三锚情景表",
+        "每股价值与总市值区间及敏感性",
+        "资本摊薄、信用损失和增长反方情景",
+        "所有当前数据与假设的as-of和来源缺口"
+      ],
+      "stop_conditions": [
+        "三情景可复算、前置质量约束完成且关键敏感性已披露。",
+        "缺少当前市场数据、正常化利润或资本规则时不输出精确估值。",
+        "任务转为个性化建议、交易执行或保证收益时停止并升级。"
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "不提供个性化投资建议、仓位、融资杠杆、下单或保证回报。",
+        "不把传统自由现金流DCF直接套银行；如需股利折现/剩余收益模型须另建专业契约。",
+        "不把PB低于1、历史8—12倍PE或特定银行15倍PE当固定低估线。"
+      ],
+      "failure_modes": [
+        "周期盈利高点使用低PE得出便宜结论。",
+        "把账面净资产视为可无折价清算。",
+        "忽略信用损失、资本补充和股本摊薄。",
+        "股息率高但分红依赖降低资本缓冲或外部融资。",
+        "使用不同日期的价格、股本和财务数据。"
+      ],
+      "limitations": [
+        "原书未完整构造银行专用股利折现或剩余收益模型。",
+        "估值倍数与无风险利率、风险偏好、法域和市场结构有关，必须使用当前外部数据。",
+        "作者对银行类型、低利率和资本监管导致估值的因果解释含主观判断。"
+      ],
+      "ask_user_when": [
+        "用户未提供估值日期、期限或证券类别。",
+        "用户要绝对估值模型还是市场可比情景，且选择会实质改变结果。"
+      ],
+      "escalate_when": [
+        "任务涉及重大资金决策、个人风险承受能力、税务或受托责任。",
+        "当前监管资本、公司行动、复杂资本工具或会计重述无法可靠处理。"
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [
+      "cap.kan-tou-yin-hang.earnings-quality-normalization",
+      "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+      "cap.kan-tou-yin-hang.capital-growth-analysis"
+    ],
+    "contrasts_with": [],
+    "composes_with": [
+      "cap.kan-tou-yin-hang.competitive-advantage-trace"
+    ],
+    "routes_to": []
+  },
+  "compilation": {
+    "destination": "reference_only",
+    "skill_name": null,
+    "skill_description": null,
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": "../../test-prompts.json"
+  }
+}

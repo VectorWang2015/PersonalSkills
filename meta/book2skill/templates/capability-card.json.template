@@ -1,0 +1,165 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.{{book-slug}}.{{capability-slug}}",
+  "revision": 1,
+  "status": "draft",
+  "slug": "{{capability-slug}}",
+  "title": "{{Capability title}}",
+  "one_liner": "{{one-sentence decision or action rule}}",
+  "source_manifest": "../../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "{{stable candidate ID}}"
+    ],
+    "aliases": [],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "{{one independently recognizable user problem}}",
+    "distinctive_value": "{{why this is more than generic good advice or a book summary}}",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": false,
+        "evidence_ids": [
+          "ev-01"
+        ],
+        "rationale": "{{how the evidence supports the claim and where interpretation begins}}"
+      },
+      "executability": {
+        "passed": false,
+        "rationale": "{{why the capability has usable inputs, actions, outputs, and stop conditions}}"
+      },
+      "incremental_utility": {
+        "status": "hypothesis",
+        "comparison": "{{how this may improve on a no-skill baseline; confirm in evaluation}}"
+      },
+      "falsifiable_boundedness": {
+        "passed": false,
+        "rationale": "{{the known non-use cases, failure paths, and transfer limits}}"
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": false,
+        "rationale": "{{repeated support, a unique source mechanism, or why a one-off procedure still matters; never use this alone as a gate}}"
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "{{user intent stated without the skill name}}"
+    ],
+    "trigger_signals": [
+      "{{natural-language signal, including useful paraphrases rather than keyword stuffing}}"
+    ],
+    "do_not_trigger": [
+      "{{topic-overlap case where this workflow should not run}}"
+    ],
+    "neighbor_distinctions": [
+      {
+        "capability_id": "cap.{{book-slug}}.{{neighbor-slug}}",
+        "use_this_when": "{{decisive condition for this capability}}",
+        "use_neighbor_when": "{{decisive condition for the neighboring capability}}"
+      }
+    ]
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-01",
+        "source_id": "src-primary",
+        "locator": "{{chapter, page, section, or stable text anchor}}",
+        "claim_type": "explicit",
+        "excerpt": "{{short excerpt when redistribution permits; otherwise use null}}",
+        "paraphrase": "{{faithful paraphrase in your own words}}",
+        "note": "{{why this evidence supports the capability and where interpretation begins}}"
+      }
+    ],
+    "interpretation": {
+      "model": "{{plain-language explanation of the mechanism, written in your own words}}",
+      "decision_rules": [
+        "{{rule that changes an action or judgment}}"
+      ],
+      "assumptions": [
+        "{{condition under which the mechanism is expected to hold}}"
+      ]
+    },
+    "application": {
+      "past_cases": [
+        {
+          "case_id": "case-01",
+          "problem": "{{problem in the source}}",
+          "method_use": "{{how the author or subject applied the method}}",
+          "result": "{{reported result, including uncertainty}}",
+          "evidence_ids": [
+            "ev-01"
+          ]
+        }
+      ],
+      "future_scenarios": [
+        {
+          "scenario": "{{new real-world scenario}}",
+          "recognition_signal": "{{what in the user's request reveals the fit}}",
+          "expected_use": "{{how the capability should adapt without overclaiming}}"
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "{{material input needed for a sound result}}"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "{{concrete action}}",
+          "completion_check": "{{observable condition showing the step is complete}}",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-02",
+          "action": "{{concrete action}}",
+          "completion_check": "{{observable condition}}",
+          "stop_if": "{{condition that makes further steps invalid or unnecessary}}"
+        }
+      ],
+      "outputs": [
+        "{{observable deliverable}}"
+      ],
+      "stop_conditions": [
+        "{{sufficient-result, diminishing-return, or invalid-method condition}}"
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "{{anti-scenario and why the method does not apply}}"
+      ],
+      "failure_modes": [
+        "{{source-grounded or observed failure pattern}}"
+      ],
+      "limitations": [
+        "{{era, sample, culture, incentives, missing evidence, or transfer limitation}}"
+      ],
+      "ask_user_when": [
+        "{{missing fact or choice that would materially change the result}}"
+      ],
+      "escalate_when": [
+        "{{risk or specialist-judgment boundary}}"
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [],
+    "contrasts_with": [
+      "cap.{{book-slug}}.{{neighbor-slug}}"
+    ],
+    "composes_with": [],
+    "routes_to": []
+  },
+  "compilation": {
+    "destination": "router_only",
+    "skill_name": null,
+    "skill_description": null,
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": "../../eval-suite.json"
+  }
+}

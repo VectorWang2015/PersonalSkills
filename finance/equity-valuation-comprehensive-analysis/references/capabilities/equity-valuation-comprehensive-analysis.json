@@ -1,0 +1,251 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.investment-valuation-4e.equity-valuation-comprehensive-analysis",
+  "revision": 1,
+  "status": "active",
+  "slug": "equity-valuation-comprehensive-analysis",
+  "title": "Equity valuation comprehensive analysis",
+  "one_liner": "Produce and audit a named public company's per-share valuation, relative pricing and market-implied expectations without inventing current inputs.",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "iv4.fw.synth.public-equity"
+    ],
+    "aliases": [],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "Turn a named listed company's current disclosures and market data into an auditable per-share valuation and expectation comparison.",
+    "distinctive_value": "Encodes claim, unit, growth/reinvestment, terminal, bridge and stop-condition checks that are commonly omitted in ad hoc valuation.",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ch01-price-value",
+          "ev-ch14-fcfe",
+          "ev-ch16-equity-bridge",
+          "ev-ch17-four-tests",
+          "ev-ch23-reverse"
+        ],
+        "rationale": "Core doctrine is directly supported at the cited chapter/line anchors; workflow routing and current-data requirements are explicitly operational synthesis."
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "The card has explicit inputs, ordered actions, observable outputs and hard stop conditions."
+      },
+      "incremental_utility": {
+        "status": "supported",
+        "comparison": "The released anonymous aggregate evaluation scored candidate 99.5, old skill 99, and no skill 97.5; see ../release-evaluation.md."
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "Non-use cases and invalid-input conditions alter routing or force a stop."
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "The governing consistency principles recur across multiple chapters; specific formulas remain valuable even when stated once."
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "value a stock",
+      "estimate fair value per share",
+      "compare market price with intrinsic value",
+      "run reverse DCF and multiples audit"
+    ],
+    "trigger_signals": [
+      "ticker or named listed company",
+      "per-share value",
+      "stock thesis",
+      "market-implied growth or margin"
+    ],
+    "do_not_trigger": [
+      "Valuation of a non-equity asset, private transaction, real-estate property or stand-alone project.",
+      "A method-selection question with no named public equity deliverable; route to cap.investment-valuation-4e.investment-valuation-comprehensive-framework."
+    ],
+    "neighbor_distinctions": [
+      {
+        "capability_id": "cap.investment-valuation-4e.investment-valuation-comprehensive-framework",
+        "use_this_when": "Use the equity executor when the requested deliverable is a named listed security's per-share valuation and market-expectation audit.",
+        "use_neighbor_when": "Use the generic framework for non-public-equity assets, projects, private transactions, acquisitions or pure model-selection questions."
+      }
+    ]
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ch01-price-value",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 1 > Pricing Versus Valuation > TXT lines 1974-1987",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Financial asset value must be tied to expected cash flows; market price and intrinsic value are different constructs.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch14-fcfe",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 14 > Potential Dividend or FCFE Models > formula TXT lines 10216-10229; valuation formulas 10370-10409",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "FCFE equals equity earnings net of equity-funded reinvestment and adjusted for net debt flows, discounted at cost of equity.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch16-equity-bridge",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 16 > Firm Value and Equity Value > TXT lines 12232-12595",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Move from operating assets to equity by separately valuing cash/nonoperating holdings and subtracting non-equity claims at value, not by mechanically using book amounts.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch17-four-tests",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 17 > Four Basic Steps to Using Multiples > TXT lines 12828-13020; EPUB OPS/c017.xhtml#c017-sec-0009",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "A multiple must be consistently defined, uniformly measured, distribution-aware, linked to fundamentals and compared after controlling for differences.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch23-reverse",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 23 > Estimation Noise > TXT lines 19298-19307",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Even a noisy valuation is useful for solving what must occur for the market price to be justified.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      }
+    ],
+    "interpretation": {
+      "model": "Produce and audit a named public company's per-share valuation, relative pricing and market-implied expectations without inventing current inputs.",
+      "decision_rules": [
+        "Verify issuer, security, date, currency, units, filing periods and share count.",
+        "Normalize earnings and construct claim-consistent FCFF/FCFE/dividends.",
+        "Forecast growth, margins and reinvestment; close with a coherent stable state.",
+        "Bridge operating assets to diluted per-share equity value.",
+        "Audit relative pricing and reverse-engineer current price assumptions.",
+        "Report sensitivity, disagreement between methods and explicit data gaps."
+      ],
+      "assumptions": [
+        "Current company, market, accounting and regulatory facts are obtained at runtime from authoritative sources.",
+        "Book examples illustrate mechanics and are not current defaults."
+      ]
+    },
+    "application": {
+      "past_cases": [],
+      "future_scenarios": [
+        {
+          "scenario": "Turn a named listed company's current disclosures and market data into an auditable per-share valuation and expectation comparison.",
+          "recognition_signal": "ticker or named listed company; per-share value; stock thesis",
+          "expected_use": "Execute the steps, disclose assumptions, and stop rather than invent missing current inputs."
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "issuer/security identity and share class",
+        "valuation date and market price",
+        "latest filings and trailing period",
+        "segment and capital structure data",
+        "current risk inputs with sources",
+        "dilution and noncontrolling interests"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "Verify issuer, security, date, currency, units, filing periods and share count.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": "A required identity, unit, claim, formula, current-data or survival input is unresolved."
+        },
+        {
+          "step_id": "step-02",
+          "action": "Normalize earnings and construct claim-consistent FCFF/FCFE/dividends.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-03",
+          "action": "Forecast growth, margins and reinvestment; close with a coherent stable state.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-04",
+          "action": "Bridge operating assets to diluted per-share equity value.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-05",
+          "action": "Audit relative pricing and reverse-engineer current price assumptions.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-06",
+          "action": "Report sensitivity, disagreement between methods and explicit data gaps.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "dated per-share valuation range",
+        "enterprise-to-equity bridge",
+        "relative-pricing audit",
+        "reverse-DCF expectations",
+        "assumption and data-gap ledger"
+      ],
+      "stop_conditions": [
+        "Required current facts or market inputs cannot be sourced or bounded.",
+        "Cash-flow claim and discount rate cannot be made consistent.",
+        "Terminal or reverse-valuation system is mathematically invalid or underidentified."
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "automatic buy/sell instruction",
+        "valuation without a current price when a market comparison is requested"
+      ],
+      "failure_modes": [
+        "Using book case numbers or U.S. historical observations as current universal defaults.",
+        "Hiding uncertainty behind a precise point value.",
+        "Continuing after unresolved entity, period, currency, unit, formula or data-vintage mismatch."
+      ],
+      "limitations": [
+        "The source is a 2025 valuation text; current accounting, tax, regulatory and market facts require separate verification.",
+        "Stage 0-1.6 validates evidence and contract design, not live-model investment performance."
+      ],
+      "ask_user_when": [
+        "Valuation purpose, claim, date, currency or control/minority perspective would materially change the model.",
+        "Several plausible narratives produce materially different values and the user must choose a scenario policy."
+      ],
+      "escalate_when": [
+        "A regulated fairness opinion, tax/legal conclusion or transaction execution is requested.",
+        "Complex derivatives, insolvency waterfall or jurisdiction-specific regulatory capital requires specialist review."
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [
+      "cap.investment-valuation-4e.valuation-input-and-identity-contract"
+    ],
+    "contrasts_with": [
+      "cap.investment-valuation-4e.investment-valuation-comprehensive-framework"
+    ],
+    "composes_with": [],
+    "routes_to": []
+  },
+  "compilation": {
+    "destination": "standalone_skill",
+    "skill_name": "equity-valuation-comprehensive-analysis",
+    "skill_description": "Produce and audit a named public company's per-share valuation, relative pricing and market-implied expectations without inventing current inputs.",
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": "../../test-prompts.json"
+  }
+}

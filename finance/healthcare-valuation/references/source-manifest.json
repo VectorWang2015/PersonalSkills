@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "title": "医疗行业估值",
+  "author": "郑华、涂宏钢",
+  "version": "机械工业出版社纸版 2020 年；ISBN 978-7-111-66589-2；EPUB 元数据日期 2020-09-30，Calibre 5.22.1 转换时间 2021-07-05",
+  "base_directory": null,
+  "local_paths_redacted": true,
+  "portability_note": "发布态来源清单已删除本机绝对路径，并以中性相对标识替代原文件名。原始来源不随 skill 再分发。",
+  "source_count": 2,
+  "sources": [
+    {
+      "absolute_path": null,
+      "relative_path": "source/medical-institution-valuation.epub",
+      "sha256": "dc51281f97839f82cbba30ab397428e4d4544dd0c4d4a88a7f7c527aa532c7fe",
+      "bytes": 23042614,
+      "format": "epub",
+      "source_id": "src-healthcare-valuation-epub",
+      "role": "primary",
+      "kind": "book",
+      "rights": {
+        "basis": "user-provided",
+        "redistribution": "restricted",
+        "notes": "书内版权页标明版权所有；skill 仅保留短释义、公式和定位，不包含原书正文或表格。"
+      },
+      "extraction": {
+        "parser": "ZIP 解包 + BeautifulSoup XML 解析",
+        "parser_version": "beautifulsoup4 4.14.3; lxml 6.0.2",
+        "text_artifact": "EPUB internal text/part0000.html-text/part0119.html",
+        "locator_scheme": "部分 > 章 > EPUB XHTML 文件 > 原始 element id；无 id 时使用 body 直接子元素中非空文本/图片块的 1 起算 pNNN 序号",
+        "coverage": {
+          "unit": "chunks",
+          "expected_units": 120,
+          "processed_units": 120,
+          "omitted_ranges": [],
+          "notes": "处理全部正文 XHTML 与目录；进入运行能力的公式图片已目视核对。EPUB 无印刷页码映射。"
+        }
+      }
+    },
+    {
+      "absolute_path": null,
+      "relative_path": "source/medical-institution-valuation.txt",
+      "sha256": "c935e34f8764ce079a6143b767f3e585ce7e65903c75661908c55f6a4358fc43",
+      "bytes": 1082691,
+      "format": "txt",
+      "source_id": "src-healthcare-valuation-txt",
+      "role": "supplementary",
+      "kind": "book",
+      "rights": {
+        "basis": "user-provided",
+        "redistribution": "restricted",
+        "notes": "与 EPUB 为同一作品的纯文本呈现，仅用于全文交叉检索。"
+      },
+      "extraction": {
+        "parser": "UTF-8 纯文本读取",
+        "parser_version": "system Python 3 UTF-8 decoder",
+        "text_artifact": "source/medical-institution-valuation.txt",
+        "locator_scheme": "仅用于全文检索；长行导致稳定章节与段落定位由 EPUB XHTML 提供。",
+        "coverage": {
+          "unit": "chunks",
+          "expected_units": 514,
+          "processed_units": 514,
+          "omitted_ranges": [],
+          "notes": "全文可读，但不作为主要锚点体系。"
+        }
+      }
+    }
+  ],
+  "manifest_id": "manifest.medical-institution-valuation",
+  "created_at": "2026-09-03T11:55:24+08:00",
+  "updated_at": "2026-09-03T12:16:19+08:00",
+  "work": {
+    "work_id": "work.medical-institution-valuation",
+    "language": "zh-CN",
+    "publication_year": 2020,
+    "user_goal": "形成可执行、可追溯、带当前事实门和金融公式质量门的医疗机构估值入口。",
+    "scope": {
+      "included": [
+        "医疗机构持续经营业务、企业价值、股权价值和融资轮估值",
+        "医院、门诊/日间手术、护理院及医疗集团类型差异",
+        "正常化、经营预测、方法选择、DCF、资本成本和初创稀释"
+      ],
+      "excluded": [
+        "当前法规和市场数据的静态复制",
+        "非医疗服务提供方的独立估值",
+        "法定评估签字、法律税务意见、个性化投资建议和交易执行"
+      ]
+    }
+  },
+  "known_gaps": [
+    {
+      "gap_id": "gap-no-printed-pages",
+      "description": "EPUB 未提供印刷页码映射。",
+      "impact": "证据采用 XHTML 文件、原始 id 和段落序号。",
+      "resolution": "保留稳定 EPUB 锚点；以后可增加纸书页码交叉索引。"
+    },
+    {
+      "gap_id": "gap-current-authority",
+      "description": "原书包含 2020 年以前的监管、医保、税务和市场事实。",
+      "impact": "不能直接作为估值基准日的现行输入。",
+      "resolution": "执行时从官方一手来源核验并记录 as_of、法域和版本。"
+    }
+  ],
+  "readiness": {
+    "exact_version_identified": true,
+    "integrity_recorded": true,
+    "rights_reviewed": true,
+    "coverage_reviewed": true,
+    "ready_for_distillation": true
+  }
+}

@@ -1,0 +1,216 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.investment-valuation-4e.investment-valuation-comprehensive-framework",
+  "revision": 1,
+  "status": "active",
+  "slug": "investment-valuation-comprehensive-framework",
+  "title": "Investment valuation comprehensive framework",
+  "one_liner": "Route and execute valuation of an asset, business, project or transaction using a model consistent with cash-flow capacity, claims, purpose and uncertainty.",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "iv4.fw.synth.public-framework",
+      "iv4.fw.ch34.l24302.model-routing"
+    ],
+    "aliases": [],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "Choose and structure a defensible valuation method for a heterogeneous asset, business, project or transaction.",
+    "distinctive_value": "Encodes claim, unit, growth/reinvestment, terminal, bridge and stop-condition checks that are commonly omitted in ad hoc valuation.",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ch34-routing",
+          "ev-ch02-three-approaches",
+          "ev-ch02-cashflow-rate-match"
+        ],
+        "rationale": "Core doctrine is directly supported at the cited chapter/line anchors; workflow routing and current-data requirements are explicitly operational synthesis."
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "The card has explicit inputs, ordered actions, observable outputs and hard stop conditions."
+      },
+      "incremental_utility": {
+        "status": "supported",
+        "comparison": "The released anonymous aggregate evaluation scored candidate 99.5, old skill 99, and no skill 97.5; see ../release-evaluation.md."
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "Non-use cases and invalid-input conditions alter routing or force a stop."
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "The governing consistency principles recur across multiple chapters; specific formulas remain valuable even when stated once."
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "choose a valuation method",
+      "value a business, asset, project, acquisition or special situation",
+      "audit whether a valuation model fits its object"
+    ],
+    "trigger_signals": [
+      "what method should I use",
+      "enterprise or asset value",
+      "acquisition synergy",
+      "real option",
+      "financial institution or distressed business"
+    ],
+    "do_not_trigger": [
+      "The main deliverable is a named listed stock's per-share value and investment thesis; route to cap.investment-valuation-4e.equity-valuation-comprehensive-analysis.",
+      "Pure retrieval of financial statements or current market quotes."
+    ],
+    "neighbor_distinctions": [
+      {
+        "capability_id": "cap.investment-valuation-4e.equity-valuation-comprehensive-analysis",
+        "use_this_when": "Use the generic framework when the requested deliverable is method choice or value of an asset/business/project/transaction.",
+        "use_neighbor_when": "Use the equity executor for a named listed security and per-share investment deliverable."
+      }
+    ]
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ch34-routing",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 34 > Choices in Valuation Models > TXT lines 24302-24439; EPUB OPS/c034.xhtml",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Choose asset-based, intrinsic, pricing or option models from cash-flow capacity, separability, comparables, purpose, horizon and analyst assumptions.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch02-three-approaches",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 2 > TXT lines 2076-2264",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Intrinsic, relative/pricing and contingent-claim approaches answer different valuation questions.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch02-cashflow-rate-match",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 2 > Intrinsic Valuation > TXT lines 2088-2110",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Cash flow to equity is discounted at cost of equity; cash flow to the firm is discounted at cost of capital.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      }
+    ],
+    "interpretation": {
+      "model": "Route and execute valuation of an asset, business, project or transaction using a model consistent with cash-flow capacity, claims, purpose and uncertainty.",
+      "decision_rules": [
+        "Classify object, claim, purpose, cash-flow capacity, separability, comparables and optionality.",
+        "Choose primary method and a non-identical cross-check.",
+        "Load shared intrinsic, bridge, relative or special-situation contracts as needed.",
+        "Reconcile outputs, sensitivities, assumptions and stop conditions."
+      ],
+      "assumptions": [
+        "Current company, market, accounting and regulatory facts are obtained at runtime from authoritative sources.",
+        "Book examples illustrate mechanics and are not current defaults."
+      ]
+    },
+    "application": {
+      "past_cases": [],
+      "future_scenarios": [
+        {
+          "scenario": "Choose and structure a defensible valuation method for a heterogeneous asset, business, project or transaction.",
+          "recognition_signal": "what method should I use; enterprise or asset value; acquisition synergy",
+          "expected_use": "Execute the steps, disclose assumptions, and stop rather than invent missing current inputs."
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "valuation object and legal claim",
+        "purpose and horizon",
+        "dated operating/financial data",
+        "currency and unit",
+        "capital structure",
+        "uncertainty and contingent rights"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "Classify object, claim, purpose, cash-flow capacity, separability, comparables and optionality.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": "A required identity, unit, claim, formula, current-data or survival input is unresolved."
+        },
+        {
+          "step_id": "step-02",
+          "action": "Choose primary method and a non-identical cross-check.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-03",
+          "action": "Load shared intrinsic, bridge, relative or special-situation contracts as needed.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-04",
+          "action": "Reconcile outputs, sensitivities, assumptions and stop conditions.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "method-routing memo",
+        "model contract",
+        "value or bounded range with bridge and sensitivities"
+      ],
+      "stop_conditions": [
+        "Required current facts or market inputs cannot be sourced or bounded.",
+        "Cash-flow claim and discount rate cannot be made consistent.",
+        "Terminal or reverse-valuation system is mathematically invalid or underidentified."
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "personalized trade execution",
+        "legal fairness opinion or regulated appraisal without qualified review"
+      ],
+      "failure_modes": [
+        "Using book case numbers or U.S. historical observations as current universal defaults.",
+        "Hiding uncertainty behind a precise point value.",
+        "Continuing after unresolved entity, period, currency, unit, formula or data-vintage mismatch."
+      ],
+      "limitations": [
+        "The source is a 2025 valuation text; current accounting, tax, regulatory and market facts require separate verification.",
+        "Stage 0-1.6 validates evidence and contract design, not live-model investment performance."
+      ],
+      "ask_user_when": [
+        "Valuation purpose, claim, date, currency or control/minority perspective would materially change the model.",
+        "Several plausible narratives produce materially different values and the user must choose a scenario policy."
+      ],
+      "escalate_when": [
+        "A regulated fairness opinion, tax/legal conclusion or transaction execution is requested.",
+        "Complex derivatives, insolvency waterfall or jurisdiction-specific regulatory capital requires specialist review."
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [
+      "cap.investment-valuation-4e.valuation-input-and-identity-contract"
+    ],
+    "contrasts_with": [
+      "cap.investment-valuation-4e.equity-valuation-comprehensive-analysis"
+    ],
+    "composes_with": [],
+    "routes_to": []
+  },
+  "compilation": {
+    "destination": "standalone_skill",
+    "skill_name": "investment-valuation-comprehensive-framework",
+    "skill_description": "Route and execute valuation of an asset, business, project or transaction using a model consistent with cash-flow capacity, claims, purpose and uncertainty.",
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": "../../test-prompts.json"
+  }
+}

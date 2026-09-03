@@ -15,6 +15,11 @@
     "reason": "明确要求下载年报和季报到项目归档目录"
   },
   {
+    "prompt": "只下载 600219 最新半年报，不要年报",
+    "should_trigger": true,
+    "reason": "应使用 --report-type interim 精确选择半年报，不能强制同时下载年报"
+  },
+  {
     "prompt": "分析 raw/reports/2026Q1/南山铝业-2026Q1.txt 这份财报",
     "should_trigger": false,
     "reason": "用户要求分析已下载报告，不是下载财报"

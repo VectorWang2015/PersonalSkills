@@ -14,9 +14,13 @@ from financial_validation import detect_quarter_anomaly, validate_balance_sheet,
 
 
 KEYWORDS = ["营业收入", "归母净利润", "扣非净利润", "经营现金流", "ROE", "每股收益", "资产负债表", "利润表", "现金流量表"]
-TITLE_PATTERNS = ["主要会计数据和财务指标", "分季度主要财务指标", "非经常性损益项目及金额", "非经常性损益项目和金额", "合并资产负债表", "母公司资产负债表", "合并利润表", "母公司利润表", "合并现金流量表", "母公司现金流量表"]
-STATEMENT_TITLES = {"合并资产负债表", "母公司资产负债表", "合并利润表", "母公司利润表", "合并现金流量表", "母公司现金流量表"}
+TITLE_PATTERNS = ["主要会计数据和财务指标", "分季度主要财务指标", "非经常性损益项目及金额", "非经常性损益项目和金额", "合并及母公司资产负债表", "合并及母公司利润表", "合并及母公司现金流量表", "合并资产负债表", "母公司资产负债表", "合并利润表", "母公司利润表", "合并现金流量表", "母公司现金流量表"]
+STATEMENT_TITLES = {"合并及母公司资产负债表", "合并及母公司利润表", "合并及母公司现金流量表", "合并资产负债表", "母公司资产负债表", "合并利润表", "母公司利润表", "合并现金流量表", "母公司现金流量表"}
 CONTINUATION_TITLES = STATEMENT_TITLES | {"非经常性损益项目及金额", "非经常性损益项目和金额"}
+DECLARED_UNIT_PATTERN = re.compile(
+    r"(?:金额)?单位\s*[：:]\s*(?:人民币)?\s*"
+    r"(亿元|百万元|万元|千元|元[/／]股|元|%|％|股|人)"
+)
 
 
 def write_json(path: Path, data: Any) -> None:
@@ -109,16 +113,17 @@ def assign_title_by_bbox(table_bbox: list[float], text_lines: list[dict[str, Any
 def infer_table_unit(table_bbox: list[float], text_lines: list[dict[str, Any]], rows: list[list[Any]] | None = None) -> str | None:
     x0, y0, x1, _ = table_bbox
     row_text = json.dumps(rows or [], ensure_ascii=False)
-    if any(word in row_text for word in ["资产", "负债", "收入", "现金", "利润", "成本", "费用", "利息"]):
-        return "元"
-    nearby = []
+    nearby: list[tuple[float, str]] = []
     for line in text_lines:
         lx0, ly0, lx1, ly1 = line["bbox"]
         if ly1 <= y0 and ly1 >= y0 - 160 and not (lx1 < x0 - 80 or lx0 > x1 + 80):
-            nearby.append(line["text"])
-    unit = detect_unit("\n".join(nearby))
-    if unit:
-        return unit
+            nearby.append((y0 - ly1, line["text"]))
+    for _, text in sorted(nearby, key=lambda item: item[0]):
+        declaration = DECLARED_UNIT_PATTERN.search(re.sub(r"\s+", "", text))
+        if declaration:
+            return declaration.group(1).replace("／", "/").replace("％", "%")
+    if any(word in row_text for word in ["资产", "负债", "收入", "现金", "利润", "成本", "费用", "利息"]):
+        return "元"
     return detect_unit(row_text)
 
 
@@ -341,15 +346,21 @@ class ValidationIndex:
                     diff = sum(qvalues) - annual_values[0]
                     checks.append({"check": "quarter_sum", "label": label, "status": "pass" if abs(diff) <= 1 else "fail", "diff": diff})
 
-        asset_candidates = [numeric_cells(row) for row in rows_by_labels(self.tables, ["资产总计", "资产总额"])]
-        liability_candidates = [numeric_cells(row) for row in rows_by_labels(self.tables, ["负债合计", "负债总额"])]
-        equity_candidates = [numeric_cells(row) for row in rows_by_labels(self.tables, ["所有者权益（或股东权益）合计", "所有者权益合计", "股东权益合计"])]
-        balance_checks = [
-            validate_balance_sheet(a[0], l[0], e[0])
-            for a in asset_candidates if a
-            for l in liability_candidates if l
-            for e in equity_candidates if e
-        ]
+        balance_checks = []
+        for table in self.tables:
+            assets = numeric_cells(first_row_by_labels([table], ["资产总计", "资产总额"]))
+            liabilities = numeric_cells(first_row_by_labels([table], ["负债合计", "负债总额"]))
+            equity = numeric_cells(
+                first_row_by_labels(
+                    [table],
+                    ["所有者权益（或股东权益）合计", "所有者权益合计", "股东权益合计"],
+                )
+            )
+            if assets and liabilities and equity:
+                check = validate_balance_sheet(assets[0], liabilities[0], equity[0])
+                check["table_id"] = table.get("table_id")
+                check["title"] = table.get("title")
+                balance_checks.append(check)
         if balance_checks:
             checks.append(sorted(balance_checks, key=lambda check: abs(check["diff"]))[0])
 
@@ -371,6 +382,7 @@ def extract_with_pymupdf(pdf_path: Path, out_dir: Path) -> dict[str, Any]:
     tables_meta = []
     chunks = []
     document_md_parts = []
+    parser_warnings: list[dict[str, Any]] = []
     for page in doc:
         page_no = page.number + 1
         text = page.get_text("text")
@@ -381,10 +393,19 @@ def extract_with_pymupdf(pdf_path: Path, out_dir: Path) -> dict[str, Any]:
         document_md_parts.append(f"\n\n<!-- page {page_no} -->\n\n{text}")
         chunks.append({"chunk_id": f"text_{page_no:04d}", "type": "text", "source_file": pdf_path.name, "section": section, "page_start": page_no, "page_end": page_no, "content": text, "linked_tables": []})
         page_tables = []
+        table_detection_error = None
         try:
             tables = page.find_tables().tables
-        except Exception:
+        except Exception as exc:
             tables = []
+            table_detection_error = f"{type(exc).__name__}: {exc}"
+            parser_warnings.append(
+                {
+                    "page": page_no,
+                    "code": "pymupdf_table_detection_error",
+                    "detail": table_detection_error,
+                }
+            )
         for idx, table in enumerate(tables, 1):
             raw_rows = table.extract()
             rows = [[clean_cell(cell) for cell in row] for row in raw_rows]
@@ -420,7 +441,26 @@ def extract_with_pymupdf(pdf_path: Path, out_dir: Path) -> dict[str, Any]:
             tables_meta.append(table_json)
             page_tables.append(table_id)
             chunks.append({"chunk_id": table_id, "type": "table", "source_file": pdf_path.name, "section": section, "page_start": page_no, "page_end": page_no, "title": table_title, "content_markdown": markdown_table(rows), "content_json_path": f"tables/{table_id}.json", "keywords": [k for k in KEYWORDS if k in text]})
-        write_json(out_dir / "pages" / f"page_{page_no:03d}.json", {"page": page_no, "section": section, "title": page_title, "unit": page_unit, "text": text, "tables": page_tables})
+        if page_title in STATEMENT_TITLES and not page_tables and table_detection_error is None:
+            parser_warnings.append(
+                {
+                    "page": page_no,
+                    "code": "no_table_detected_on_statement_page",
+                    "title": page_title,
+                }
+            )
+        write_json(
+            out_dir / "pages" / f"page_{page_no:03d}.json",
+            {
+                "page": page_no,
+                "section": section,
+                "title": page_title,
+                "unit": page_unit,
+                "text": text,
+                "tables": page_tables,
+                "table_detection_error": table_detection_error,
+            },
+        )
     merged_tables = assign_merged_table_ids(merge_continued_tables(tables_meta))
     for table in merged_tables:
         merged_id = table["table_id"]
@@ -428,19 +468,62 @@ def extract_with_pymupdf(pdf_path: Path, out_dir: Path) -> dict[str, Any]:
         write_text(out_dir / "tables_merged" / f"{merged_id}.md", markdown_table(table["rows"]))
         write_json(out_dir / "tables_merged" / f"{merged_id}.json", table)
     write_text(out_dir / "document.md", "".join(document_md_parts))
-    write_json(out_dir / "document.json", {"source_file": pdf_path.name, "page_count": doc.page_count, "tables": [t["table_id"] for t in tables_meta], "merged_tables": [f"merged_table_{i+1:04d}" for i in range(len(merged_tables))]})
+    write_json(
+        out_dir / "document.json",
+        {
+            "source_file": pdf_path.name,
+            "page_count": doc.page_count,
+            "parser": "pymupdf_find_tables",
+            "tables": [t["table_id"] for t in tables_meta],
+            "merged_tables": [f"merged_table_{i+1:04d}" for i in range(len(merged_tables))],
+            "parser_warnings": parser_warnings,
+        },
+    )
     with (out_dir / "chunks.jsonl").open("w", encoding="utf-8") as f:
         for chunk in chunks:
             f.write(json.dumps(chunk, ensure_ascii=False) + "\n")
-    return {"tables": tables_meta, "merged_tables": merged_tables, "chunks": chunks}
+    return {
+        "tables": tables_meta,
+        "merged_tables": merged_tables,
+        "chunks": chunks,
+        "parser_warnings": parser_warnings,
+    }
 
 
 def validate_outputs(parsed: dict[str, Any], out_dir: Path, source_name: str | None = None) -> list[dict[str, Any]]:
     checks = ValidationIndex(parsed.get("merged_tables") or parsed["tables"]).run_core_checks()
+    core_check_count = len(checks)
     period = report_period_from_source(source_name or str(parsed.get("source_file") or ""))
     min_checks = min_core_checks_for_report(period)
-    if len(checks) < min_checks:
-        checks.append({"check": "validation_coverage", "status": "warn", "reason": "fewer_than_required_core_checks", "period": period, "required": min_checks, "count": len(checks)})
+    if core_check_count < min_checks:
+        checks.append({"check": "validation_coverage", "status": "warn", "reason": "fewer_than_required_core_checks", "period": period, "required": min_checks, "count": core_check_count})
+    parser_warnings = parsed.get("parser_warnings") or []
+    missing_statement_pages = sorted(
+        {
+            warning.get("page")
+            for warning in parser_warnings
+            if warning.get("code") == "no_table_detected_on_statement_page"
+            and warning.get("page") is not None
+        }
+    )
+    detection_error_pages = sorted(
+        {
+            warning.get("page")
+            for warning in parser_warnings
+            if warning.get("code") == "pymupdf_table_detection_error"
+            and warning.get("page") is not None
+        }
+    )
+    if missing_statement_pages or detection_error_pages:
+        checks.append(
+            {
+                "check": "statement_table_coverage",
+                "status": "fail",
+                "reason": "financial_statement_pages_require_manual_fallback",
+                "missing_statement_pages": missing_statement_pages,
+                "detection_error_pages": detection_error_pages,
+            }
+        )
     write_json(out_dir / "validation" / "validation_report.json", checks)
     lines = ["# Validation Report", ""]
     for check in checks:
@@ -454,6 +537,7 @@ def build_analysis_context(parsed: dict[str, Any], checks: list[dict[str, Any]])
     tables = parsed.get("tables") or []
     merged_tables = parsed.get("merged_tables") or []
     chunks = parsed.get("chunks") or []
+    parser_warnings = parsed.get("parser_warnings") or []
     failed = sum(1 for check in checks if check.get("status") == "fail")
     warned = sum(1 for check in checks if check.get("status") == "warn")
     lines = [
@@ -463,6 +547,7 @@ def build_analysis_context(parsed: dict[str, Any], checks: list[dict[str, Any]])
         f"- raw tables: {len(tables)}",
         f"- merged tables: {len(merged_tables)}",
         f"- chunks: {len(chunks)}",
+        f"- parser warnings: {len(parser_warnings)}",
         f"- validation checks: {len(checks)}",
         f"- validation failed: {failed}",
         f"- validation warnings: {warned}",
@@ -472,10 +557,22 @@ def build_analysis_context(parsed: dict[str, Any], checks: list[dict[str, Any]])
         "Use `tables_merged/` first for financial statement analysis. Fall back to `tables/` only for page-level traceability or when a merged table is missing.",
         "Read `validation/validation_report.md` before using key figures. If any check fails, quote the failed check and treat related figures as provisional.",
         "Use `chunks.jsonl` for retrieval context and `document.md` for narrative sections; do not use narrative text as the sole source for financial numbers.",
-        "",
-        "## Key Tables",
-        "",
     ]
+    if parser_warnings:
+        lines.extend(
+            [
+                "Parser warnings make affected pages provisional. Run the manual comparison/fallback workflow before using figures from those pages.",
+                "",
+                "## Parser Warnings",
+                "",
+            ]
+        )
+        for warning in parser_warnings:
+            code = warning.get("code") or "unknown"
+            page = warning.get("page") or "unknown"
+            detail = warning.get("title") or warning.get("detail") or "no detail"
+            lines.append(f"- page {page}: {code} — {detail}")
+    lines.extend(["", "## Key Tables", ""])
     key_titles = set(TITLE_PATTERNS)
     key_rows = [table for table in merged_tables if table.get("title") in key_titles]
     if not key_rows:
@@ -490,6 +587,33 @@ def build_analysis_context(parsed: dict[str, Any], checks: list[dict[str, Any]])
     return "\n".join(lines) + "\n"
 
 
+def build_parse_report(parsed: dict[str, Any], checks: list[dict[str, Any]]) -> str:
+    failed = sum(1 for check in checks if check.get("status") == "fail")
+    warned = sum(1 for check in checks if check.get("status") == "warn")
+    parser_warnings = parsed.get("parser_warnings") or []
+    warning_groups: dict[str, list[Any]] = {}
+    for warning in parser_warnings:
+        warning_groups.setdefault(str(warning.get("code") or "unknown"), []).append(warning.get("page"))
+    warning_lines = "".join(
+        f"- parser warning {code}: pages {', '.join(str(page) for page in pages)}\n"
+        for code, pages in sorted(warning_groups.items())
+    )
+    return (
+        "# Parse Report\n\n"
+        "- parser: pymupdf_find_tables\n"
+        "- automatic fallback: not attempted; use extract_tables.py for manual "
+        "Camelot/pdfplumber comparison when warnings require it\n"
+        f"- raw tables: {len(parsed.get('tables') or [])}\n"
+        f"- merged tables: {len(parsed.get('merged_tables') or [])}\n"
+        f"- chunks: {len(parsed.get('chunks') or [])}\n"
+        f"- parser warnings: {len(parser_warnings)}\n"
+        f"- validation checks: {len(checks)}\n"
+        f"- validation failed: {failed}\n"
+        f"- validation warnings: {warned}\n"
+        f"{warning_lines}"
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("pdf")
@@ -499,9 +623,7 @@ def main() -> None:
     parsed = extract_with_pymupdf(Path(args.pdf), out_dir)
     parsed["source_file"] = Path(args.pdf).name
     checks = validate_outputs(parsed, out_dir, Path(args.pdf).name)
-    failed = sum(1 for c in checks if c.get("status") == "fail")
-    warned = sum(1 for c in checks if c.get("status") == "warn")
-    write_text(out_dir / "parse_report.md", f"# Parse Report\n\n- parser: hybrid v3 (PyMuPDF extraction with bbox title/unit, conservative continuation merges, confidence proxy, validation gate; Camelot/pdfplumber benchmark remains available via extract_tables.py)\n- raw tables: {len(parsed['tables'])}\n- merged tables: {len(parsed['merged_tables'])}\n- chunks: {len(parsed['chunks'])}\n- validation checks: {len(checks)}\n- validation failed: {failed}\n- validation warnings: {warned}\n")
+    write_text(out_dir / "parse_report.md", build_parse_report(parsed, checks))
     write_text(out_dir / "analysis_context.md", build_analysis_context(parsed, checks))
 
 

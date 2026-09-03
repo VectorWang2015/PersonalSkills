@@ -1,115 +1,76 @@
 ---
 name: {{skill-slug}}
-description: |
-  {{何时调用 + 何时不调用 + 关键 trigger 信号, ≤300 字}}
-  基于 A2 段, 用于 Claude 激活判断。示例:
-  用户在纠结一个决策、列举正面理由却理不出头绪时;或在问"怎么做 X 才能成功"时。
-  不适用于: 纯信息查询、日常琐碎选择。
-source_book: 《{{BOOK_TITLE}}》 {{AUTHOR}}
-source_chapter: {{章节}}
-tags: [{{tag1}}, {{tag2}}]
-related_skills: []    # 阶段 3 填充
+description: >-
+  {{用一至三句话写清可识别的用户情境、该 skill 产生的结果，以及一个关键反场景。不要只写主题名，也不要罗列内部方法论。}}
+metadata:
+  book2skill_capability_id: "{{capability-id}}"
+  book2skill_revision: "{{revision}}"
+  book2skill_source_manifest: "{{source-manifest-relative-path}}"
+# 仅在确有需要时添加以下受支持的顶层字段；否则删除注释，不要添加自定义顶层字段：
+# license: {{SPDX 标识或许可证文件引用}}
+# allowed-tools: {{以空格分隔的工具名}}
 ---
+
+<!--
+生成最终 SKILL.md 时删除本注释块。
+
+渐进披露原则：
+1. frontmatter 只负责发现；description 包含“何时用 + 产生什么结果 + 何时不用”。
+2. 正文先给最短可执行路径，再给判断规则和停止条件；步骤数量由真实依赖决定，不固定。
+3. 原文、书中案例、完整批判和验证记录放入 references/capabilities/{{capability-slug}}.json；
+   仅在需要解释依据、处理边界案例或审计时读取。
+4. 删除不改变执行决策的背景、修辞和重复说明。
+-->
 
 # {{Skill Title}}
 
-## R — 原文 (Reading)
+{{一句话说明此 skill 帮用户完成什么决策或任务。}}
 
-> {{原文引用, ≤150 字, 必须标注章节/页码}}
->
-> — {{AUTHOR}}, {{CHAPTER}}
+## Use this skill
 
----
+Use when:
 
-## I — 方法论骨架 (Interpretation)
+- {{可观察的场景或用户意图 1}}
+- {{可观察的场景或用户意图 2}}
 
-{{ 用自己的话重写, 5-15 行。
-   读完这段, 一个没读过原书的人应当能理解这个方法论在做什么。
-   禁止照搬原文, 禁止堆砌修辞。}}
+Do not use when:
 
----
+- {{关键反场景；指出应直接回答、询问澄清或改用哪个相邻 skill}}
 
-## A1 — 书中的应用 (Past Application)
+Expected result: {{具体交付物或决策结果，不写“帮助用户理解”之类不可检验表述。}}
 
-### 案例 1: {{案例名}}
-- **问题**: {{作者遇到了什么}}
-- **方法论的使用**: {{作者怎么用这个方法论思考}}
-- **结论**: {{得出了什么}}
-- **结果**: {{实际发生了什么}}
+## Workflow
 
-### 案例 2 (如有)
-...
+1. **{{首个必要动作}}** — {{所需输入与可判断的完成标准。}}
+2. **{{下一必要动作；若一步即可闭环则删除本项，按实际依赖增删后续步骤}}** — {{处理或输出规则与可判断的完成标准。}}
 
----
+## Decision rules
 
-## A2 — 触发场景 (Future Trigger) ★
+- {{决定如何应用方法论的核心规则 1}}
+- {{核心规则 2，包括重要假设或权衡}}
+- {{遇到信息不足时应如何处理}}
 
-### 用户会在什么情境下需要这个 skill?
+## Stop or escalate
 
-1. {{场景 1 — 具体到可识别的情况}}
-2. {{场景 2}}
-3. {{场景 3}}
+- Stop when {{已达到充分答案或继续分析收益很低的条件。}}
+- Ask the user when {{缺失信息会实质改变结论的条件。}}
+- Do not continue when {{来源方法不适用、风险超出范围或需要专业判断的条件。}}
 
-### 语言信号 (用户的话里出现这些就应激活)
+## Output contract
 
-- "{{典型措辞 1}}"
-- "{{典型措辞 2}}"
-- "{{典型措辞 3}}"
+Return:
 
-### 与相邻 skill 的区分
+- {{必需输出 1}}
+- {{必需输出 2}}
+- {{不确定性、假设或反例的披露方式}}
 
-- 与 `{{related-skill-a}}` 的区别: {{ ... }}
-- 与 `{{related-skill-b}}` 的区别: {{ ... }}
+## Optional depth
 
----
+- For source excerpts, the author's examples, limitations, and verification evidence, read [the capability card](references/capabilities/{{capability-slug}}.json). Load it only when the task needs grounding or auditability.
+- For routing behavior and near-neighbor negatives, use `test-prompts.json` during evaluation; do not load the test suite during ordinary execution.
 
-## E — 可执行步骤 (Execution)
+## Related skills
 
-当 skill 被激活后, agent 应按以下步骤执行:
-
-1. **{{步骤 1}}**
-   - 完成标准: {{如何判断这一步已完成}}
-
-2. **{{步骤 2}}**
-   - 完成标准: {{ ... }}
-   - 判停条件: 若 {{X}} 则跳到步骤 {{N}}
-
-3. **{{步骤 3}}**
-   - 完成标准: {{ ... }}
-
----
-
-## B — 边界 (Boundary) ★
-
-### 不要在以下情况使用此 skill
-
-- {{反场景 1 — 为什么不适用}}
-- {{反场景 2}}
-
-### 作者在书中警告的失败模式
-
-- {{ 来自 counter-example-extractor 的对应反例 }}
-
-### 作者的盲点 / 时代局限
-
-- {{ 来自阶段 0 批判阶段 }}
-
-### 容易混淆的邻近方法论
-
-- {{ ... }}
-
----
-
-## 相关 skills (阶段 3 填充)
-
-- depends-on: {{}}
-- contrasts-with: {{}}
-- composes-with: {{}}
-
----
-
-## 审计信息
-
-- **验证通过**: V1 ✓ / V2 ✓ / V3 ✓
-- **测试通过率**: {{%}} (详见 test-prompts.json)
-- **蒸馏时间**: {{DATE}}
+- Depends on: {{无则写 None；有则写相对链接及依赖原因。}}
+- Prefer instead: {{相邻 skill 的相对链接与区分条件；无则写 None。}}
+- Compose with: {{可组合 skill 的相对链接与组合顺序；无则写 None。}}

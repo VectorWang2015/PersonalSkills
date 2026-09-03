@@ -1,0 +1,215 @@
+{
+  "schema": "book2skill/test-prompts@1",
+  "suite_id": "eval.kan-tou-yin-hang.installment-cost-analysis-r2",
+  "skill": "installment-cost-analysis",
+  "version": "2.0.0",
+  "source_book": "看透银行：投资银行股从入门到精通 — 价投谷子地",
+  "dataset_role": "dev_regression",
+  "holdout_policy": "These cases cover known formula, fee-completeness, routing, and labeling failures and are not unseen holdout evidence. Revision 2's independent release evaluation is recorded separately; future revisions should isolate new product quotes and cash flows.",
+  "capability_id": "cap.kan-tou-yin-hang.installment-cost-analysis",
+  "capability_revision": 2,
+  "bundle": "references/capability-bundle.json",
+  "darwin_compatible": false,
+  "darwin_compatibility_note": "This visible suite does not generate the release score; Revision 2's independent holdout and deterministic regression results are recorded separately.",
+  "evaluation": {
+    "minimum_pass_rate": null,
+    "release_threshold_rationale": "Every deterministic cash-flow result, fee-completeness stop, simple-versus-compound label, and sibling route is a hard gate.",
+    "judge_instruction": "Recompute the cash-flow rates independently. Judge whether every direct fee and actual date is included, whether the book approximation is correctly bounded, and whether product-cost questions are distinguished from bank-statement analysis.",
+    "hard_gates": [
+      "XIRR or periodic IRR matches independent calculation within stated tolerance",
+      "All directly related costs and actual net proceeds are included before an all-in label is used",
+      "The book 24xy/(x+1) result is labeled as a limited simple approximation",
+      "Nominal annual, effective annual, simple annual, and advertised fee rates are never conflated",
+      "Non-conventional or incomplete cash flows stop rather than returning a confident unique rate"
+    ]
+  },
+  "test_cases": [
+    {
+      "id": "book-example-direct",
+      "type": "should_trigger",
+      "prompt": "信用卡借12000元，分12个月，每月底还1000元本金和79.2元手续费，没有其他费用。请比较书中算法、名义IRR和有效年化IRR。",
+      "expected_behavior": "Invoke the skill, build twelve periodic payments, calculate IRR, and show the book simple approximation separately.",
+      "expected": {
+        "activation": "invoke",
+        "target": "installment-cost-analysis",
+        "must_do": [
+          "Show book simple approximation about 14.6215%",
+          "Show nominal annualized periodic IRR about 14.3106%",
+          "Show effective annual periodic IRR about 15.2876%",
+          "State that actual-date XIRR can differ"
+        ],
+        "must_not_do": [
+          "Call 14.62% the sole true APR",
+          "Omit the simple-versus-compound distinction"
+        ],
+        "acceptable_variation": "Rounding within 0.02 percentage points is acceptable."
+      },
+      "rationale": "Direct regression for the source-book formula and corrected labeling.",
+      "tags": ["direct-intent", "formula", "hard-gate"]
+    },
+    {
+      "id": "pbc-upfront-fee-example",
+      "type": "should_trigger",
+      "prompt": "贷款合同本金10万元，放款当天另付1000元服务费，之后12个月每月末还8833.3元。没有其他费用，复利年化是多少？",
+      "expected_behavior": "Net the same-day fee into 99,000 actual proceeds and calculate the effective periodic IRR.",
+      "expected": {
+        "activation": "invoke",
+        "target": "installment-cost-analysis",
+        "must_do": [
+          "Use 99,000 as net day-zero proceeds",
+          "Return effective annual periodic IRR about 13.58%",
+          "Explain that the upfront fee raises the rate"
+        ],
+        "must_not_do": [
+          "Use 100,000 as the only initial cash receipt",
+          "Apply 24xy/(x+1) because an upfront fee exists"
+        ],
+        "acceptable_variation": "The official rounded value 13.58% or a close independently calculated value is acceptable."
+      },
+      "rationale": "Matches the People's Bank of China all-cost example.",
+      "tags": ["official-example", "upfront-fee", "hard-gate"]
+    },
+    {
+      "id": "irregular-dates-xirr",
+      "type": "should_trigger",
+      "prompt": "这笔消费贷1月5日到账，2月1日、3月18日、5月2日分别还款，金额也不同。请按实际日期算年化。",
+      "expected_behavior": "Invoke XIRR using each actual date and avoid the regular-period shortcut.",
+      "expected": {
+        "activation": "invoke",
+        "target": "installment-cost-analysis",
+        "must_do": [
+          "Request all amounts and directly related fees",
+          "Use dated XIRR and state the day-count basis"
+        ],
+        "must_not_do": [
+          "Assume equal monthly periods",
+          "Apply the book formula"
+        ],
+        "acceptable_variation": "The skill may first ask for missing amounts before calculation."
+      },
+      "rationale": "Tests irregular-date routing to XIRR.",
+      "tags": ["xirr", "irregular-dates", "positive"]
+    },
+    {
+      "id": "missing-direct-costs",
+      "type": "edge_case",
+      "prompt": "分12期，每期费率0.6%，但我不知道有没有保险费和提前还款违约金。直接告诉我真实综合年化。",
+      "expected_behavior": "Identify missing costs and refuse to label a partial calculation all-in.",
+      "expected": {
+        "activation": "clarify_then_invoke",
+        "target": "installment-cost-analysis",
+        "must_do": [
+          "Ask for actual proceeds, payment amount/date, insurance, other fees, and early-settlement terms",
+          "Offer only a labeled provisional book approximation if its assumptions are explicitly accepted"
+        ],
+        "must_not_do": [
+          "Present an exact all-in rate",
+          "Assume all direct costs are zero"
+        ],
+        "acceptable_variation": "A range is acceptable only when each missing-cost scenario is explicit."
+      },
+      "rationale": "All-cost completeness is required by the current official rule and the script contract.",
+      "tags": ["missing-input", "fees", "hard-gate"]
+    },
+    {
+      "id": "balloon-loan-no-shortcut",
+      "type": "adversarial",
+      "prompt": "前11个月只付手续费，最后一个月还全部本金。请仍用24xy/(x+1)算真实APR。",
+      "expected_behavior": "Reject the shortcut and calculate from the balloon cash flows if complete.",
+      "expected": {
+        "activation": "invoke",
+        "target": "installment-cost-analysis",
+        "must_do": [
+          "State which equal-principal assumption fails",
+          "Use IRR/XIRR from the actual balloon schedule"
+        ],
+        "must_not_do": [
+          "Apply the source-book formula",
+          "Describe its output as true APR"
+        ],
+        "acceptable_variation": "The skill may request the final payment amount and exact dates."
+      },
+      "rationale": "Protects the source formula's narrow domain.",
+      "tags": ["adversarial", "balloon", "hard-gate"]
+    },
+    {
+      "id": "route-bank-fee-accounting",
+      "type": "route_to_sibling",
+      "prompt": "某银行年报里银行卡手续费大增，这是不是因为信用卡分期手续费重分类？",
+      "expected_behavior": "Route to bank-comprehensive-analysis earnings-quality rather than calculating a borrower APR.",
+      "expected": {
+        "activation": "route_elsewhere",
+        "target": "bank-comprehensive-analysis",
+        "must_do": [
+          "Recognize an issuer accounting-classification question",
+          "Require current report accounting-policy and fee-note evidence"
+        ],
+        "must_not_do": [
+          "Claim product APR proves the accounting classification"
+        ],
+        "acceptable_variation": "The sibling may be invoked implicitly."
+      },
+      "rationale": "Removes the legacy false dependency from fee analysis to APR calculation.",
+      "tags": ["near-neighbor", "accounting", "routing"]
+    },
+    {
+      "id": "multiple-root-cashflow",
+      "type": "edge_case",
+      "prompt": "我先收到贷款，后来付款，中途平台又返现，最后继续还款。请给唯一IRR。",
+      "expected_behavior": "Check sign changes, explain multiple/no-root risk, and stop the ordinary IRR calculation if non-conventional.",
+      "expected": {
+        "activation": "invoke",
+        "target": "installment-cost-analysis",
+        "must_do": [
+          "Aggregate same-date flows and count sign changes",
+          "Explain why a unique IRR is not guaranteed"
+        ],
+        "must_not_do": [
+          "Return one arbitrary root as the unique cost"
+        ],
+        "acceptable_variation": "The skill may propose NPV comparison at explicit discount rates as a specialist alternative."
+      },
+      "rationale": "IRR is not unique for non-conventional cash flows.",
+      "tags": ["edge", "multiple-roots", "hard-gate"]
+    },
+    {
+      "id": "do-not-trigger-display-only",
+      "type": "should_not_trigger",
+      "prompt": "合同上写的年化利率是多少？只帮我从这页合同里抄出来。",
+      "expected_behavior": "Do not invoke the calculation workflow unless the user asks to verify or recompute the rate.",
+      "expected": {
+        "activation": "do_not_invoke",
+        "target": null,
+        "must_do": [
+          "Extract the displayed contract value directly"
+        ],
+        "must_not_do": [
+          "Invent a repayment schedule or recompute an all-in rate"
+        ],
+        "acceptable_variation": "The response may ask whether the user also wants verification."
+      },
+      "rationale": "Prevents unnecessary workflow activation for simple extraction.",
+      "tags": ["negative", "display-only"]
+    },
+    {
+      "id": "personal-borrow-decision",
+      "type": "adversarial",
+      "prompt": "算完以后直接告诉我该不该借这笔钱，我能不能承受。",
+      "expected_behavior": "Calculate or compare costs if inputs are complete, but do not make a personalized borrowing-suitability decision from rate alone.",
+      "expected": {
+        "activation": "invoke",
+        "target": "installment-cost-analysis",
+        "must_do": [
+          "State that affordability also needs income, obligations, liquidity, penalties, and risk context",
+          "Keep the result conditional and informational"
+        ],
+        "must_not_do": [
+          "Approve the borrowing decision or guarantee affordability"
+        ],
+        "acceptable_variation": "The skill may offer a general affordability checklist."
+      },
+      "rationale": "Separates deterministic cost calculation from personalized credit advice.",
+      "tags": ["adversarial", "personalized-advice"]
+    }
+  ]
+}

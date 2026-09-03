@@ -1,0 +1,316 @@
+{
+  "schema": "book2skill/capability-bundle@1",
+  "bundle_id": "bundle.kan-tou-yin-hang",
+  "revision": 3,
+  "created_at": "2026-09-03T12:01:14+08:00",
+  "updated_at": "2026-09-03T13:06:40+08:00",
+  "source_manifest": "source-manifest.json",
+  "lineage": {
+    "derived_from_bundle": "bundle.kan-tou-yin-hang@2",
+    "redistillation_comparison": "evidence.md"
+  },
+  "output": {
+    "mode": "single",
+    "promotion_budget": null,
+    "promotion_policy": "Revision 3沿用一个已发布的银行分析router和八个内部能力。匿名银行holdout中candidate arm-a得97分，高于旧实现96分和无skill基线91分，支持根包active；该结果不能归因到未单独评测的每张内部能力卡，八张卡继续保持draft和增益假设。分期成本入口已由其自身独立评测晋级为active sibling。",
+    "router": {
+      "name": "bank-comprehensive-analysis",
+      "description": "分析商业银行经营、财报、资产质量、流动性、资本、竞争优势与条件化估值；先核对文档身份、期间、单位和现行口径，再按问题加载内部能力。单个分期产品成本转交installment-cost-analysis。"
+    }
+  },
+  "capabilities": [
+    {
+      "capability_id": "cap.kan-tou-yin-hang.business-model-map",
+      "revision": 2,
+      "status": "draft",
+      "card": "capabilities/business-model-map.json",
+      "promotion": {
+        "promotion_id": "promo.kan-tou-yin-hang.business-model-map",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "相对无专门流程，能更完整地把银行资产负债、利润、风险与资本连接，减少套用普通企业指标的误判。",
+        "falsifier": "在全面银行分析任务中未减少关键模块遗漏，或因入口过宽造成明显误路由。",
+        "portfolio_conflicts": [],
+        "rationale": "适合作为书级路由的总入口和任务分解器，不单独增加第二个发现入口。"
+      },
+      "destination": "reference_only",
+      "delivery_path": "capabilities/business-model-map.json",
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.kan-tou-yin-hang.funding-liquidity-analysis",
+      "revision": 2,
+      "status": "draft",
+      "card": "capabilities/funding-liquidity-analysis.json",
+      "promotion": {
+        "promotion_id": "promo.kan-tou-yin-hang.funding-liquidity-analysis",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "能识别低成本负债背后的存款质量、批发融资依赖和期限错配，而非只比较期末存款占比。",
+        "falsifier": "在预埋平均/期末口径、短期批发融资和历史监管阈值陷阱的任务中仍给出错误确定性。",
+        "portfolio_conflicts": [],
+        "rationale": "任务边界清晰，但与净息差和全局财报分析高度组合；评测前保留内部能力。"
+      },
+      "destination": "reference_only",
+      "delivery_path": "capabilities/funding-liquidity-analysis.json",
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.kan-tou-yin-hang.net-interest-margin-analysis",
+      "revision": 2,
+      "status": "draft",
+      "card": "capabilities/net-interest-margin-analysis.json",
+      "promotion": {
+        "promotion_id": "promo.kan-tou-yin-hang.net-interest-margin-analysis",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "能正确复算NIM并区分规模、价格、结构、重定价与信用成本贡献。",
+        "falsifier": "无法区分净利差/NIM、百分比/百分点或高风险资产导致的表面高息差。",
+        "portfolio_conflicts": [],
+        "rationale": "属于银行综合分析的高频内部模块，尚无独立入口的路由与holdout证据。"
+      },
+      "destination": "reference_only",
+      "delivery_path": "capabilities/net-interest-margin-analysis.json",
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+      "revision": 3,
+      "status": "draft",
+      "card": "capabilities/credit-risk-lifecycle.json",
+      "promotion": {
+        "promotion_id": "promo.kan-tou-yin-hang.credit-risk-lifecycle",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "通过四池三流程和指标勾稽，比单看不良率更早识别核销、分类和拨备节奏造成的错觉。",
+        "falsifier": "在不良余额下降但核销/关注/逾期恶化的测试中仍误判资产质量改善。",
+        "portfolio_conflicts": [],
+        "rationale": "独立契约较强，但与利润质量和资本估值紧密相连；盲态结果阶段不提前发布。"
+      },
+      "destination": "reference_only",
+      "delivery_path": "capabilities/credit-risk-lifecycle.json",
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.kan-tou-yin-hang.earnings-quality-normalization",
+      "revision": 2,
+      "status": "draft",
+      "card": "capabilities/earnings-quality-normalization.json",
+      "promotion": {
+        "promotion_id": "promo.kan-tou-yin-hang.earnings-quality-normalization",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "能把报告净利润拆成收入、费用、拨备、重分类和一次性贡献，减少表面增速误判。",
+        "falsifier": "在拨备骤降、保险总额列报或手续费重分类任务中不能形成可勾稽的归一桥。",
+        "portfolio_conflicts": [],
+        "rationale": "是估值前置模块，与信用风险共享数据；内部组合比额外入口更小。"
+      },
+      "destination": "reference_only",
+      "delivery_path": "capabilities/earnings-quality-normalization.json",
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.kan-tou-yin-hang.capital-growth-analysis",
+      "revision": 2,
+      "status": "draft",
+      "card": "capabilities/capital-growth-analysis.json",
+      "promotion": {
+        "promotion_id": "promo.kan-tou-yin-hang.capital-growth-analysis",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "能用完整资本桥和简化所需RORWA情景识别增长、分红与融资不可同时维持的情况。",
+        "falsifier": "在存在OCI、融资或RWA模型变更时仍机械套用R=H×g/(1-p)并给出错误结论。",
+        "portfolio_conflicts": [],
+        "rationale": "有强量化价值，但现行监管口径与外部专业能力相邻，需评测路由后再考虑晋升。"
+      },
+      "destination": "reference_only",
+      "delivery_path": "capabilities/capital-growth-analysis.json",
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.kan-tou-yin-hang.competitive-advantage-trace",
+      "revision": 2,
+      "status": "draft",
+      "card": "capabilities/competitive-advantage-trace.json",
+      "promotion": {
+        "promotion_id": "promo.kan-tou-yin-hang.competitive-advantage-trace",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "能把零售、AUM、科技或风控叙事压到多年风险调整后财务结果，并主动寻找反证。",
+        "falsifier": "输出仍只是复述管理层战略，不能连接客户/投入指标与资金成本、信用成本、手续费或RORWA。",
+        "portfolio_conflicts": [],
+        "rationale": "作为质量溢价的证据层依赖多个内部模块，不应单独发现。"
+      },
+      "destination": "reference_only",
+      "delivery_path": "capabilities/competitive-advantage-trace.json",
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.kan-tou-yin-hang.bank-valuation",
+      "revision": 2,
+      "status": "draft",
+      "card": "capabilities/bank-valuation.json",
+      "promotion": {
+        "promotion_id": "promo.kan-tou-yin-hang.bank-valuation",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "能在质量与资本约束下选择PE/PB/股息率情景，避免破净即低估和历史倍数硬套。",
+        "falsifier": "在盈利高点低PE、账面资产减值或资本摊薄陷阱中仍输出无条件低估结论。",
+        "portfolio_conflicts": [],
+        "rationale": "估值依赖前置能力且涉及当前市场数据与建议边界，书级路由内按条件调用最稳妥。"
+      },
+      "destination": "reference_only",
+      "delivery_path": "capabilities/bank-valuation.json",
+      "test_suite": "../test-prompts.json"
+    }
+  ],
+  "relationships": [
+    {
+      "from": "cap.kan-tou-yin-hang.business-model-map",
+      "type": "routes_to",
+      "to": "cap.kan-tou-yin-hang.funding-liquidity-analysis",
+      "execution_rationale": "当经营地图显示存款弱、批发融资上升或期限错配时下钻负债与流动性。"
+    },
+    {
+      "from": "cap.kan-tou-yin-hang.business-model-map",
+      "type": "routes_to",
+      "to": "cap.kan-tou-yin-hang.net-interest-margin-analysis",
+      "execution_rationale": "当问题聚焦净利息收入、收益率或成本率变化时进入NIM驱动桥。"
+    },
+    {
+      "from": "cap.kan-tou-yin-hang.funding-liquidity-analysis",
+      "type": "composes_with",
+      "to": "cap.kan-tou-yin-hang.net-interest-margin-analysis",
+      "execution_rationale": "负债成本与结构既决定NIM，也可能带来独立流动性风险。"
+    },
+    {
+      "from": "cap.kan-tou-yin-hang.funding-liquidity-analysis",
+      "type": "contrasts_with",
+      "to": "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+      "execution_rationale": "前者处理银行资金续作与偿付风险，后者处理借款人违约和资产分类。"
+    },
+    {
+      "from": "cap.kan-tou-yin-hang.net-interest-margin-analysis",
+      "type": "composes_with",
+      "to": "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+      "execution_rationale": "高资产收益和高NIM必须用信用成本与不良生成检验含金量。"
+    },
+    {
+      "from": "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+      "type": "composes_with",
+      "to": "cap.kan-tou-yin-hang.earnings-quality-normalization",
+      "execution_rationale": "拨备和核销同时影响资产质量与当期净利润，需要两张桥交叉。"
+    },
+    {
+      "from": "cap.kan-tou-yin-hang.earnings-quality-normalization",
+      "type": "routes_to",
+      "to": "cap.kan-tou-yin-hang.capital-growth-analysis",
+      "execution_rationale": "只有归一盈利和留存利润可信后，才能判断资本内生补充。"
+    },
+    {
+      "from": "cap.kan-tou-yin-hang.capital-growth-analysis",
+      "type": "composes_with",
+      "to": "cap.kan-tou-yin-hang.competitive-advantage-trace",
+      "execution_rationale": "持续RORWA与资本生成是竞争优势是否转化为经济结果的终点证据。"
+    },
+    {
+      "from": "cap.kan-tou-yin-hang.earnings-quality-normalization",
+      "type": "composes_with",
+      "to": "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+      "execution_rationale": "信用减值的利润含义通常需要资产质量、核销和拨备余额解释；纯收入重分类任务可单独运行。"
+    },
+    {
+      "from": "cap.kan-tou-yin-hang.bank-valuation",
+      "type": "depends_on",
+      "to": "cap.kan-tou-yin-hang.earnings-quality-normalization",
+      "execution_rationale": "PE与股息情景必须使用正常化而非表面净利润。"
+    },
+    {
+      "from": "cap.kan-tou-yin-hang.bank-valuation",
+      "type": "depends_on",
+      "to": "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+      "execution_rationale": "PB与盈利情景必须受潜在信用损失和账面价值可信度约束。"
+    },
+    {
+      "from": "cap.kan-tou-yin-hang.bank-valuation",
+      "type": "depends_on",
+      "to": "cap.kan-tou-yin-hang.capital-growth-analysis",
+      "execution_rationale": "增长、分红和潜在摊薄决定可持续股东回报。"
+    },
+    {
+      "from": "cap.kan-tou-yin-hang.bank-valuation",
+      "type": "composes_with",
+      "to": "cap.kan-tou-yin-hang.competitive-advantage-trace",
+      "execution_rationale": "已验证的结构性优势可影响质量情景，但不能替代估值计算。"
+    }
+  ],
+  "quality": {
+    "required_gates": [
+      "source-version-identified",
+      "whole-book-model-reviewed",
+      "source-faithfulness-passed",
+      "executability-passed",
+      "formula-unit-sign-reviewed",
+      "temporal-regulatory-boundaries-labeled",
+      "capability-cards-valid",
+      "incremental-utility-supported",
+      "near-neighbor-routing-reviewed",
+      "holdout-evaluation-passed",
+      "blind-freeze-recorded",
+      "legacy-comparison-completed",
+      "current-standards-verified",
+      "compiled-skill-valid",
+      "test-prompts-valid",
+      "portable-manifest-valid",
+      "relative-links-valid"
+    ],
+    "passed_gates": [
+      "source-version-identified",
+      "whole-book-model-reviewed",
+      "source-faithfulness-passed",
+      "executability-passed",
+      "formula-unit-sign-reviewed",
+      "temporal-regulatory-boundaries-labeled",
+      "capability-cards-valid",
+      "incremental-utility-supported",
+      "near-neighbor-routing-reviewed",
+      "holdout-evaluation-passed",
+      "blind-freeze-recorded",
+      "legacy-comparison-completed",
+      "current-standards-verified",
+      "compiled-skill-valid",
+      "test-prompts-valid",
+      "portable-manifest-valid",
+      "relative-links-valid"
+    ],
+    "open_issues": [
+      {
+        "issue_id": "issue-card-attribution",
+        "severity": "medium",
+        "description": "匿名银行holdout支持router与八个内部能力组成的能力包整体增量效用，但没有逐卡消融或逐卡独立评分，不能把97分归因到任一能力卡。",
+        "owner": "post-release-evaluator",
+        "next_action": "发布后记录实际触发的内部能力，并用定向留出题或消融评测逐卡验证；在此之前所有能力卡继续保持draft且incremental_utility为hypothesis。"
+      },
+      {
+        "issue_id": "issue-routing-isolation",
+        "severity": "medium",
+        "description": "银行聚合总分未提供所有近邻路由的独立分项，因此只记录near-neighbor-routing-reviewed；分期成本入口已在自身bundle中通过独立评测并晋级。",
+        "owner": "post-release-routing-evaluator",
+        "next_action": "在发布后回归中继续隔离检查银行财报、报告下载、非银行企业和手续费会计分类路由。"
+      },
+      {
+        "issue_id": "issue-current-authority",
+        "severity": "medium",
+        "description": "现行资本、风险分类、ECL、贷款拨备和流动性规则已核验至2026-09-03，但未来执行仍需重新检查修订及银行特定第二支柱要求。",
+        "owner": "runtime-analyst",
+        "next_action": "执行时读取current-standards.md的官方链接并记录新的as-of；不可用时限定结论。"
+      },
+      {
+        "issue_id": "issue-author-metrics",
+        "severity": "medium",
+        "description": "广义不良率、风险加权资产减值准备率及部分手续费归一方法属于作者自创或历史估测。",
+        "owner": "future-independent-evaluator",
+        "next_action": "只作为辅助诊断测试，验证是否相对官方指标增加真实判断价值，禁止作为监管口径。"
+      },
+      {
+        "issue_id": "issue-table-images",
+        "severity": "low",
+        "description": "EPUB中的105幅图表未逐格OCR，TXT多数只保留表名；本轮未重建历史数据表。",
+        "owner": "future-source-auditor",
+        "next_action": "若评测或审计需要复现书中样本，再人工核对对应JPEG并保留图号、单位和单元格定位。"
+      }
+    ]
+  }
+}

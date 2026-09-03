@@ -1,0 +1,763 @@
+{
+  "schema": "book2skill/test-prompts@1",
+  "suite_id": "eval.insurance-comprehensive-analysis.revision-7",
+  "skill": "insurance-comprehensive-analysis",
+  "version": "7.0.0",
+  "source_book": "读懂保险股——东先生；合并现行官方会计、偿付能力和利润分配规则",
+  "dataset_role": "dev_regression",
+  "holdout_policy": "本集吸收截至第6版的已解盲聚合评测失败，只能用于开发回归，不属于未见测试。第7版发布使用的独立聚合结果另见references/release-evaluation.md；未来revision仍须使用新的隔离留出。",
+  "capability_id": "cap.insurance-analysis.router",
+  "capability_revision": 7,
+  "bundle": "references/capability-bundle.json",
+  "darwin_compatible": false,
+  "darwin_compatibility_note": "本可见套件包含搜索完备性、口径标签、排序和停止条件，但不生成第7版发布分数；独立聚合结果单独记录。",
+  "evaluation": {
+    "minimum_pass_rate": null,
+    "release_threshold_rationale": "综合金融集团归属、寿险三桥、成本法宣告确认、年度资金流入证据强度、当前结论证伪和第6版全部硬门均属关键门。",
+    "judge_instruction": "检查首表是否并列业务净利润与集团归属贡献，寿险三条桥是否分别闭合，年度可动用资金表是否保持恰当证据强度，各表差异是否保持未归属/跨口径，证伪点是否直接挑战当前结论；同时保留第6版全部硬门。",
+    "hard_gates": [
+      "宣布整份报告未披露前扫描集团摘要、资本管理、主要子公司章节、母公司单体报表、投资收益、关联方交易、应收股利和利润分配附注",
+      "区分未在摘要披露、未在当前章节披露和整份报告未找到",
+      "综合金融集团首表使用现成勾稽并列业务净利润、集团归属贡献、少数股东和合并抵销",
+      "资本表优先列主要保险子公司核心和综合偿付能力率、评级、时点、门槛和来源",
+      "集团偿付能力率不得替代保险子公司个体比率",
+      "分红链把母公司股利收入合计与关联方主要子公司逐家确认明细交叉勾稽",
+      "明确区分合计确认金额可得、主要子公司确认明细可得和逐家宣告支付到账证据不可得",
+      "成本法会计政策只建立宣告确认节点，不替代逐家宣告决议",
+      "年度可动用资金表所列子公司分红流入不得称逐笔银行到账",
+      "年度资金流入与现金流、投资收益或EV差异列未归属或跨口径，不猜来源",
+      "股利合计与逐家明细差额只列未归属项，无证据不得全部归为结构化主体",
+      "母公司分红表列现金流旁证、应收股利、停止层级、母公司净利润、未分配利润、现金和法定顺序",
+      "静态分红覆盖只能标压力提示，不得冒充完整法定可分配能力",
+      "混合税前项目、所得税和少数股东的桥使用税前利润至归母利润同比勾稽桥标题",
+      "没有逐项税后证据时不得称各税前项目为税后归母贡献",
+      "保险服务结果和利润桥按绝对变化额从大到小排序",
+      "显式检查CSM释放、非金融风险调整、亏损部分、服务经验、保险财务、投资买卖和公允价值、税及一次性事项",
+      "不得用CSM释放概括保险服务利润变化或用投资单项替代正式主因",
+      "寿险服务内部桥有可复算数据时量化，只有结果层时不得用概念清单冒充桥",
+      "寿险服务三桶、营运利润至净利润和CSM余额三条桥分别闭合且不得混加",
+      "不得臆造未披露EV、CSM或剩余边际、摊销、久期、持偿成本或营运利润分项",
+      "偿付能力同时检查核心、综合和风险评级",
+      "估值不得使用外生倍数生成情景价格",
+      "紧凑请求限一行身份、三条结论、最多两表和三个证伪点，连续追问避免重复",
+      "三个证伪点直接挑战当前核心结论，不得用未来重述或新增披露充数",
+      "删除非任务核心的评级搜索和机械现金余量等弱静态相减",
+      "未经授权不得写文件、交易或发布"
+    ]
+  },
+  "test_cases": [
+    {
+      "id": "solvency-late-report-search",
+      "type": "adversarial",
+      "prompt": "年报摘要只写集团综合/核心偿付能力249.9%/201.3%，第258页资本管理却列财险232.4%/213.4%、寿险201.9%/134.0%、健康险267.5%/140.9%，主要子公司评级均A及以上。请紧凑评估资本安全，能否说子公司具体比率未披露？",
+      "expected_behavior": "必须使用报告后部个体数据，不能把摘要未列误报为整份年报未披露。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "先列财险、寿险、健康险个体核心和综合比率，再列集团",
+          "记录评级A及以上、报告时点和核心50%综合100%评级B及以上门槛",
+          "引用第258页资本管理或等价精确定位",
+          "明确摘要未列不等于整份报告未披露"
+        ],
+        "must_not_do": [
+          "声称主要子公司具体偿付率未披露",
+          "用集团249.9%和201.3%替代个体比率"
+        ],
+        "acceptable_variation": "表格顺序可在三个子公司之间调整，但子公司必须整体先于集团。"
+      },
+      "rationale": "回归第4版在报告后部存在数据时误报缺失的核心失败。",
+      "tags": ["全文搜索", "偿付能力", "子公司", "硬门"]
+    },
+    {
+      "id": "disclosure-levels",
+      "type": "edge_case",
+      "prompt": "我只给你年报前20页摘要，里面没有母公司子公司分红收入。请直接写整份年报未披露。",
+      "expected_behavior": "拒绝把节选缺失外推为整份报告缺失，并说明下一步检查范围。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "表述为未在所给摘要披露",
+          "要求检查母公司单体利润表和投资收益附注",
+          "说明完成全文检索后才能写整份报告未找到"
+        ],
+        "must_not_do": [
+          "写整份年报未披露",
+          "猜测子公司分红金额"
+        ],
+        "acceptable_variation": "可同时列资本管理和主要子公司章节作为待查范围。"
+      },
+      "rationale": "机械区分摘要、当前章节和整份报告的披露层级。",
+      "tags": ["披露层级", "摘要", "缺失输入"]
+    },
+    {
+      "id": "subsidiary-capital-table",
+      "type": "should_trigger",
+      "prompt": "混合保险集团有财险、寿险、健康险三家主要子公司。报告同时给集团和各子公司偿付率、评级与2025年末时点。请设计最紧凑资本表。",
+      "expected_behavior": "表格以受监管保险子公司为主体，保留门槛、评级、时点和来源，集团放在其后。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "列实体、核心率、综合率、评级、时点、门槛和来源列",
+          "主要保险子公司优先于集团",
+          "逐实体判断核心50%综合100%评级B及以上",
+          "提示个体资本约束子公司上划分红"
+        ],
+        "must_not_do": [
+          "只列集团一行",
+          "把集团评级或比率复制到子公司"
+        ],
+        "acceptable_variation": "可加最低资本或监管措施列。"
+      },
+      "rationale": "验证资本表结构而不依赖特定公司数字。",
+      "tags": ["资本表", "子公司", "评级", "时点"]
+    },
+    {
+      "id": "parent-subsidiary-dividend-income",
+      "type": "should_trigger",
+      "prompt": "年报母公司投资收益附注列子公司分红收入2025年92.10亿元、2024年114.83亿元；母公司净利润90.75/113.80亿元，年末未分配利润71.40亿元、现金及等价物29.05亿元，全年现金股息97.29亿元、拟付末期64.12亿元，本年提取法定盈余公积9.07亿元。请判断分红约束。",
+      "expected_behavior": "重建子公司上划到母公司资源链，计算同比和静态压力指标，同时保留法定与监管边界。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "计算子公司分红收入同比约下降19.8%",
+          "计算母公司净利润同比约下降20.3%",
+          "同时列未分配利润、现金、法定盈余公积和拟付股息",
+          "区分投资收益附注确认收入、子公司批准或支付和母公司现金实际收到",
+          "说明先弥补亏损、提取法定公积，再受章程、决议、子公司资本和监管约束"
+        ],
+        "must_not_do": [
+          "漏掉母公司确认的子公司分红收入",
+          "用集团归母利润直接判断现金分红能力"
+        ],
+        "acceptable_variation": "可复算股息/母公司净利润107.2%和扣公积后119.1%，但必须标为静态压力提示。"
+      },
+      "rationale": "覆盖第4版漏掉母公司子公司分红收入的失败。",
+      "tags": ["母公司", "子公司分红", "投资收益附注", "硬门"]
+    },
+    {
+      "id": "related-party-dividend-detail",
+      "type": "adversarial",
+      "prompt": "母公司投资收益附注列‘子公司及合并范围内结构化主体股利收入’10,624/9,284；关联方交易附注另列太保寿险6,869/6,869、太保产险3,144/1,965、太保资产382/369、太保科技24/11、太保不动产18/49。能否说年报没有主要子公司逐家股利金额？",
+      "expected_behavior": "识别关联方表已有主要子公司逐家确认明细，与投资收益合计交叉勾稽，但不升级为逐家支付或到账。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "复算五家主要子公司确认明细合计为10,437/9,263",
+          "分别标投资收益附注合计确认金额可得和关联方主要子公司确认明细可得",
+          "保留各表范围、单位、本期上期和页码或表名",
+          "说明逐家宣告日期、支付和到账仍需单独证据"
+        ],
+        "must_not_do": [
+          "声称年报没有主要子公司逐家确认金额",
+          "把关联方股利收入明细直接称为逐家现金到账"
+        ],
+        "acceptable_variation": "可以合并列一张母公司分红表，但总额和逐家明细必须分层。"
+      },
+      "rationale": "回归第5版漏查关联方逐家股利收入明细的主要失败。",
+      "tags": ["关联方", "股利收入", "逐家明细", "全文搜索", "硬门"]
+    },
+    {
+      "id": "unreconciled-dividend-residual",
+      "type": "adversarial",
+      "prompt": "投资收益附注股利合计10,624/9,284，关联方表主要子公司合计10,437/9,263，差额187/21。请直接把差额全部归为合并范围内结构化主体。",
+      "expected_behavior": "复算差额并保持未归属，只列报告标签允许的候选来源，不强制归类。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "复算本期和上期差额为187和21",
+          "把差额标为未归属项",
+          "列可能来自结构化主体、未在关联方表单列的其他子公司或口径差异",
+          "说明需要进一步附注明细才能归类"
+        ],
+        "must_not_do": [
+          "把187和21全部断言为结构化主体",
+          "把差额分摊给已列五家主要子公司"
+        ],
+        "acceptable_variation": "候选顺序可以不同，但必须使用可能或未归属等审慎措辞。"
+      },
+      "rationale": "防止对两表差额作无证据强制归类。",
+      "tags": ["未归属差额", "结构化主体", "口径差异", "硬门"]
+    },
+    {
+      "id": "recognized-vs-paid",
+      "type": "should_trigger",
+      "prompt": "已知母公司股利收入合计10,624/9,284、主要子公司确认明细10,437/9,263；现金流量表只列‘取得投资收益和利息收入收到的现金’12,789/11,490，年末应收股利1/0。请判断证据最远能到确认、宣告、支付还是到账哪一层。",
+      "expected_behavior": "分别报告确认合计、主要子公司确认明细和逐家宣告/支付/到账缺口，现金流与应收股利只作旁证。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "明确合计确认金额可得",
+          "明确主要子公司确认明细可得",
+          "说明逐家宣告日期或决议、支付和母公司到账证据不可得",
+          "说明12,789/11,490混有利息和其他投资收益，只是现金流旁证",
+          "说明应收股利1/0不能单独证明其余金额全部到账"
+        ],
+        "must_not_do": [
+          "把确认金额直接等同当期现金收到",
+          "因支付到账证据缺失而反称逐家确认明细缺失",
+          "用低应收余额证明全额收现"
+        ],
+        "acceptable_variation": "若报告另有逐家宣告或支付公告，可把相应主体推进到该层，但不得一概外推。"
+      },
+      "rationale": "验证确认、宣告、支付和到账的停止层级。",
+      "tags": ["会计确认", "支付", "现金到账", "应收股利", "硬门"]
+    },
+    {
+      "id": "declaration-recognition-policy",
+      "type": "adversarial",
+      "prompt": "母公司成本法会计政策规定按享有被投资单位宣告分派的现金股利或利润确认投资收益；年度可动用资金表另列子公司分红流入53,022，现金流量表取得投资收益收到的现金54,591，母公司投资收益30,735；EV口径寿健分红39,331，而资金表对应寿险和健康险为39,318。能否把53,022称为八家子公司逐笔银行到账并补出差额来源？",
+      "expected_behavior": "用成本法政策建立一般宣告确认节点，把53,022限定为年度可动用资金表所列流入，不升级为逐笔到账或逐家宣告决议。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "说明成本法政策支持一般宣告分派时确认投资收益",
+          "说明政策不能替代八家子公司的逐家宣告日期或决议",
+          "把53,022称为年度可动用资金表所列子公司分红流入",
+          "说明该表不是逐笔银行回单",
+          "把54,591与53,022的1,569差额列为未归属现金流差额",
+          "把53,022与30,735的22,287列为权责发生制与现金流的跨口径差额",
+          "把39,331与39,318的13列为EV与年度资金表跨口径差额"
+        ],
+        "must_not_do": [
+          "把53,022称为已核对逐笔银行到账",
+          "从会计政策补造逐家宣告日",
+          "猜测1,569、22,287或13的具体来源"
+        ],
+        "acceptable_variation": "可说明年度资金表的证据强于损益确认、但弱于逐笔银行凭证。"
+      },
+      "rationale": "覆盖成本法宣告确认节点和年度可动用资金表的固定证据强度。",
+      "tags": ["成本法", "宣告确认", "可动用资金", "证据强度", "硬门"]
+    },
+    {
+      "id": "life-service-evidence-level",
+      "type": "edge_case",
+      "prompt": "年报只披露寿险保险服务业绩及其他同比增长1.8%、服务收入和费用，以及CSM摊销增加408；没有同口径风险调整、亏损部分和经验差异变动表。请完整量化寿险服务内部桥。",
+      "expected_behavior": "明确只能分析到结果层，CSM摊销是局部事实；不以概念清单或假设数完成内部桥。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "列已披露的服务结果、收入、费用和CSM局部事实",
+          "明确缺少风险调整、亏损部分和经验差异的同口径量化桥",
+          "把结论停在结果层并列未解释差额或补充数据",
+          "说明只有报告提供可复算变动表时才量化完整桥"
+        ],
+        "must_not_do": [
+          "把CSM增加408概括为寿险服务质量改善的全部原因",
+          "用概念清单冒充已完成的量化桥",
+          "按历史比例补造缺失项目"
+        ],
+        "acceptable_variation": "可以给方向性候选原因，但必须标为待证，不得写成桥表事实。"
+      },
+      "rationale": "覆盖第5版寿险服务内部驱动只有概念提示、缺少证据层级的问题。",
+      "tags": ["寿险", "保险服务", "证据层级", "停止条件"]
+    },
+    {
+      "id": "static-coverage-pressure-only",
+      "type": "adversarial",
+      "prompt": "全年股息97.29亿元，母公司净利润90.75亿元、未分配利润71.40亿元、现金29.05亿元。算几个覆盖率就能证明法定可分配能力完整充足，对吗？",
+      "expected_behavior": "只选与结论直接相关的一至两个覆盖指标并标静态压力提示，不堆叠弱比率或机械余量。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "把股息/净利润、股息/未分配利润或现金覆盖标为静态压力提示",
+          "检查弥补亏损、公积、章程和股东会决议",
+          "检查现金受限、债务、子公司实际上划和监管资本",
+          "说明这些静态比率不是可持续派息上限",
+          "优先保留信息覆盖率最高的一至两个指标"
+        ],
+        "must_not_do": [
+          "称覆盖率证明完整法定能力",
+          "承诺未来分红增长",
+          "把现金或资金流入减股息后的机械余额称为可自由支配余量"
+        ],
+        "acceptable_variation": "可指出现金和股息时点不同。"
+      },
+      "rationale": "防止把静态覆盖冒充完整法定可分配能力。",
+      "tags": ["分红", "静态压力", "法定能力", "对抗"]
+    },
+    {
+      "id": "bridge-title-scope",
+      "type": "should_trigger",
+      "prompt": "同比变化包括：投资收益及公允价值+121.67、信用减值-29.29、保险财务损益-27.22、所得税费用减少+13.25、少数股东损益增加-14.36，最终归母净利润+37.77。请把它们放一张桥表。",
+      "expected_behavior": "使用跨层级勾稽标题，标出税前、税后和归母层级，不把税前行伪装成税后归母贡献。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "标题使用税前利润至归母利润同比勾稽桥",
+          "先由税前项目勾稽至税前利润变化",
+          "再加所得税变化勾稽至净利润变化",
+          "再减少数股东损益变化勾稽至归母变化"
+        ],
+        "must_not_do": [
+          "把表命名为各项对归母利润的税后贡献",
+          "声称121.67是已精确税后归母贡献"
+        ],
+        "acceptable_variation": "可在一张表中用层级小计分隔，也可分三段但仍只算一张核心表。"
+      },
+      "rationale": "直接回归第4版桥表标题和口径失真。",
+      "tags": ["利润桥", "税前", "所得税", "少数股东", "硬门"]
+    },
+    {
+      "id": "no-after-tax-allocation",
+      "type": "edge_case",
+      "prompt": "报告只有税前利润表行、总所得税和少数股东损益，没有每个驱动的税率或归属。请给每一行精确税后归母贡献。",
+      "expected_behavior": "拒绝逐项分配，只给跨层级勾稽和未作逐项税后归因的声明。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "说明缺逐项税率和归属信息",
+          "明确未作逐项税后归因",
+          "保留税前小计、税变化、净利润和少数股东到归母的勾稽"
+        ],
+        "must_not_do": [
+          "按统一税率机械分摊",
+          "把税前行称税后归母贡献"
+        ],
+        "acceptable_variation": "用户明确提供税务和归属数据时可另建税后桥。"
+      },
+      "rationale": "验证无法逐项税后归因时明确不做。",
+      "tags": ["税后归因", "缺失输入", "口径"]
+    },
+    {
+      "id": "long-contract-absolute-bridge",
+      "type": "should_trigger",
+      "prompt": "长期合同服务结果同比-97.84亿元，驱动为亏损部分-70.11、过去服务履约现金流-41.79、CSM释放+30.79、当期服务经验-18.54、非金融风险调整+1.81。请重建主因。",
+      "expected_behavior": "按绝对变化排序并完整勾稽，不能因CSM释放增加就称服务利润改善。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "按70.11、41.79、30.79、18.54、1.81排序",
+          "复算合计为负97.84亿元",
+          "指出亏损部分和过去服务变化是最大拖累",
+          "区分CSM释放与完整服务结果"
+        ],
+        "must_not_do": [
+          "按故事顺序忽略绝对变化排序",
+          "把CSM增加写成全部服务利润改善"
+        ],
+        "acceptable_variation": "可将当期经验进一步拆分，但原合计必须勾稽。"
+      },
+      "rationale": "保留第4版最强的长期合同内部桥。",
+      "tags": ["长期合同", "CSM", "绝对变化", "计算", "硬门"]
+    },
+    {
+      "id": "service-result-two-level-bridge",
+      "type": "should_trigger",
+      "prompt": "集团保险服务结果同比桥为：非保费分配法长期合同-97.84亿元、保费分配法+84.59亿元、分出再保险净影响+10.91亿元；长期合同内部另有五项明细。请紧凑展示。",
+      "expected_behavior": "先复算集团总桥为-2.34亿元，再单独展示长期合同内部桥，不把两个层级重复相加。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "按绝对变化97.84、84.59、10.91排序集团总桥",
+          "复算负97.84加84.59加10.91等于负2.34",
+          "把长期合同内部五项标成负97.84的拆分",
+          "明确两个层级不重复相加"
+        ],
+        "must_not_do": [
+          "把长期合同明细再次加到集团负2.34上",
+          "用CSM单项替代长期合同内部桥"
+        ],
+        "acceptable_variation": "可在同一张表中用层级列，也可用上下两个小表。"
+      },
+      "rationale": "保留第4版集团总桥与长期合同内部桥的双层勾稽。",
+      "tags": ["保险服务结果", "双层桥", "勾稽", "硬门"]
+    },
+    {
+      "id": "three-separate-life-bridges",
+      "type": "should_trigger",
+      "prompt": "寿险及健康险披露：CSM摊销68,187、非金融风险调整变动6,486、营运偏差及其他9,362；投资服务业绩27,301、所得税-8,071、短期投资波动9,064、一次性项目0；期初CSM731,312、新业务36,688、预期利息22,801、估计变更2,505。请重建三条桥。",
+      "expected_behavior": "分别闭合保险服务结果、税前营运利润至净利润、CSM期初至期末三条桥，明确彼此不可混加。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "复算68,187加6,486加9,362等于保险服务结果84,035",
+          "复算84,035加27,301等于税前营运利润111,336",
+          "复算111,336减8,071等于营运利润103,265，再加9,064和0等于净利润112,329",
+          "复算731,312加36,688加22,801加2,505减68,187等于期末CSM725,119",
+          "说明三条桥分别回答服务、管理利润和CSM存量，不能横向相加"
+        ],
+        "must_not_do": [
+          "把期末CSM725,119加到净利润桥",
+          "把营运偏差及其他擅自拆成未披露的亏损或经验项目",
+          "把寿险业务净利润自动当集团归母贡献"
+        ],
+        "acceptable_variation": "可用一张分层表展示，但必须有三个独立小计和口径标签。"
+      },
+      "rationale": "回归第6版未把三条现成寿险桥集中闭合的问题。",
+      "tags": ["寿险", "保险服务三桶", "营运利润", "CSM余额", "硬门"]
+    },
+    {
+      "id": "csm-not-service-summary",
+      "type": "adversarial",
+      "prompt": "CSM当期释放同比增加15%，所以保险服务利润一定增长，对吗？不用看其他项目。",
+      "expected_behavior": "拒绝单项概括，要求风险调整、亏损部分、服务经验、过去服务和再保险等项目。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "说明CSM释放只是服务结果组成项",
+          "列出风险调整、亏损部分和服务经验等必查项",
+          "要求完整同比桥并按绝对变化排序"
+        ],
+        "must_not_do": [
+          "断言服务利润一定增长",
+          "把CSM余额桥当保险服务结果桥"
+        ],
+        "acceptable_variation": "可给其他项目抵消的简短反例。"
+      },
+      "rationale": "保持CSM不能概括服务利润的硬门。",
+      "tags": ["CSM", "服务结果", "对抗", "硬门"]
+    },
+    {
+      "id": "formal-attribution-profit-bridge",
+      "type": "should_trigger",
+      "prompt": "归母净利润同比减少90亿元。同比驱动：保险服务+15、投资买卖-20、公允价值-40、税+10、会计变动+5、去年处置收益高基数-60。管理层称处置高基数是主因。请复核。",
+      "expected_behavior": "先记录公司归因，再按绝对变化排序复算，并分开一次性和持续经营。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "先引用管理层处置高基数归因",
+          "按60、40、20、15、10、5排序",
+          "复算15-20-40+10+5-60等于负90",
+          "分开一次性处置与持续投资和服务"
+        ],
+        "must_not_do": [
+          "只因公允价值下降就把投资写成唯一主因",
+          "忽略处置高基数"
+        ],
+        "acceptable_variation": "若税前、税和归母混合，还必须使用跨层级勾稽标题。"
+      },
+      "rationale": "保持正式归因优先和绝对变化桥。",
+      "tags": ["正式归因", "利润桥", "一次性", "排序"]
+    },
+    {
+      "id": "compact-followup-no-repeat",
+      "type": "should_trigger",
+      "prompt": "任务一已经用两张表给了利润和资本分析。任务二只问：为什么集团归母利润、母公司可分配能力、子公司偿付能力不能画等号？继续保持紧凑。",
+      "expected_behavior": "引用任务一数据，只补三层口径与约束，不重复两张表和整段经营结论。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "引用任务一已有数字或表",
+          "解释合并利润、母公司单体资源、子公司监管资本的不同主体和用途",
+          "只补新增边界和缺口",
+          "保持一行身份、三条结论、最多两表和三个证伪点的总限制"
+        ],
+        "must_not_do": [
+          "重复任务一全部表格",
+          "重新展开完整长期合同桥",
+          "写成长篇教科书"
+        ],
+        "acceptable_variation": "任务二可不用新表。"
+      },
+      "rationale": "覆盖第4版任务二重复问题。",
+      "tags": ["紧凑", "追问", "去重复", "硬门"]
+    },
+    {
+      "id": "compact-format-hard-limit",
+      "type": "should_trigger",
+      "prompt": "快速看一下这份保险公司季报，只说重点，务必紧凑。",
+      "expected_behavior": "采用一行身份、三条结论、最多两张核心表和三个证伪点。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "仅一行身份和数据限制",
+          "仅三条主要结论",
+          "核心表不超过两张",
+          "仅三个证伪点"
+        ],
+        "must_not_do": [
+          "展开所有参考模块",
+          "输出长篇苹果树或方法论",
+          "附加未请求的详细全量桥"
+        ],
+        "acceptable_variation": "数据不足时结论或表格可少于上限。"
+      },
+      "rationale": "保持紧凑输出硬门。",
+      "tags": ["紧凑", "格式", "硬门"]
+    },
+    {
+      "id": "current-conclusion-falsifiers",
+      "type": "adversarial",
+      "prompt": "当前结论称：集团各业务利润可直接并入归母、寿健CSM增长、投资回报全面改善、集团资本足以保证分红持续。已知银行业务净利润42,633但集团归属24,711；CSM期初731,312、期末725,119；净投资收益率3.8%降至3.7%，产险综合收益率4.5%降至3.4%；子公司上划仍受个体资本约束。请给恰好三个最强证伪点。",
+      "expected_behavior": "用当前报告内可观察冲突直接推翻核心结论，不用未来重述或新增披露充数。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "只给三个证伪点",
+          "至少用42,633与24,711的归属冲突证伪业务利润直接并入集团归母",
+          "至少用725,119低于731,312证伪CSM余额增长",
+          "第三点使用净与综合投资收益率分化或个体资本和上划约束直接挑战对应结论",
+          "逐点写明被挑战的当前核心结论"
+        ],
+        "must_not_do": [
+          "把未来重述后重算当作证伪点",
+          "把以后若新增披露当作证伪点",
+          "用机械现金余量或无关评级缺失替代当前反例"
+        ],
+        "acceptable_variation": "第三点可选投资分化或资本上划，只要直接对应当前结论。"
+      },
+      "rationale": "回归第6版证伪点偏模型维护条件的问题。",
+      "tags": ["证伪点", "集团归属", "CSM方向", "投资分化", "资本约束"]
+    },
+    {
+      "id": "csm-current-accounting",
+      "type": "should_trigger",
+      "prompt": "CSM是不是旧剩余边际改名，能否当成已赚且未来必分红的利润？",
+      "expected_behavior": "否定简单映射，说明CSM是未来服务尚未赚取利润，并与分红资源分开。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "说明CSM的未来服务属性",
+          "说明未来服务相关变化可调整CSM",
+          "区分CSM、公司管理利润和母公司现金"
+        ],
+        "must_not_do": [
+          "称CSM为旧剩余边际改名",
+          "称CSM为可立即分配利润"
+        ],
+        "acceptable_variation": "可简短回答并引用现行准则。"
+      },
+      "rationale": "保持现行会计硬门。",
+      "tags": ["CSM", "会计", "硬门"]
+    },
+    {
+      "id": "service-revenue-premium",
+      "type": "should_trigger",
+      "prompt": "保费增长18%，保险服务收入增长9%，是不是扩张费用全部首年确认？",
+      "expected_behavior": "区分保费和服务收入，拒绝自动费用前置归因。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "说明保险服务收入排除投资成分",
+          "说明保险获取现金流系统摊销",
+          "读取管理层正式归因并要求服务收入桥"
+        ],
+        "must_not_do": [
+          "用苹果树直接解释当前会计差异",
+          "仅凭增速差认定主因"
+        ],
+        "acceptable_variation": "可列合同组合、服务量和计量模型等备选原因。"
+      },
+      "rationale": "保持保险服务收入硬门。",
+      "tags": ["保险服务收入", "保费", "归因"]
+    },
+    {
+      "id": "missing-ev",
+      "type": "edge_case",
+      "prompt": "一季报只有VNB增长20%，没有EV、敏感性、同日价格和股本。请算当前PEV。",
+      "expected_behavior": "停止精确PEV并要求同口径EV、价格、股本和日期。",
+      "expected": {
+        "activation": "clarify_then_invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "说明VNB不能重建当前EV",
+          "列必要输入",
+          "只给有限VNB事实"
+        ],
+        "must_not_do": [
+          "上年EV加本季VNB",
+          "套固定PEV区间"
+        ],
+        "acceptable_variation": "可给明确标注的方向压力，但不能称报告值。"
+      },
+      "rationale": "保持缺失EV和估值纪律。",
+      "tags": ["EV", "PEV", "缺失输入", "边界"]
+    },
+    {
+      "id": "solvency-three-tests",
+      "type": "should_trigger",
+      "prompt": "核心55%，综合130%，风险评级C，偿付能力达标吗？",
+      "expected_behavior": "认定不达标，因为三项必须同时满足。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "使用核心50%、综合100%、评级B及以上",
+          "指出评级C失败",
+          "提示监管和分红约束"
+        ],
+        "must_not_do": [
+          "只看两个比率",
+          "用120%或150%替代法定条件"
+        ],
+        "acceptable_variation": "可提示继续看流动性和监管措施。"
+      },
+      "rationale": "保持偿付能力三项硬门。",
+      "tags": ["偿付能力", "评级", "硬门"]
+    },
+    {
+      "id": "capital-cost-sign",
+      "type": "should_trigger",
+      "prompt": "调整净资产100，毛有效业务价值60，持偿成本括号(8)，复算寿险EV。",
+      "expected_behavior": "只扣一次得到152，并区分持偿成本和最低资本。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "计算100加60减8等于152",
+          "声明符号约定",
+          "区分最低资本和持偿成本"
+        ],
+        "must_not_do": [
+          "重复扣减",
+          "把最低资本当持偿成本"
+        ],
+        "acceptable_variation": "两种一致符号约定均可。"
+      },
+      "rationale": "保持EV符号硬门。",
+      "tags": ["EV", "持偿成本", "计算", "硬门"]
+    },
+    {
+      "id": "report-anchor-no-price-extension",
+      "type": "adversarial",
+      "prompt": "报告日每股EV是80元，直接乘1.2倍给明年96元目标价并设80元止损。",
+      "expected_behavior": "拒绝价格延伸，只保留报告日EV和对价值锚本身的压力。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "记录报告日EV及来源",
+          "指出1.2倍是外生假设",
+          "仅对价值锚做公司敏感性或明确压力"
+        ],
+        "must_not_do": [
+          "输出96元目标价",
+          "输出80元止损"
+        ],
+        "acceptable_variation": "输入完整时可算同日股价除以每股EV的观测比率。"
+      },
+      "rationale": "保持估值只到报告日锚和压力区间。",
+      "tags": ["估值", "目标价", "交易建议", "硬门"]
+    },
+    {
+      "id": "quarter-return",
+      "type": "edge_case",
+      "prompt": "一季度非年化综合投资收益率0.5%，乘4就是全年2%，可据此判断利差损吗？",
+      "expected_behavior": "只把2%作为简单情景，检查收益定义和负债成本。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "说明路径和季节性",
+          "核对平均资产分母",
+          "要求公司负债成本和ALM证据"
+        ],
+        "must_not_do": [
+          "把2%当全年预测",
+          "用单一结算利率代替整体负债成本"
+        ],
+        "acceptable_variation": "可展示简单算术并标为压力。"
+      },
+      "rationale": "保持投资时间基础和ALM门。",
+      "tags": ["投资", "年化", "ALM", "边界"]
+    },
+    {
+      "id": "mixed-group",
+      "type": "should_trigger",
+      "prompt": "综合保险集团财险占收入八成，另有寿险和健康险。请分析。",
+      "expected_behavior": "先分业，再合并集团投资、资本、内部抵销和少数股东。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "建立分部贡献",
+          "财险使用承保指标",
+          "寿险仅在披露时使用EV、VNB和CSM",
+          "处理内部抵销和少数股东"
+        ],
+        "must_not_do": [
+          "全集团套寿险PEV",
+          "财险套旧剩余边际"
+        ],
+        "acceptable_variation": "可略写不重要分部。"
+      },
+      "rationale": "保持P&C/Life分业。",
+      "tags": ["混合集团", "分业", "路由"]
+    },
+    {
+      "id": "business-vs-attributable-profit",
+      "type": "should_trigger",
+      "prompt": "综合金融集团现成勾稽表列：寿健业务净利润112,329、归属集团108,723、少数股东3,606；产险14,597/14,531/66；银行42,633/24,711/17,922；其他业务及合并抵销净利润-11,333、归属-12,594、少数股东1,261；集团净利润158,301、归母134,778、少数股东23,523。请设计第一张核心表。",
+      "expected_behavior": "首表同时展示业务净利润、集团归属贡献、少数股东及合并抵销，并使用报告正式勾稽闭合集团。",
+      "expected": {
+        "activation": "invoke",
+        "target": "insurance-comprehensive-analysis",
+        "must_do": [
+          "并列业务或分部净利润、归属于集团母公司的贡献和少数股东",
+          "单列其他业务及合并抵销",
+          "列集团净利润158,301、归母134,778和少数股东23,523",
+          "指出银行42,633不能直接作为集团归属贡献，正确值为24,711",
+          "优先使用报告现成勾稽而不是另行分摊"
+        ],
+        "must_not_do": [
+          "把寿健、产险和银行业务净利润机械相加成集团归母",
+          "省略少数股东或合并抵销",
+          "把业务净利润列名为归母贡献"
+        ],
+        "acceptable_variation": "表中可增列营运利润或一次性项目，但核心四类口径必须同时可见。"
+      },
+      "rationale": "覆盖综合金融集团首表没有同时展示业务利润和集团归属贡献的问题。",
+      "tags": ["综合金融集团", "集团归属", "少数股东", "合并抵销", "硬门"]
+    },
+    {
+      "id": "personal-policy-decoy",
+      "type": "should_not_trigger",
+      "prompt": "我35岁有两个孩子，应该买多少重疾险和寿险？",
+      "expected_behavior": "不调用公司基本面分析技能。",
+      "expected": {
+        "activation": "do_not_invoke",
+        "target": null,
+        "must_do": [
+          "识别为个人保障需求"
+        ],
+        "must_not_do": [
+          "使用EV、VNB或公司估值流程"
+        ],
+        "acceptable_variation": "可转个人保险规划。"
+      },
+      "rationale": "负例。",
+      "tags": ["负例", "个人保险"]
+    },
+    {
+      "id": "parse-only-route",
+      "type": "route_to_sibling",
+      "prompt": "只把年报PDF抽成表格和文本，不分析。",
+      "expected_behavior": "路由到financial-pdf-parser。",
+      "expected": {
+        "activation": "route_elsewhere",
+        "target": "financial-pdf-parser",
+        "must_do": [
+          "说明这是文档抽取任务"
+        ],
+        "must_not_do": [
+          "生成保险公司基本面结论"
+        ],
+        "acceptable_variation": "解析后可另行调用分析技能。"
+      },
+      "rationale": "近邻路由负例。",
+      "tags": ["解析", "近邻路由", "负例"]
+    }
+  ]
+}

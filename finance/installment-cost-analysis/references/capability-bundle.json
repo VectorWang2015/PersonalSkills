@@ -1,0 +1,72 @@
+{
+  "schema": "book2skill/capability-bundle@1",
+  "bundle_id": "bundle.installment-cost-analysis",
+  "revision": 2,
+  "created_at": "2026-09-03T12:31:49+08:00",
+  "updated_at": "2026-09-03T15:11:35+08:00",
+  "source_manifest": "source-manifest.json",
+  "lineage": {
+    "derived_from_bundle": null,
+    "redistillation_comparison": "evidence.md"
+  },
+  "output": {
+    "mode": "single",
+    "promotion_budget": 1,
+    "promotion_policy": "Promote as a standalone sibling because product-level installment cash-flow analysis has a distinct user intent, independent inputs/outputs, deterministic implementation, and is not a bank-report subtask.",
+    "router": {
+      "name": "installment-cost-analysis",
+      "description": "Calculate borrower-side all-in installment annualized cost from actual dated cash flows; use IRR/XIRR by default and show the book formula only as a labeled limited simple approximation."
+    }
+  },
+  "capabilities": [
+    {
+      "capability_id": "cap.kan-tou-yin-hang.installment-cost-analysis",
+      "revision": 2,
+      "status": "active",
+      "card": "capability-card.json",
+      "promotion": {
+        "promotion_id": "promo.kan-tou-yin-hang.installment-cost-analysis-r2",
+        "decision": "standalone-skill",
+        "gain_hypothesis": "Compared with surface fee multiplication or the book shortcut alone, IRR/XIRR will correctly include actual proceeds, dates, compounding and all direct fees.",
+        "falsifier": "The skill misroutes bank-statement fee questions, omits direct costs, or produces a different result from independently recomputed cash-flow IRR.",
+        "portfolio_conflicts": [
+          "bank-comprehensive-analysis must redirect product-cost questions and retain accounting-classification questions"
+        ],
+        "rationale": "The legacy capability was unreachable from its router; a separate entrypoint has lower routing ambiguity than broadening the bank-report description."
+      },
+      "destination": "standalone_skill",
+      "delivery_path": "../SKILL.md",
+      "test_suite": "../test-prompts.json"
+    }
+  ],
+  "relationships": [],
+  "quality": {
+    "required_gates": [
+      "source-faithfulness-passed",
+      "formula-unit-sign-reviewed",
+      "current-rate-disclosure-verified",
+      "capability-card-valid",
+      "script-tests-passed",
+      "trigger-routing-passed",
+      "holdout-evaluation-passed",
+      "compiled-skill-valid",
+      "test-prompts-valid",
+      "portable-manifest-valid",
+      "relative-links-valid"
+    ],
+    "passed_gates": [
+      "source-faithfulness-passed",
+      "formula-unit-sign-reviewed",
+      "current-rate-disclosure-verified",
+      "capability-card-valid",
+      "script-tests-passed",
+      "trigger-routing-passed",
+      "holdout-evaluation-passed",
+      "compiled-skill-valid",
+      "test-prompts-valid",
+      "portable-manifest-valid",
+      "relative-links-valid"
+    ],
+    "open_issues": []
+  }
+}

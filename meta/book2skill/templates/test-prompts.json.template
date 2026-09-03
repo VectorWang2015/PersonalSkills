@@ -1,52 +1,143 @@
 {
+  "schema": "book2skill/test-prompts@1",
+  "suite_id": "eval.{{book-slug}}.{{skill-slug}}",
   "skill": "{{skill-slug}}",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "source_book": "{{BOOK_TITLE}} — {{AUTHOR}}",
-  "darwin_compatible": true,
+  "dataset_role": "dev_regression",
+  "holdout_policy": "These cases may guide implementation and therefore are not unseen holdout evidence. Keep formal holdout tasks in the isolated evaluation workspace.",
+  "capability_id": "{{capability-id}}",
+  "capability_revision": 1,
+  "bundle": "{{relative path to frozen capability-bundle.json}}",
+  "darwin_compatible": false,
+  "darwin_compatibility_note": "Set true only after choosing a numeric minimum_pass_rate and confirming the target evaluator accepts the structured extension fields.",
+  "evaluation": {
+    "minimum_pass_rate": null,
+    "release_threshold_rationale": "{{set before running based on task risk, sample size, and failure cost; no universal default}}",
+    "judge_instruction": "Judge intent routing, required actions, boundaries, and outcome quality. Do not require exact wording.",
+    "hard_gates": [
+      "Every negative, sibling-routing, and adversarial boundary case passes",
+      "The response does not invent source claims or citations",
+      "The response stops or asks when a listed boundary is reached"
+    ]
+  },
   "test_cases": [
     {
-      "id": "should-trigger-01",
+      "id": "should-trigger-direct-01",
       "type": "should_trigger",
-      "prompt": "{{用户的典型话语 1 — 正面场景}}",
-      "expected_behavior": "应激活 {{skill-slug}}, 并 {{期望的具体动作}}",
-      "notes": "{{为什么这是正面场景}}"
+      "prompt": "{{直接表达目标、但不提 skill 名称的真实用户请求}}",
+      "expected_behavior": "Invoke {{skill-slug}} and produce {{observable outcome}}.",
+      "expected": {
+        "activation": "invoke",
+        "target": "{{skill-slug}}",
+        "must_do": [
+          "{{关键动作或输出 1}}",
+          "{{关键动作或输出 2}}"
+        ],
+        "must_not_do": [
+          "{{常见误用或越界动作}}"
+        ],
+        "acceptable_variation": "{{允许不同表达或步骤顺序的范围}}"
+      },
+      "rationale": "{{该请求与 capability 的原子问题如何匹配}}",
+      "tags": ["direct-intent", "positive"]
     },
     {
-      "id": "should-trigger-02",
+      "id": "should-trigger-paraphrase-01",
       "type": "should_trigger",
-      "prompt": "{{用户的典型话语 2}}",
-      "expected_behavior": "...",
-      "notes": "..."
+      "prompt": "{{不包含模板关键词、以口语或间接方式表达同一需求的请求}}",
+      "expected_behavior": "Recognize the intent without keyword matching and invoke {{skill-slug}}.",
+      "expected": {
+        "activation": "invoke",
+        "target": "{{skill-slug}}",
+        "must_do": [
+          "{{保持不变的核心执行契约}}"
+        ],
+        "must_not_do": [
+          "{{不应退化为泛泛总结}}"
+        ],
+        "acceptable_variation": "The response may ask one material clarification before execution."
+      },
+      "rationale": "{{证明测试的是语义识别而不是关键词命中}}",
+      "tags": ["paraphrase", "positive"]
     },
     {
-      "id": "should-trigger-03",
-      "type": "should_trigger",
-      "prompt": "{{用户的典型话语 3}}",
-      "expected_behavior": "...",
-      "notes": "..."
-    },
-    {
-      "id": "should-not-trigger-01",
+      "id": "should-not-trigger-information-01",
       "type": "should_not_trigger",
-      "prompt": "{{诱饵 1 — 看似相关但实际不该调用}}",
-      "expected_behavior": "不应激活本 skill, 因为 {{理由}}",
-      "notes": "诱饵: {{这是什么类型的诱饵}}"
+      "prompt": "{{主题相关但只需事实查询、翻译或摘要的请求}}",
+      "expected_behavior": "Do not invoke {{skill-slug}}; answer directly or use the appropriate information task.",
+      "expected": {
+        "activation": "do_not_invoke",
+        "target": null,
+        "must_do": [
+          "{{直接处理请求或说明缺少什么信息}}"
+        ],
+        "must_not_do": [
+          "Apply the capability workflow merely because topic words overlap"
+        ],
+        "acceptable_variation": "Any concise direct answer is acceptable."
+      },
+      "rationale": "{{主题重叠但意图不匹配的原因}}",
+      "tags": ["topic-decoy", "negative"]
     },
     {
-      "id": "should-not-trigger-02",
-      "type": "should_not_trigger",
-      "prompt": "{{诱饵 2 — 另一种不该调用的情况}}",
-      "expected_behavior": "...",
-      "notes": "..."
+      "id": "route-to-sibling-01",
+      "type": "route_to_sibling",
+      "prompt": "{{应由同书相邻 capability 处理、且容易误触发本 skill 的请求}}",
+      "expected_behavior": "Do not invoke {{skill-slug}}; route to {{sibling-skill-slug}}.",
+      "expected": {
+        "activation": "route_elsewhere",
+        "target": "{{sibling-skill-slug}}",
+        "must_do": [
+          "State or apply the decisive routing distinction"
+        ],
+        "must_not_do": [
+          "Blend two incompatible workflows without explaining the choice"
+        ],
+        "acceptable_variation": "The sibling may be named explicitly or applied directly."
+      },
+      "rationale": "{{两项能力的近邻边界}}",
+      "tags": ["near-neighbor", "negative", "hard-gate"]
     },
     {
-      "id": "edge-01",
+      "id": "edge-missing-input-01",
       "type": "edge_case",
-      "prompt": "{{边界模糊场景}}",
-      "expected_behavior": "{{期望的合理判断 — 可能是调用, 可能是不调用, 但要说清为什么}}",
-      "notes": "边界: {{为什么这是边界}}"
+      "prompt": "{{意图匹配但缺少会实质改变结果的输入}}",
+      "expected_behavior": "Conditionally invoke {{skill-slug}}, identify the missing material input, and ask only the necessary clarification.",
+      "expected": {
+        "activation": "clarify_then_invoke",
+        "target": "{{skill-slug}}",
+        "must_do": [
+          "Identify why the missing input is decision-relevant",
+          "Avoid fabricating the missing input"
+        ],
+        "must_not_do": [
+          "Produce a confident final recommendation from invented assumptions"
+        ],
+        "acceptable_variation": "A clearly labeled provisional analysis is acceptable if the user asked for one."
+      },
+      "rationale": "{{对应 capability card 中的 ask/stop condition}}",
+      "tags": ["missing-input", "boundary"]
+    },
+    {
+      "id": "adversarial-overreach-01",
+      "type": "adversarial",
+      "prompt": "{{要求把该方法用于明确反场景，或要求忽略证据/边界的请求}}",
+      "expected_behavior": "Refuse the method's misuse, explain the relevant boundary, and offer a safer in-scope alternative.",
+      "expected": {
+        "activation": "do_not_invoke",
+        "target": null,
+        "must_do": [
+          "Name the applicable boundary",
+          "Offer an in-scope alternative when possible"
+        ],
+        "must_not_do": [
+          "Pretend the book-derived method is universally valid"
+        ],
+        "acceptable_variation": "The response may use a different skill if its scope clearly fits."
+      },
+      "rationale": "{{验证边界不是装饰性文字}}",
+      "tags": ["adversarial", "boundary", "hard-gate"]
     }
-  ],
-  "minimum_pass_rate": 0.8,
-  "notes": "至少 3 条 should_trigger + 2 条 should_not_trigger + 1 条 edge_case。全部 should_not_trigger 必须通过 (诱饵容错为 0)。"
+  ]
 }

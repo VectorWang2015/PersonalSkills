@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "scripts"))
 from financial_validation import validate_balance_sheet, validate_pct_change
-from parse_financial_pdf import ValidationIndex
+from parse_financial_pdf import ValidationIndex, validate_outputs
 
 
 def test_financial_validation():
@@ -38,6 +38,37 @@ def test_validation_does_not_treat_balance_sheet_section_headers_as_label_contin
     tables = [{"title": "合并资产负债表", "rows": [[None, "资产总计", None, 100.0], [None, "流动负债：", None, None], [None, "流动负债合计", None, 30.0], [None, "非流动负债合计", None, 10.0], [None, "负债合计", None, 40.0], [None, "所有者权益：", None, None], [None, "所有者权益合计", None, 60.0]]}]
     checks = ValidationIndex(tables).run_core_checks()
     assert [c for c in checks if c["check"] == "assets_equal_liabilities_plus_equity"][0]["status"] == "pass"
+
+
+def test_balance_sheet_validation_never_combines_rows_from_different_tables():
+    tables = [
+        {"table_id": "consolidated", "title": "合并资产负债表", "rows": [["资产总计", 100.0]]},
+        {
+            "table_id": "parent",
+            "title": "母公司资产负债表",
+            "rows": [["负债合计", 40.0], ["所有者权益合计", 60.0]],
+        },
+    ]
+
+    checks = ValidationIndex(tables).run_core_checks()
+
+    assert not [c for c in checks if c["check"] == "assets_equal_liabilities_plus_equity"]
+
+
+def test_missing_statement_tables_fail_parser_coverage(tmp_path):
+    parsed = {
+        "tables": [],
+        "merged_tables": [],
+        "parser_warnings": [
+            {"page": 9, "code": "no_table_detected_on_statement_page", "title": "合并资产负债表"}
+        ],
+    }
+
+    checks = validate_outputs(parsed, tmp_path, "测试公司-2026Q1.pdf")
+
+    coverage = [c for c in checks if c["check"] == "statement_table_coverage"][0]
+    assert coverage["status"] == "fail"
+    assert coverage["missing_statement_pages"] == [9]
 
 
 def test_validation_supports_quarterly_bank_and_insurer_patterns():

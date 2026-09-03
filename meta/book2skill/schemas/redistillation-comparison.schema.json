@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "book2skill/redistillation-comparison.schema.json",
+  "title": "book2skill redistillation comparison",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "comparison_id", "compared_at", "baseline_bundle", "candidate_bundle", "source_alignment", "independence_controls", "evaluation_evidence", "summary", "dimension_findings", "mappings", "unmatched_baseline", "unmatched_candidate", "finalization"],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "independence_controls": {
+            "properties": { "blindness_level": { "const": "complete" } },
+            "required": ["blindness_level"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "independence_controls": {
+            "properties": {
+              "candidate_created_without_baseline_access": { "const": true },
+              "candidate_frozen_before_comparison": { "const": true },
+              "candidate_frozen_at": { "type": "string" },
+              "legacy_first_exposed_at": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "schema": { "const": "book2skill/redistillation-comparison@1" },
+    "comparison_id": { "type": "string", "pattern": "^compare\\.[a-z0-9.-]+$" },
+    "compared_at": { "type": "string", "format": "date-time" },
+    "baseline_bundle": { "type": "string", "minLength": 1 },
+    "candidate_bundle": { "type": "string", "minLength": 1 },
+    "source_alignment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseline_manifest", "candidate_manifest", "same_content_digest", "material_differences"],
+      "properties": {
+        "baseline_manifest": { "type": "string", "minLength": 1 },
+        "candidate_manifest": { "type": "string", "minLength": 1 },
+        "same_content_digest": { "type": "boolean" },
+        "material_differences": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "independence_controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blindness_level", "candidate_created_without_baseline_access", "candidate_frozen_before_comparison", "comparator_separate_from_candidate_run", "candidate_freeze_manifest", "candidate_frozen_at", "legacy_first_exposed_at", "notes"],
+      "properties": {
+        "blindness_level": { "enum": ["complete", "limited", "none", "unverified"] },
+        "candidate_created_without_baseline_access": { "type": "boolean" },
+        "candidate_frozen_before_comparison": { "type": "boolean" },
+        "comparator_separate_from_candidate_run": { "type": "boolean" },
+        "candidate_freeze_manifest": { "type": "string", "minLength": 1 },
+        "candidate_frozen_at": { "type": ["string", "null"], "format": "date-time" },
+        "legacy_first_exposed_at": { "type": ["string", "null"], "format": "date-time" },
+        "notes": { "type": "string" }
+      }
+    },
+    "evaluation_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol", "holdout_suite", "variant_identity_map", "environment_equalized", "arms", "findings", "limitations"],
+      "properties": {
+        "protocol": { "const": "anonymous_baseline_candidate_no_skill" },
+        "holdout_suite": { "type": "string", "minLength": 1 },
+        "variant_identity_map": { "type": "string", "minLength": 1 },
+        "environment_equalized": { "type": "boolean" },
+        "arms": {
+          "type": "array",
+          "minItems": 3,
+          "uniqueItems": true,
+          "items": { "enum": ["baseline", "candidate", "no_skill", "merged"] }
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["task_family", "winner", "evidence"],
+            "properties": {
+              "task_family": { "type": "string", "minLength": 1 },
+              "winner": { "enum": ["baseline", "candidate", "no_skill", "tie", "inconclusive"] },
+              "evidence": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "limitations": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseline_capability_count", "candidate_capability_count", "matched_groups", "baseline_only", "candidate_only", "unresolved"],
+      "properties": {
+        "baseline_capability_count": { "type": "integer", "minimum": 0 },
+        "candidate_capability_count": { "type": "integer", "minimum": 0 },
+        "matched_groups": { "type": "integer", "minimum": 0 },
+        "baseline_only": { "type": "integer", "minimum": 0 },
+        "candidate_only": { "type": "integer", "minimum": 0 },
+        "unresolved": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "dimension_findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["dimension", "judgment", "evidence", "action"],
+        "properties": {
+          "dimension": { "enum": ["source_faithfulness", "coverage", "evidence_traceability", "atomicity", "executability", "routing_precision", "boundaries", "evaluation_quality", "concision", "portability", "other"] },
+          "judgment": { "enum": ["baseline", "candidate", "tie", "mixed", "insufficient_evidence"] },
+          "evidence": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+          "action": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "mappings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["mapping_id", "baseline_capability_ids", "candidate_capability_ids", "relationship", "evidence", "decision", "target_capability_ids", "preserve_from_baseline", "preserve_from_candidate", "discard", "rationale", "confidence"],
+        "properties": {
+          "mapping_id": { "type": "string" },
+          "baseline_capability_ids": { "type": "array", "items": { "type": "string" } },
+          "candidate_capability_ids": { "type": "array", "items": { "type": "string" } },
+          "relationship": { "enum": ["equivalent", "baseline_broader", "candidate_broader", "overlap", "conflict", "unrelated"] },
+          "evidence": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+          "decision": { "enum": ["keep_baseline", "adopt_candidate", "merge", "split", "retain_both", "deprecate", "manual_review"] },
+          "target_capability_ids": { "type": "array", "items": { "type": "string" } },
+          "preserve_from_baseline": { "type": "array", "items": { "type": "string" } },
+          "preserve_from_candidate": { "type": "array", "items": { "type": "string" } },
+          "discard": { "type": "array", "items": { "type": "string" } },
+          "rationale": { "type": "string", "minLength": 1 },
+          "confidence": { "enum": ["high", "medium", "low"] }
+        }
+      }
+    },
+    "unmatched_baseline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["capability_id", "decision", "rationale"],
+        "properties": {
+          "capability_id": { "type": "string" },
+          "decision": { "enum": ["retain", "revise", "deprecate", "manual_review"] },
+          "rationale": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "unmatched_candidate": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["capability_id", "decision", "rationale"],
+        "properties": {
+          "capability_id": { "type": "string" },
+          "decision": { "enum": ["adopt", "merge", "reject", "manual_review"] },
+          "rationale": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "finalization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target_bundle", "merged_evaluation", "new_capability_ids", "revised_capability_ids", "deprecated_capability_ids", "unresolved_items"],
+      "properties": {
+        "target_bundle": { "type": "string", "minLength": 1 },
+        "merged_evaluation": { "type": "string", "minLength": 1 },
+        "new_capability_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "revised_capability_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "deprecated_capability_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "unresolved_items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["item_id", "question", "required_resolution"],
+            "properties": {
+              "item_id": { "type": "string" },
+              "question": { "type": "string", "minLength": 1 },
+              "required_resolution": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

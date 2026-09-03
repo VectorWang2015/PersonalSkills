@@ -1,0 +1,72 @@
+{
+  "schema": "book2skill/capability-bundle@1",
+  "bundle_id": "bundle.{{book-slug}}",
+  "revision": 1,
+  "created_at": "{{ISO-8601 timestamp}}",
+  "updated_at": "{{ISO-8601 timestamp}}",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "derived_from_bundle": null,
+    "redistillation_comparison": null
+  },
+  "output": {
+    "mode": "single",
+    "promotion_budget": null,
+    "promotion_policy": "Promote only capabilities with distinct user intent, input/output contract, independent operation, and evaluation evidence.",
+    "router": {
+      "name": "{{book-slug}}",
+      "description": "{{when the book-level router should activate, what it routes, and when a standalone sibling should activate instead}}"
+    }
+  },
+  "capabilities": [
+    {
+      "capability_id": "cap.{{book-slug}}.{{capability-slug}}",
+      "revision": 1,
+      "status": "draft",
+      "card": "cards/{{capability-slug}}.json",
+      "promotion": {
+        "promotion_id": "promo.{{book-slug}}.{{capability-slug}}",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "{{observable improvement expected over a no-skill baseline}}",
+        "falsifier": "{{result that would overturn the gain hypothesis}}",
+        "portfolio_conflicts": [],
+        "rationale": "{{why this disposition creates the smallest complete discoverable surface}}"
+      },
+      "destination": "router_only",
+      "delivery_path": "../staging/{{book-slug}}/references/capabilities/{{capability-slug}}.json",
+      "test_suite": "../eval-suite.json"
+    }
+  ],
+  "relationships": [
+    {
+      "from": "cap.{{book-slug}}.{{capability-slug}}",
+      "type": "contrasts_with",
+      "to": "cap.{{book-slug}}.{{neighbor-slug}}",
+      "execution_rationale": "{{the condition that determines routing or composition}}"
+    }
+  ],
+  "quality": {
+    "required_gates": [
+      "source-version-identified",
+      "whole-book-model-reviewed",
+      "source-faithfulness-passed",
+      "executability-passed",
+      "incremental-utility-supported",
+      "falsifiable-boundedness-passed",
+      "capability-cards-valid",
+      "near-neighbor-routing-passed",
+      "frontmatter-valid",
+      "relative-links-valid"
+    ],
+    "passed_gates": [],
+    "open_issues": [
+      {
+        "issue_id": "issue-01",
+        "severity": "medium",
+        "description": "{{unresolved evidence, routing, portability, or scope issue}}",
+        "owner": "{{agent, user, or external dependency}}",
+        "next_action": "{{specific resolution step}}"
+      }
+    ]
+  }
+}

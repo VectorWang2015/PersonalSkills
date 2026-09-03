@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "title": "{{BOOK_TITLE}}",
+  "author": "{{AUTHOR}}",
+  "version": "{{edition, translation, or release identifier}}",
+  "base_directory": "{{absolute source base directory}}",
+  "local_paths_redacted": false,
+  "portability_note": "Working manifests use false. Before publishing, set local_paths_redacted to true and set base_directory plus every sources[].absolute_path to null.",
+  "source_count": 1,
+  "sources": [
+    {
+      "absolute_path": "{{absolute source path}}",
+      "relative_path": "{{path relative to base_directory}}",
+      "sha256": "{{64 lowercase hexadecimal characters}}",
+      "bytes": 0,
+      "format": "{{pdf, epub, txt, md, or other extension}}",
+      "source_id": "src-primary",
+      "role": "primary",
+      "kind": "book",
+      "rights": {
+        "basis": "user-provided",
+        "redistribution": "restricted",
+        "notes": "{{license, public-domain basis, or usage restriction; do not infer rights}}"
+      },
+      "extraction": {
+        "parser": "{{tool or manual process}}",
+        "parser_version": "{{version or unknown}}",
+        "text_artifact": "{{workspace-relative extracted-text path}}",
+        "locator_scheme": "{{for example: part > chapter > printed-page > paragraph}}",
+        "coverage": {
+          "unit": "pages",
+          "expected_units": null,
+          "processed_units": 0,
+          "omitted_ranges": [
+            {
+              "range": "{{for example: pp. 311-318}}",
+              "reason": "{{missing, unreadable, intentionally out of scope, or duplicate}}"
+            }
+          ],
+          "notes": "{{OCR errors, table handling, footnotes, appendices, or other limitations}}"
+        }
+      }
+    }
+  ],
+  "manifest_id": "manifest.{{book-slug}}",
+  "created_at": "{{ISO-8601 timestamp}}",
+  "updated_at": "{{ISO-8601 timestamp}}",
+  "work": {
+    "work_id": "work.{{book-slug}}",
+    "language": "{{BCP-47 language tag}}",
+    "publication_year": "{{publication year or unknown}}",
+    "user_goal": "{{real task or recurring decisions this distillation should support}}",
+    "scope": {
+      "included": [
+        "{{included topic or section}}"
+      ],
+      "excluded": [
+        "{{excluded topic or section and why}}"
+      ]
+    }
+  },
+  "known_gaps": [
+    {
+      "gap_id": "gap-01",
+      "description": "{{known missing or uncertain material}}",
+      "impact": "{{which claims or capabilities may be affected}}",
+      "resolution": "{{planned check, accepted limitation, or unresolved}}"
+    }
+  ],
+  "readiness": {
+    "exact_version_identified": false,
+    "integrity_recorded": false,
+    "rights_reviewed": false,
+    "coverage_reviewed": false,
+    "ready_for_distillation": false
+  }
+}

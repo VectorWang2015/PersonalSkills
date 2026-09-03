@@ -6,7 +6,7 @@ from typing import Any
 
 
 NULL_TOKENS = {"", "-", "--", "—", "不适用", "无", "nan", "None", "null"}
-UNIT_PATTERNS = ["万元", "亿元", "元/股", "元／股", "元", "%", "股", "人"]
+UNIT_PATTERNS = ["亿元", "百万元", "万元", "千元", "元/股", "元／股", "元", "%", "股", "人"]
 
 
 def normalize_number(value: Any) -> Any:

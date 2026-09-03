@@ -1,0 +1,298 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+  "revision": 3,
+  "status": "draft",
+  "slug": "credit-risk-lifecycle",
+  "title": "信用风险生命周期分析",
+  "one_liner": "用贷款存量、不良生成、拨备计提、核销处置四池模型还原资产质量，而不是把期末不良率当作完整事实。",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "ktbank-txt-2021.fw.ch06.l775-npl-lifecycle",
+      "ktbank-txt-2021.qp.ch06.l788-new-npl-rate",
+      "ktbank-txt-2021.qp.ch06.l796-credit-risk-metrics",
+      "ktbank-txt-2021.qp.ch06.l823-provision-metrics",
+      "ktbank-txt-2021.fw.ch06.l836-integrated-risk",
+      "ktbank-txt-2021.ce.ch09.l1231-industry-divergence"
+    ],
+    "aliases": [
+      "legacy.npl-lifecycle-analysis",
+      "legacy.rwa-provision-ratio"
+    ],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "判断一家银行承担信用风险的贷款及其他金融资产质量是在改善、恶化，还是受到分类、处置和减值节奏影响。",
+    "distinctive_value": "把贷款时点不良率还原为流量和存量联动，同时按现行规则检查债券、同业、应收款项和表外信用风险，不用单一比率推断管理层意图。",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ktb-ch06-l783-four-pools",
+          "ev-ktb-ch06-l789-new-npl",
+          "ev-ktb-ch06-l797-npl-ratio",
+          "ev-ktb-ch06-l806-deviation",
+          "ev-ktb-ch06-l824-provisions",
+          "ev-ktb-ch06-l837-integrate"
+        ],
+        "rationale": "生命周期、主要公式与综合分析原则都由第6章直接给出；对公式适用性的额外限制来自金融质量门并标为操作约束。"
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "输入金融资产分类、逾期、迁徙、核销、回收、拨备和减值数据后，可生成多期风险流量表及矛盾检查。"
+      },
+      "incremental_utility": {
+        "status": "hypothesis",
+        "comparison": "预计比只看不良率和覆盖率更早发现分类偏松、核销掩盖、拨备不足和高息差高信用成本；尚未评测。"
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "数据缺失、定义改变或跨法域分类不一致时停止精确比较；作者自创指标仅作诊断候选。"
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "‘利润前置、风险后置’及不良生命周期贯穿第5、6、8、9、10章；四池三流程是书中最具操作性的风险框架。"
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "分析银行不良贷款、关注和逾期变化",
+      "复原新生成不良、核销与拨备的关系",
+      "判断高净息差是否被信用成本吞噬"
+    ],
+    "trigger_signals": [
+      "用户提到不良率、关注率、逾期90天、迁徙率、核销、拨备或信用成本",
+      "不良率下降但核销或减值大幅变化",
+      "不同银行同一行业贷款不良率出现难以解释的巨大偏差"
+    ],
+    "do_not_trigger": [
+      "主要问题是批发融资、挤兑或期限错配时使用流动性能力",
+      "只需判断净利润分类与一次性项目时使用利润质量能力",
+      "需要贷款审批、授信或当前监管分类合规判断时超出公开投资分析范围"
+    ],
+    "neighbor_distinctions": [
+      {
+        "capability_id": "cap.kan-tou-yin-hang.funding-liquidity-analysis",
+        "use_this_when": "风险来源是借款人违约和资产分类。",
+        "use_neighbor_when": "风险来源是银行自身资金续作和偿付流动性。"
+      },
+      {
+        "capability_id": "cap.kan-tou-yin-hang.earnings-quality-normalization",
+        "use_this_when": "要重建不良形成、处置和抵补的动态。",
+        "use_neighbor_when": "要重建拨备前利润到净利润的会计桥及分类调整。"
+      }
+    ]
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ktb-ch06-l783-four-pools",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第6章 > 6.2.4不良贷款的生命周期 > 不良贷款的动态演变 > TXT lines 775-787；EPUB text/part0011.html#cha6_6_1_2_9_28",
+        "claim_type": "explicit",
+        "excerpt": "有4个“池子”和3个主要的过程",
+        "paraphrase": "四池是全部贷款、不良贷款、贷款减值准备、减值前利润；三流程是不良新生成、减值计提和核销处置。",
+        "note": "为动态风险分析提供主框架。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch06-l789-new-npl",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第6章 > 6.2.4 > 新生成不良率 > TXT lines 788-793；EPUB text/part0011.html#cha6_6_1_2_9_29",
+        "claim_type": "explicit",
+        "excerpt": "新生成不良率=新生成不良贷款÷贷款总额。",
+        "paraphrase": "新生成不良率观察报告期内贷款从正常存量流入不良池的速度，比期末不良率更接近风险流量。",
+        "note": "分母使用期末还是平均贷款需按披露定义统一，原书未充分限定。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch06-l797-npl-ratio",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第6章 > 6.2.5 > 不良贷款率、广义不良率 > TXT lines 796-804；EPUB text/part0011.html#cha6_6_1_2_10_30",
+        "claim_type": "explicit",
+        "excerpt": "不良率=不良贷款余额÷贷款总额。",
+        "paraphrase": "不良率是时点快照；作者另用不良率加关注率构造‘广义不良率’，用于观察关注类潜在风险。",
+        "note": "广义不良率是作者自创的非通用指标，只能辅助诊断，不能宣称监管或会计标准。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch06-l806-deviation",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第6章 > 6.2.5 > 不良偏离度、贷款迁徙率、新生成不良率 > TXT lines 803-818；EPUB text/part0011.html#cha6_6_1_2_10_32",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "书中以逾期90天以上余额/不良余额观察分类严格度，以正常贷款向下迁徙率观察恶化流量，并用不良余额增量加核销估算新生成不良下限。",
+        "note": "90天分类关系及监管含义属于历史口径；‘不良余额增量+核销是新生成下限’只是原书简化说法。若其他流入、流出、分类或范围变化未知，该式没有无条件上下界含义。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch06-l824-provisions",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第6章 > 6.2.6信用风险的抵补机制 > TXT lines 820-835；EPUB text/part0011.html#cha6_6_1_2_11_36",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "不良覆盖率=贷款减值准备/不良贷款，拨贷比=拨备/贷款，且拨贷比=拨备覆盖率×不良率；作者另提出资产减值准备/RWA。",
+        "note": "后一个比率为作者自创指标，且不同RWA方法会削弱可比性。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch06-l837-integrate",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第6章 > 6.2.7综合分析信用风险信息 > TXT lines 836-848；EPUB text/part0011.html#cha6_6_1_2_12",
+        "claim_type": "explicit",
+        "excerpt": "很难用单一指标准确判断银行的资产质量和信用风险",
+        "paraphrase": "营收、新生成不良、暴露节奏、核销和拨备会相互制约，必须做纵向与横向比较并寻找指标间矛盾。",
+        "note": "构成综合判断和反证要求。"
+      }
+    ],
+    "interpretation": {
+      "model": "期末不良余额是流入（新生成/迁徙）与流出（核销、处置、回收、转让等）的净结果；拨备余额又受当期计提、核销使用和回收影响。只有把流量、存量和利润承受力联合起来，才能判断风险趋势。",
+      "decision_rules": [
+        "先读取../current-standards.md并记录as-of；现行分类覆盖承担信用风险的表内外金融资产，贷款四池模型不能冒充全部资产分类。",
+        "贷款不良率只作为起点，至少与关注/逾期、迁徙、新生成、核销和拨备联合。",
+        "任何下降的不良率都要问：是新生成下降、核销上升、分类变化还是贷款分母扩张。",
+        "新生成不良未披露时，先写完整余额桥。若范围、分类或其他流量未知，‘期末不良-期初不良+核销’只是不良净新增与未披露变动的平衡项，不是毛新生成，也不是毛新生成的无条件下限。",
+        "只有同口径且其他流入流出均已知或可证明为零时，才能在逐项列出假设后，用余额桥推导毛新生成或相应界限。",
+        "现行90/270/360天最低分类、信用减值和重组观察期属于监管口径；会计ECL、风险分类和贷款拨备监管必须分栏。",
+        "拨备覆盖率和拨贷比同时看；高覆盖率与其他风险信号矛盾时只形成核查假设。",
+        "作者自创的广义不良率和风险加权资产减值准备率只作辅助信号，不替代官方定义。",
+        "跨行比较必须对齐贷款范围、分类规则、核销口径、平均/期末分母和合并范围。"
+      ],
+      "assumptions": [
+        "定期报告披露了贷款分类、逾期、减值准备与核销的期初期末变动。",
+        "比较期间没有无法调整的重大资产出售、并购或分类制度断点。"
+      ]
+    },
+    "application": {
+      "past_cases": [
+        {
+          "case_id": "case-ktb-xingye-exposure",
+          "problem": "不良率和新生成不良看似平稳，但营收承压、关注和重组贷款累积。",
+          "method_use": "作者把营收、减值计提、暴露速度、核销和潜在风险池联合解释。",
+          "result": "案例提示延后暴露可能使时点不良率低估风险；下一期加大计提和暴露未必代表风险突然变差。",
+          "evidence_ids": [
+            "ev-ktb-ch06-l837-integrate"
+          ]
+        }
+      ],
+      "future_scenarios": [
+        {
+          "scenario": "某银行不良率下降、净利润增长，但拨备计提骤降。",
+          "recognition_signal": "核销、关注类、逾期或不良偏离度与不良率方向不一致。",
+          "expected_use": "重建四池三流程，判断净利润改善是否主要来自放慢风险暴露或减少计提。"
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "贷款以及债券/其他投资、同业资产、应收款项和表外信用风险的五级分类余额（如披露）",
+        "逾期贷款分桶，尤其报告披露的90天以上余额",
+        "正常/关注类迁徙率或可替代流量数据",
+        "不良贷款期初期末、当期核销、转让、清收和其他处置",
+        "贷款减值准备期初期末、计提、核销使用、回收往年核销",
+        "信用减值损失、拨备前利润/营收、贷款信用成本",
+        "报告期、单位、合并范围、分类制度和重述信息"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "读取current-standards并建立口径表，确认分类覆盖范围、贷款与其他信用资产、逾期定义、平均/期末分母、核销与回收列报。",
+          "completion_check": "所有比率的分子、分母、时间点、单位和规则as-of明确。",
+          "stop_if": "跨期分类制度或主体范围变化无法桥接。"
+        },
+        {
+          "step_id": "step-02",
+          "action": "计算并核对不良率、关注率、作者定义的广义不良率、逾期90天以上占比、不良偏离度和迁徙率。",
+          "completion_check": "每个指标都标注官方披露、复算或作者自创，百分数与百分点区分。",
+          "stop_if": "关键余额为零或缺失时不输出无意义比率；改列缺口。"
+        },
+        {
+          "step_id": "step-03",
+          "action": "重建不良余额桥：期初不良+毛新生成/转入-核销-转让/处置-回收/升级±汇兑、并购、分类和范围变化等=期末不良。若只能计算‘期末-期初+核销’，将其命名为‘净新增及未披露变动平衡项’。",
+          "completion_check": "能勾稽则给出各流量；不能勾稽则明确‘未解释项’，不把平衡项当毛新生成或无条件下限。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-04",
+          "action": "重建拨备桥：期初准备+当期计提+回收往年核销±汇兑/其他-核销使用=期末准备。",
+          "completion_check": "拨备覆盖率、拨贷比及二者恒等关系可复算，差异已解释。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-05",
+          "action": "把风险流量与拨备前利润、信用减值和信用成本相联，列出资产变化、宏观情景、模型参数、分类与管理叠加等相容解释。",
+          "completion_check": "风险趋势结论有至少两个独立指标支持，且未把相关性写成操纵或主观意图。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-06",
+          "action": "做三到五期纵向比较和同口径同业横向比较，特别检查行业/地域贷款不良率的异常分化。",
+          "completion_check": "结论区分趋势、时点和潜在分类差异，不用单期排名代替判断。",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "信用风险指标与口径表",
+        "不良余额桥和拨备余额桥",
+        "新生成/核销/暴露节奏判断",
+        "资产质量趋势、抵补充足性和反证",
+        "作者自创指标与当前规则待核验清单"
+      ],
+      "stop_conditions": [
+        "不良和拨备两张桥完成、主要矛盾解释且反方情景列明。",
+        "数据不足时停在可复核的平衡项或方向；除非同口径及其他流量假设成立，不把它描述为毛新生成的下限。",
+        "需要现行监管分类、审慎监管合规或贷款级审查时升级。"
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "不做单笔贷款信用审批或违约概率模型。",
+        "不把公开报表分析等同于监管资产质量检查。",
+        "不以作者历史案例给当前银行贴固定标签。"
+      ],
+      "failure_modes": [
+        "把不良率下降直接解释为资产质量改善。",
+        "在范围、分类或其他流量未知时，把不良余额增量加核销当作毛新生成、精确新生成或无条件下限。",
+        "把广义不良率或风险加权资产减值准备率当作官方标准。",
+        "忽略贷款分母快速增长对不良率的稀释。",
+        "跨行比较时混用集团/母行、贷款/全部金融资产或不同分类制度。"
+      ],
+      "limitations": [
+        "公开报告可能不披露完整的新生成、转让、升级、重组和非贷款信用资产流量。",
+        "不良分类具有管理判断，指标异常只能形成核查假设，不能直接证明操纵。",
+        "本内部能力卡使用的现行中国口径核验截至2026-09-03；以后执行必须复核current-standards中的官方链接。"
+      ],
+      "ask_user_when": [
+        "需要选择按贷款总额期末值还是平均值计算自定义流量比率。",
+        "用户要求比较不同法域或不同监管分类体系。"
+      ],
+      "escalate_when": [
+        "报告附注无法勾稽、存在重大重述或审计意见涉及贷款减值。",
+        "任务要求判断现行监管违规、会计错报或欺诈。"
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [
+      "cap.kan-tou-yin-hang.business-model-map"
+    ],
+    "contrasts_with": [
+      "cap.kan-tou-yin-hang.funding-liquidity-analysis"
+    ],
+    "composes_with": [
+      "cap.kan-tou-yin-hang.net-interest-margin-analysis",
+      "cap.kan-tou-yin-hang.earnings-quality-normalization",
+      "cap.kan-tou-yin-hang.capital-growth-analysis",
+      "cap.kan-tou-yin-hang.bank-valuation"
+    ],
+    "routes_to": [
+      "cap.kan-tou-yin-hang.earnings-quality-normalization"
+    ]
+  },
+  "compilation": {
+    "destination": "reference_only",
+    "skill_name": null,
+    "skill_description": null,
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": "../../test-prompts.json"
+  }
+}

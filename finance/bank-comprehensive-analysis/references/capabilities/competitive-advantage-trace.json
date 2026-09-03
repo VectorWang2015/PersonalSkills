@@ -1,0 +1,320 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.kan-tou-yin-hang.competitive-advantage-trace",
+  "revision": 2,
+  "status": "draft",
+  "slug": "competitive-advantage-trace",
+  "title": "银行竞争优势证据链",
+  "one_liner": "从客户与战略投入追踪到低成本负债、风险调整后收入、资产质量和资本效率，用持续结果而非管理层口号检验护城河。",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "ktbank-txt-2021.fw.ch01.l143-aum-deposit-loop",
+      "ktbank-txt-2021.pr.ch03.l320-fee-stickiness",
+      "ktbank-txt-2021.pr.ch05.l572-spending-evidence",
+      "ktbank-txt-2021.fw.ch10.l1445-moat-method",
+      "ktbank-txt-2021.fw.ch10.l1453-margin-chain",
+      "ktbank-txt-2021.fw.ch10.l1467-risk-chain",
+      "ktbank-txt-2021.fw.ch10.l1502-customer-chain",
+      "ktbank-txt-2021.fw.ch10.l1525-strategy-chain"
+    ],
+    "aliases": [
+      "legacy.cmb-moat-analysis"
+    ],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "判断一家银行声称的零售、财富管理、科技、风控或客户优势是否形成可持续且可复制检验的财务结果。",
+    "distinctive_value": "把软性战略叙事压到跨期可观察的客户、负债、风险、收入和资本结果上，并要求寻找反证与复制风险。",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ktb-ch01-l148-aum",
+          "ev-ktb-ch03-l320-stickiness",
+          "ev-ktb-ch05-l572-spend",
+          "ev-ktb-ch10-l1445-method",
+          "ev-ktb-ch10-l1453-margin",
+          "ev-ktb-ch10-l1467-risk",
+          "ev-ktb-ch10-l1504-customer",
+          "ev-ktb-ch10-l1525-strategy"
+        ],
+        "rationale": "作者在招商银行案例中明确示范从净息差、风控、客群回溯战略布局；跨行验证、反证和复制测试是本轮操作化。"
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "以多年客户、AUM、存款、费用、手续费、信用风险和RORWA数据可构建战略投入到财务结果的证据链。"
+      },
+      "incremental_utility": {
+        "status": "hypothesis",
+        "comparison": "预计比直接复述管理层‘零售/科技领先’更能区分真实优势、周期顺风和高投入未兑现；尚未评测。"
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "单一成功案例、短期相关性或历史先发不构成因果证明；结果未持续或同业快速复制时应否定/缩窄护城河。"
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "客户黏性—低成本负债—手续费—风控—资本效率的链条在第1、3、4、5、7、8、10章反复出现，末章集中示范。"
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "验证银行零售、财富管理、科技或风控护城河",
+      "把战略和客户优势映射到财务指标",
+      "判断竞争优势是否持续、可复制或已衰退"
+    ],
+    "trigger_signals": [
+      "用户询问某银行为何长期享有更高估值或更低资金成本",
+      "管理层强调客户体验、AUM、金融科技或零售转型",
+      "需要区分结构性优势与周期、监管或会计带来的短期表现"
+    ],
+    "do_not_trigger": [
+      "只需做一次财报数字复算时使用相应专项能力",
+      "缺少至少三期数据却要求证明长期护城河时应先补数据",
+      "品牌偏好或个人使用体验本身不能触发确定性竞争结论"
+    ],
+    "neighbor_distinctions": [
+      {
+        "capability_id": "cap.kan-tou-yin-hang.business-model-map",
+        "use_this_when": "已知道银行怎么赚钱，需验证为什么它能比同业长期做得更好。",
+        "use_neighbor_when": "尚未建立基本经营链。"
+      },
+      {
+        "capability_id": "cap.kan-tou-yin-hang.bank-valuation",
+        "use_this_when": "要证明质量溢价的经营来源。",
+        "use_neighbor_when": "要把已验证的质量差异转为估值区间。"
+      }
+    ]
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ktb-ch01-l148-aum",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第1章 > 1.2.2 > 知识链接：AUM导向的零售管理体系 > TXT lines 143-154；EPUB text/part0006.html#cha1_1_1_2_2_2",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "作者把AUM导向、客户体验和产品供给与客户资产迁入、活期沉淀、存款成本和净息差优势连接起来。",
+        "note": "这是作者对招商银行案例的机制解释，不是对所有银行都已证明的因果。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch03-l320-stickiness",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第3章 > 3.1中间业务的优势、3.3代理业务 > TXT lines 319-321, 348-355；EPUB text/part0008.html#cha3_3_1_1",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "中间与代理服务既产生手续费，也可能增加客户黏性、主账户关系和低成本资金。",
+        "note": "服务是否真正提升黏性要由客户留存、AUM和交叉销售数据验证。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch05-l572-spend",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第5章 > 5.2业务及管理费 > TXT lines 572-579；EPUB text/part0010.html#cha5_5_1_2",
+        "claim_type": "explicit",
+        "excerpt": "不要看银行在说什么，而要看它们在做什么。",
+        "paraphrase": "战略承诺要用人员、科技、渠道等实际投入及后续客户和效率结果验证。",
+        "note": "投入本身也不是优势，必须看到后续产出。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch10-l1445-method",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第10章 > 10.3招商银行的护城河 > TXT lines 1441-1445；EPUB text/part0015.html#cha10_10_1_3",
+        "claim_type": "explicit",
+        "excerpt": "本部分内容的数据相对老旧",
+        "paraphrase": "作者明确要求把末章作为系统分析方法示例，而非沿用旧数据结论。",
+        "note": "为本轮只迁移方法、不迁移历史排名提供直接依据。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch10-l1453-margin",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第10章 > 10.3.1傲视群雄的净息差 > TXT lines 1446-1465；EPUB text/part0015.html#cha10_10_1_3_8",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "案例把持续NIM优势拆为资产收益、负债成本、贷款结构、存款成本和活期占比，再回溯AUM体系。",
+        "note": "示范结果到机制的回溯顺序。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch10-l1467-risk",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第10章 > 10.3.2优秀的风控能力 > TXT lines 1466-1501；EPUB text/part0015.html#cha10_10_1_3_9",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "作者用不良率趋势、迁徙率、拨贷比和资本充足，再结合贷款组合解释风险调整后优势。",
+        "note": "关于零售贷款低风险高收益的法域和时代条件不能普遍化。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch10-l1504-customer",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第10章 > 10.3.3优质的客群 > TXT lines 1502-1524；EPUB text/part0015.html#cha10_10_1_3_10",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "客户分层、AUM集中、普通客户漏斗和对公基础客群共同支撑负债、财富管理和交叉销售。",
+        "note": "客户集中也可能形成流失或服务成本风险，需反向检查。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch10-l1525-strategy",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第10章 > 10.3.4前瞻的战略布局 > TXT lines 1525-1535；EPUB text/part0015.html#cha10_10_1_3_11",
+        "claim_type": "explicit",
+        "excerpt": "过去20年，招行的每一次成功都来自前瞻性的战略布局",
+        "paraphrase": "作者把一卡通、信用卡和私人银行的早期投入视为后来零售与客群优势的历史根源。",
+        "note": "这是作者的案例归因，需防后见偏差和幸存者偏差。"
+      }
+    ],
+    "interpretation": {
+      "model": "竞争优势需要形成可追踪闭环：战略选择与持续投入→客户获取/留存及数据/服务能力→低成本稳定负债、优质资产或手续费→较低信用成本和较高RORWA→资本与再投资能力→优势延续。任何断点都削弱护城河主张。",
+      "decision_rules": [
+        "从至少三到五期持续的结果出发，再回溯资源和流程；不从口号直接推演优势。",
+        "每条优势至少要求一个经营输入指标和一个风险调整后财务结果。",
+        "高费用投入只有在客户、效率、风险或收入结果随后改善时才构成支持。",
+        "同业相对比较与本行纵向趋势同时使用，避免周期顺风或行业普涨。",
+        "检验可复制性、客户集中、监管变化、技术替代和关键人员依赖等反方情景。",
+        "书中招商银行结论和历史数据只作案例，不作为当前排名或推荐。"
+      ],
+      "assumptions": [
+        "银行持续披露客户、AUM、存款、收入、风险和科技/人员投入中的足够代理指标。",
+        "比较对象业务模式相近且会计口径可以对齐。"
+      ]
+    },
+    "application": {
+      "past_cases": [
+        {
+          "case_id": "case-ktb-cmb-moat",
+          "problem": "解释一家银行为何持续拥有更高NIM、更好风控和更高估值。",
+          "method_use": "作者从结果指标回溯零售贷款、活期存款、AUM客群、服务体系和长期战略布局。",
+          "result": "形成客户—负债—资产—风险—资本的机制链，但数据老旧且以单一成功案例为主。",
+          "evidence_ids": [
+            "ev-ktb-ch10-l1445-method",
+            "ev-ktb-ch10-l1453-margin",
+            "ev-ktb-ch10-l1467-risk",
+            "ev-ktb-ch10-l1504-customer",
+            "ev-ktb-ch10-l1525-strategy"
+          ]
+        }
+      ],
+      "future_scenarios": [
+        {
+          "scenario": "某银行宣称零售转型和金融科技领先。",
+          "recognition_signal": "多年投入上升，但用户需要判断这是否转化为持久经济优势。",
+          "expected_use": "按证据链核对客户与AUM、低成本存款、手续费、信用成本、效率和RORWA，并寻找同业复制与投入无回报反证。"
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "至少三到五期客户数、活跃度、AUM、客群分层或可替代指标",
+        "存款结构与成本、NIM及资产收益/负债成本分解",
+        "手续费及佣金分项、交叉销售或财富管理指标",
+        "不良、迁徙、信用成本、拨备与资本效率",
+        "科技、人员、渠道等投入及效率/服务结果",
+        "同业务模式可比银行和行业背景",
+        "期间、单位、合并范围、会计口径与当前制度as-of"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "定义待验证的具体优势主张，例如‘高净值客群带来低成本稳定负债’，禁止使用空泛的‘品牌好’。",
+          "completion_check": "主张包含机制、预期中间指标和最终财务结果。",
+          "stop_if": "主张无法转成可观察结果。"
+        },
+        {
+          "step_id": "step-02",
+          "action": "检查结果是否持续：NIM/资金成本、手续费、信用成本、RORWA和资本生成至少跨三期观察。",
+          "completion_check": "结果不是单期异常，且与同业有可比基准。",
+          "stop_if": "只有单期数据却要求长期结论。"
+        },
+        {
+          "step_id": "step-03",
+          "action": "回溯客户、产品、渠道、风控、数据和组织投入，建立输入→中间结果→财务结果链。",
+          "completion_check": "每个箭头都有披露证据或明确标为推断，不跳过关键中介。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-04",
+          "action": "做风险调整：把高收益与信用成本、客户集中、流动性、资本消耗和营运费用一起评价。",
+          "completion_check": "优势在风险和投入成本后仍存在，或已明确被削弱。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-05",
+          "action": "寻找反证：同业复制速度、关键产品过时、监管/会计变化、客户流失、投入无产出、周期顺风和后见偏差。",
+          "completion_check": "至少一个会推翻主张的观察条件被明确写出。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-06",
+          "action": "按‘已证实、部分支持、仅相关、被反证、数据不足’评级，并标注证据状态与时效。",
+          "completion_check": "结论不依赖书中历史排名，且能够直接供估值质量情景使用。",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "竞争优势因果链与证据状态",
+        "多年持续性和同业对照表",
+        "风险调整后结果与投入回报",
+        "可复制性、衰退信号和反证",
+        "可用于估值的质量评级（非投资评级）"
+      ],
+      "stop_conditions": [
+        "主张、机制、结果、反证和数据缺口均已明确。",
+        "只有故事或单期相关性时停止在‘未证实’，不补写因果。",
+        "需要当前行业排名或监管影响时取得外部最新资料后另行分析。"
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "不把个人客户体验、品牌偏好或管理层口号直接当作护城河证据。",
+        "不复制原书对招商银行的历史结论为当前结论。",
+        "不因发现竞争优势就自动给出买入或估值溢价。"
+      ],
+      "failure_modes": [
+        "只列优势不找反证和替代解释。",
+        "用高NIM证明护城河却忽略信用成本。",
+        "用高科技费用证明科技领先却不看产出。",
+        "把客户规模与客户价值、黏性或低成本资金混为一谈。",
+        "从单一成功银行反推所有零售银行都会成功。"
+      ],
+      "limitations": [
+        "原书末章以招商银行成功案例为主，存在后见与幸存者偏差。",
+        "客户体验、数据能力和组织文化难以仅从公开报表完全测量。",
+        "零售贷款风险收益关系受法域、破产制度、信用周期和客群变化影响。"
+      ],
+      "ask_user_when": [
+        "用户希望验证的优势主张不具体。",
+        "需要选择同业可比组或观察周期。"
+      ],
+      "escalate_when": [
+        "竞争优势判断依赖未公开客户数据、模型或商业机密。",
+        "任务要求当前投资评级、目标价或重大资金决策。"
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [
+      "cap.kan-tou-yin-hang.funding-liquidity-analysis",
+      "cap.kan-tou-yin-hang.net-interest-margin-analysis",
+      "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+      "cap.kan-tou-yin-hang.capital-growth-analysis"
+    ],
+    "contrasts_with": [
+      "cap.kan-tou-yin-hang.business-model-map"
+    ],
+    "composes_with": [
+      "cap.kan-tou-yin-hang.bank-valuation"
+    ],
+    "routes_to": [
+      "cap.kan-tou-yin-hang.bank-valuation"
+    ]
+  },
+  "compilation": {
+    "destination": "reference_only",
+    "skill_name": null,
+    "skill_description": null,
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": "../../test-prompts.json"
+  }
+}

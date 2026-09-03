@@ -1,0 +1,300 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.kan-tou-yin-hang.net-interest-margin-analysis",
+  "revision": 2,
+  "status": "draft",
+  "slug": "net-interest-margin-analysis",
+  "title": "净利息收入与净息差驱动分析",
+  "one_liner": "把净利息收入拆成规模、资产收益率、负债成本、结构和重定价五类驱动，并用信用成本检验息差含金量。",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "ktbank-txt-2021.qp.ch04.l370-interest-definitions",
+      "ktbank-txt-2021.qp.ch04.l383-nii-growth",
+      "ktbank-txt-2021.fw.ch04.l389-nim-quality",
+      "ktbank-txt-2021.fw.ch04.l411-nim-drivers",
+      "ktbank-txt-2021.fw.ch04.l445-repricing",
+      "ktbank-txt-2021.pr.ch08.l1087-risk-behind-nim"
+    ],
+    "aliases": [
+      "legacy.nim-decomposition",
+      "legacy.rate-cycle-impact"
+    ],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "解释一家银行净利息收入和净息差为何变化，并判断变化是可持续负债优势还是高风险资产定价造成。",
+    "distinctive_value": "不仅复算NIM，还把平均余额、资产/负债结构、收益/成本、重定价时点和信用成本放进同一驱动桥。",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ktb-ch04-l370-definitions",
+          "ev-ktb-ch04-l383-growth",
+          "ev-ktb-ch04-l389-quality",
+          "ev-ktb-ch04-l411-drivers",
+          "ev-ktb-ch04-l465-repricing",
+          "ev-ktb-ch08-l1089-risk"
+        ],
+        "rationale": "公式与核心驱动均由第4章直接给出，第8章补充相同息差可能承载不同信用风险；标准化桥接步骤为本轮操作化。"
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "使用净利息收入表、平均生息资产/计息负债、分项收益成本和重定价信息即可复算并解释趋势。"
+      },
+      "incremental_utility": {
+        "status": "hypothesis",
+        "comparison": "预计减少把净利差与净息差混淆、把高NIM自动判优、忽略平均余额和重定价滞后的错误；尚未holdout。"
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "若分项平均余额、口径或信用成本缺失，只能给出有限归因；不预测未来利率路径。"
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "净息差及其资产、负债和利率敏感性在第1、4、8、9、10章反复作为盈利核心出现。"
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "复算净息差、净利差和净利息收入增长",
+      "解释息差变化来自资产端还是负债端",
+      "判断高息差的风险调整后质量"
+    ],
+    "trigger_signals": [
+      "用户提到NIM、净利差、生息资产收益率、计息负债成本或利率敏感性",
+      "净利息收入增速与资产增速不一致",
+      "需要比较两家银行相似净息差的含金量"
+    ],
+    "do_not_trigger": [
+      "问题只涉及不良生成、拨备和核销时使用信用风险能力",
+      "问题只涉及手续费分类或拨备平滑时使用利润质量能力",
+      "需要给出当前利率预测或交易策略时超出本能力"
+    ],
+    "neighbor_distinctions": [
+      {
+        "capability_id": "cap.kan-tou-yin-hang.funding-liquidity-analysis",
+        "use_this_when": "要解释整个利息收入引擎或资产负债两端共同变化。",
+        "use_neighbor_when": "只需深入负债成本、稳定性和期限错配。"
+      },
+      {
+        "capability_id": "cap.kan-tou-yin-hang.earnings-quality-normalization",
+        "use_this_when": "核心交付物是净利息收入驱动桥。",
+        "use_neighbor_when": "核心问题是各收入费用分类、拨备和净利润含金量。"
+      }
+    ]
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ktb-ch04-l370-definitions",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第4章 > 4.1.1利息相关的重要概念 > TXT lines 367-380；EPUB text/part0009.html#cha4_4_1_1_1",
+        "claim_type": "explicit",
+        "excerpt": "净息差（净利息收益率）=净利息收入／总生息资产",
+        "paraphrase": "书中区分平均资产收益率、平均负债成本率、净利差与净息差，并说明生息资产与计息负债分母不同。",
+        "note": "运行时应用期间平均生息资产；若公司披露定义不同，以报告口径为准并说明。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch04-l383-growth",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第4章 > 4.1.1 > 净利息收入增速 > TXT lines 381-387；EPUB text/part0009.html#cha4_4_1_1_1_2",
+        "claim_type": "explicit",
+        "excerpt": "=（生息资产增速+1）×（净息差增速+1）-1",
+        "paraphrase": "净利息收入的增长可拆为生息资产规模变化和净息差变化的乘法组合。",
+        "note": "这里的‘净息差增速’是比率的相对变化；实务也应同时报告百分点变化，避免混淆。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch04-l389-quality",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第4章 > 4.1.2净息差 > TXT lines 388-393；EPUB text/part0009.html#cha4_4_1_1_2",
+        "claim_type": "explicit",
+        "excerpt": "显然这两种银行获取相同的息差所冒的风险是完全不同的",
+        "paraphrase": "相同NIM可能来自高风险高收益资产，也可能来自低成本负债；静态数值不能替代结构和风险判断。",
+        "note": "形成风险调整检查的来源依据。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch04-l411-drivers",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第4章 > 4.1.2谁在影响净息差、4.1.3更高的贷款利率更低的负债成本 > TXT lines 393-444；EPUB text/part0009.html#cha4_4_1_1_2_4",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "净息差由贷款与其他生息资产收益率、存款与同业负债成本，以及各分项在资产负债中的占比共同决定。",
+        "note": "从两家银行案例综合出的通用驱动，不沿用案例数值。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch04-l465-repricing",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第4章 > 4.1.4—4.1.5加减息影响 > TXT lines 445-477；EPUB text/part0009.html#cha4_4_1_1_5",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "利率变化对NIM的影响取决于活期存款、固定/浮动利率、资产与负债重定价周期及期限错配，不能只凭‘加息利好银行’判断。",
+        "note": "书中具体基准利率制度属于历史情境；保留的是重定价分析框架。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch08-l1089-risk",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第8章 > 8.3.1净息差 > TXT lines 1087-1089；EPUB text/part0013.html#cha8_8_1_3_1_10",
+        "claim_type": "explicit",
+        "excerpt": "单看净息差指标可能会忽略了其背后的资产质量问题。",
+        "paraphrase": "息差结论必须与信用风险和信用成本交叉验证。",
+        "note": "避免将价格风险补偿误判为竞争优势。"
+      }
+    ],
+    "interpretation": {
+      "model": "净利息收入约由平均生息资产乘以NIM形成；NIM再由分项资产收益、分项负债成本、结构权重和重定价时点共同决定。高收益资产若带来更高信用成本，表面NIM并不等于更高经济利润。",
+      "decision_rules": [
+        "所有收益率和成本率优先使用期间平均余额；期末口径必须单独标示。",
+        "净利差与净息差分开计算，不因数值接近而混用。",
+        "收入增速同时报告生息资产增速、NIM相对变化和NIM百分点变化。",
+        "资产端至少拆贷款、投资、同业/央行；负债端至少拆存款、同业/存单、央行资金。",
+        "高NIM结论必须附信用成本、资产质量或扣除信用成本后的指标。",
+        "利率冲击按重定价桶和结构传导分析，不使用固定方向口号；旧版3×2幸福痛苦矩阵只可作为历史教学例。",
+        "单季净利息收入或信用减值不默认乘4；需要年度化时优先TTM并展示季节性假设。"
+      ],
+      "assumptions": [
+        "报告披露的净利息收入与平均余额口径可勾稽。",
+        "跨期会计准则、税收列报和利息/非息重分类已调整或已披露。"
+      ]
+    },
+    "application": {
+      "past_cases": [
+        {
+          "case_id": "case-ktb-cmb-bocom-nim",
+          "problem": "两家银行净息差存在显著差距。",
+          "method_use": "作者把差异分解到贷款收益率、存款和同业成本、零售贷款占比、存款占比与活期占比。",
+          "result": "案例显示结构与单项价格共同解释NIM，而不是只看某一个平均利率。",
+          "evidence_ids": [
+            "ev-ktb-ch04-l411-drivers"
+          ]
+        }
+      ],
+      "future_scenarios": [
+        {
+          "scenario": "银行NIM同比下降但净利息收入仍增长。",
+          "recognition_signal": "生息资产增速为正，NIM以基点计下降。",
+          "expected_use": "用乘法增长桥量化规模抵消程度，再解释资产负债价格与结构变化。"
+        },
+        {
+          "scenario": "两家银行NIM相同但估值差异较大。",
+          "recognition_signal": "其中一家资产收益更高、信用成本也明显更高。",
+          "expected_use": "增加扣除信用成本后的单位风险资产利息贡献，避免把高风险溢价当护城河。"
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "净利息收入、利息收入、利息支出",
+        "平均生息资产、平均计息负债及其分项平均余额",
+        "分项资产收益率、负债成本率和结构权重",
+        "至少两期可比数据及重分类说明",
+        "资产负债重定价/到期结构或利率敏感性披露",
+        "信用减值损失、贷款信用成本或可替代风险指标",
+        "期间、币种、单位、是否年化和合并范围"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "核对报告定义、平均余额、年化基础、利息税费处理、合并范围与重分类。",
+          "completion_check": "NIM、净利差、资产收益率和负债成本的分子分母及期间均明确。",
+          "stop_if": "关键口径无法识别或跨期发生不可调整的分类变化。"
+        },
+        {
+          "step_id": "step-02",
+          "action": "复算平均资产收益率、平均负债成本率、净利差、NIM，并与披露值勾稽。",
+          "completion_check": "差异在舍入范围内，或已由口径、税项、代理理财等披露解释。",
+          "stop_if": "差异重大且找不到解释。"
+        },
+        {
+          "step_id": "step-03",
+          "action": "计算净利息收入增长桥：(1+生息资产增速)×(1+NIM相对增速)-1，并同时报告NIM的基点变化。",
+          "completion_check": "规模贡献、息差贡献和交叉项均可复算，百分数与百分点未混淆。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-04",
+          "action": "分别做资产端、负债端结构与价格归因，识别贷款组合、投资、存款活期、批发融资等主要驱动。",
+          "completion_check": "主要变动能够落到具体分项的余额、权重或利率，而非泛称宏观影响。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-05",
+          "action": "按重定价期限分析利率冲击：浮动/固定、短期/长期、活期敏感度与错配。",
+          "completion_check": "结论说明短期与中期可能不同，并列出未知的传导假设。",
+          "stop_if": "无重定价或敏感性数据时不做精确预测。"
+        },
+        {
+          "step_id": "step-06",
+          "action": "将NIM与信用成本、资产质量和RORWA交叉，给出‘低成本负债型’、‘高风险定价型’或混合解释。",
+          "completion_check": "高NIM是否转化为风险调整后利润有独立证据。",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "净利息收入规模—息差增长桥",
+        "NIM资产端与负债端驱动表",
+        "重定价与利率敏感性方向分析",
+        "息差含金量与信用成本交叉结论",
+        "口径差异和缺失输入清单"
+      ],
+      "stop_conditions": [
+        "披露值已复算、主要变动已归因且风险调整检查完成。",
+        "分项平均余额或重定价信息不足时停止精确分解并说明限制。",
+        "用户要求未来利率点位或个性化交易决策时转交其他流程。"
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "不预测政策利率、LPR、存款挂牌利率或市场利率的具体路径。",
+        "不以NIM单项给出银行优劣或估值结论。",
+        "不把书中对特定加减息制度的方向判断直接移植到不同制度。"
+      ],
+      "failure_modes": [
+        "把NIM变化的百分点误写成百分比增速。",
+        "用期末资产余额作为平均余额却不披露。",
+        "只看贷款收益率，忽略贷款结构与信用成本。",
+        "把所有加息情景都判断为银行受益。"
+      ],
+      "limitations": [
+        "公司披露的NIM定义、税项和代理业务剔除可能不同。",
+        "公开报告的重定价分桶往往较粗，无法替代内部ALM模型。",
+        "书中2017—2019年的比较数据只证明当时案例，不构成当前排名。"
+      ],
+      "ask_user_when": [
+        "用户没有说明要按公司披露NIM还是统一复算口径。",
+        "比较跨法域银行且会计/税收列报差异显著。"
+      ],
+      "escalate_when": [
+        "披露NIM与复算差异重大且缺少解释。",
+        "需要复杂利率衍生品、行为期限或存款beta建模。"
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [
+      "cap.kan-tou-yin-hang.business-model-map"
+    ],
+    "contrasts_with": [
+      "cap.kan-tou-yin-hang.earnings-quality-normalization"
+    ],
+    "composes_with": [
+      "cap.kan-tou-yin-hang.funding-liquidity-analysis",
+      "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+      "cap.kan-tou-yin-hang.capital-growth-analysis",
+      "cap.kan-tou-yin-hang.competitive-advantage-trace"
+    ],
+    "routes_to": [
+      "cap.kan-tou-yin-hang.credit-risk-lifecycle"
+    ]
+  },
+  "compilation": {
+    "destination": "reference_only",
+    "skill_name": null,
+    "skill_description": null,
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": "../../test-prompts.json"
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "title": "彼得·林奇的成功投资",
+  "author": "彼得·林奇；约翰·罗瑟查尔德",
+  "version": "机械工业出版社华章中文电子版，2010-04，ISBN 978-7-111-30249-0；正文含千禧版序言",
+  "base_directory": null,
+  "local_paths_redacted": true,
+  "portability_note": "发布态清单已移除本机绝对路径。TXT 是逐行证据锚点的规范文本；EPUB 用于核对书目元数据、章节结构与图表存在性。",
+  "source_count": 2,
+  "sources": [
+    {
+      "absolute_path": null,
+      "relative_path": "彼得林奇的成功投资.txt",
+      "sha256": "85bca43c1a0c9a3446070b0da67138c8d96b8c9e8c0ddaf2bbbf9e8416ac780d",
+      "bytes": 739639,
+      "format": "txt",
+      "source_id": "src-peter-lynch-cn-2010-txt",
+      "role": "primary",
+      "kind": "book",
+      "rights": {
+        "basis": "user-provided",
+        "redistribution": "restricted",
+        "notes": "版权页声明版权所有；本产物仅保留定位、短释义与独立转述，不再分发正文。"
+      },
+      "extraction": {
+        "parser": "UTF-8 plain-text manual review",
+        "parser_version": "line-addressed-v1",
+        "text_artifact": "彼得林奇的成功投资.txt",
+        "locator_scheme": "chapter > subsection > UTF-8 text line range",
+        "coverage": {
+          "unit": "chapters",
+          "expected_units": 20,
+          "processed_units": 20,
+          "omitted_ranges": [],
+          "notes": "20章边界、全书论证与结论均已映射；与目标能力直接相关的第4—18章进行了深读提取，第1—3章及第19—20章用于范围、风险和反例复核。TXT 中若干图表仅保留标题或留白，因此未从缺失图像反推数值。"
+        }
+      }
+    },
+    {
+      "absolute_path": null,
+      "relative_path": "彼得林奇的成功投资.epub",
+      "sha256": "9ec086ff1f3ac728f0cad2f6fe3ad416efd588aecdb90669549aa3e753d27316",
+      "bytes": 9376825,
+      "format": "epub",
+      "source_id": "src-peter-lynch-cn-2010-epub",
+      "role": "supplementary",
+      "kind": "book",
+      "rights": {
+        "basis": "user-provided",
+        "redistribution": "restricted",
+        "notes": "仅用于版本、目录与媒介完整性核对。"
+      },
+      "extraction": {
+        "parser": "EPUB ZIP/OPF/NCX inspection",
+        "parser_version": "EPUB 2 package inspection",
+        "text_artifact": "彼得林奇的成功投资.txt",
+        "locator_scheme": "OEBPS package metadata > guide/NCX chapter title > XHTML resource",
+        "coverage": {
+          "unit": "other",
+          "expected_units": 2,
+          "processed_units": 2,
+          "omitted_ranges": [
+            {
+              "range": "OEBPS/Text/*.xhtml body",
+              "reason": "与规范 TXT 正文重复；EPUB 本轮仅承担元数据、目录和图表存在性核对。"
+            }
+          ],
+          "notes": "OPF 标识出版日期 2010-04-01、语言 zh、ISBN 978-7-111-30249-0；EPUB 含章节导航和图像资源。"
+        }
+      }
+    }
+  ],
+  "manifest_id": "manifest.peter-lynch-successful-investing-cn-2010",
+  "created_at": "2026-09-03T13:12:21+08:00",
+  "updated_at": "2026-09-03T13:12:21+08:00",
+  "work": {
+    "work_id": "work.peter-lynch-successful-investing",
+    "language": "zh-CN",
+    "publication_year": 2010,
+    "user_goal": "支持公司分类、研究主线、增长与估值一致性、持有与退出复核，以及组合和认知边界。",
+    "scope": {
+      "included": [
+        "公司类型与类型迁移",
+        "生活或行业观察到公司研究的证据链",
+        "盈利驱动、利润质量、财务承受力与估值预期",
+        "按公司类型进行主线监测与退出复核",
+        "资金期限、价格锚定、热门叙事和组合适配边界"
+      ],
+      "excluded": [
+        "把历史美国市场统计、税制、监管流程或市场结构当作当前事实",
+        "固定持股数量、类型配置、满仓或止损规则",
+        "固定 PEG、清单计分、卖出阈值或鸡尾酒会交易信号",
+        "期权、期货、卖空操作和任何下单执行"
+      ]
+    }
+  },
+  "known_gaps": [
+    {
+      "gap_id": "gap-digital-provenance",
+      "description": "电子文件的具体印次和数字化制作链未完整披露。",
+      "impact": "不影响章节级核心主张，但不宜声称与任一纸质印次逐页完全一致。",
+      "resolution": "以版权页、ISBN、OPF 元数据和双文件哈希锁定本轮来源版本。"
+    },
+    {
+      "gap_id": "gap-figures-tables",
+      "description": "TXT 中部分图表仅有标题或空白，无法从纯文本复核图中全部数值。",
+      "impact": "不保留依赖缺失图表才能成立的公式、回测或阈值。",
+      "resolution": "只采用正文可独立核对的关系和算例；需要图表数值时返回来源缺口。"
+    },
+    {
+      "gap_id": "gap-current-facts",
+      "description": "书中公司、法规、会计处理、税制和市场数据均具有年代与美国法域背景。",
+      "impact": "任何当代公司结论都必须另取当前一手数据，不能由原书案例直接推出。",
+      "resolution": "运行时要求主体、期间、币种、单位、会计口径、价格时点和当前权威来源。"
+    }
+  ],
+  "readiness": {
+    "exact_version_identified": true,
+    "integrity_recorded": true,
+    "rights_reviewed": true,
+    "coverage_reviewed": true,
+    "ready_for_distillation": true
+  }
+}

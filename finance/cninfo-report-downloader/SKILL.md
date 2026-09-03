@@ -1,6 +1,9 @@
 ---
 name: cninfo-report-downloader
 description: Use when the user wants to download A-share annual reports, quarterly reports, interim reports, latest financial reports, or 巨潮资讯 disclosures by stock code. Triggers include "下载年报", "拉一下季报", "最新财报", "巨潮", and A 股代码 such as 600219. Do not use for analyzing already-downloaded reports without a download request.
+metadata:
+  status: active
+  release-record: references/release-evaluation.md
 ---
 
 # 巨潮财报下载器
@@ -24,7 +27,7 @@ Do not use when the user only wants interpretation of an existing local report; 
 From the `financial_skills` workspace root when using this repository layout:
 
 ```bash
-python3 skills/cninfo-report-downloader/scripts/download_cninfo_reports.py 600219
+python3 skills/finance/cninfo-report-downloader/scripts/download_cninfo_reports.py 600219
 ```
 
 If the skill is installed directly under opencode's project skill directory, use the installed path instead:
@@ -38,13 +41,15 @@ Run the command from the project root where `raw/reports/` should be created. Th
 Runtime requirements:
 
 - Required: Python 3.9+ with standard library network access.
-- Required for default TXT conversion: `pdfplumber` installed in the Python environment.
-- If `pdfplumber` is unavailable, pass `--no-txt` to download PDF only.
+- TXT conversion uses `pdfplumber` when installed, otherwise falls back to the
+  system `pdftotext` command from Poppler.
+- If neither converter is available, pass `--no-txt` to download PDF only.
 
-Install TXT conversion dependency when needed:
+Install either TXT conversion dependency when needed:
 
 ```bash
 python3 -m pip install pdfplumber
+# or install Poppler with the operating system package manager
 ```
 
 Options:
@@ -54,6 +59,8 @@ Options:
 --no-txt                   # download PDF only
 --overwrite                # replace existing files
 --dry-run                  # query and show selected reports without downloading
+--report-type TYPE         # both, annual, latest-periodic, q1, interim, or q3
+--max-pages N              # announcement pagination safety limit; default 20
 ```
 
 ## Behavior
@@ -62,6 +69,10 @@ The script downloads two reports by default:
 
 - 最新年度报告完整版，不使用摘要、简报、英文版或更正摘要替代。
 - 最近一期非年报定期报告，一季报、半年报、三季报三者中取最新。
+
+Use `--report-type` when the user requests only one category. In `both` mode, if only one category exists, keep the available result and print a warning instead of discarding the successful selection.
+
+The announcement query follows all reported result pages up to `--max-pages`, deduplicates announcements, and retries transient network/HTTP 429/5xx failures. Increase the limit explicitly if the API reports more pages than the safety cap.
 
 “最新年度报告”按报告期年份判断，不按公告发布时间判断。若过去年报的更正后版本晚于最新年报发布，仍应选择报告期最新的年报；只有在同一报告期内，才优先选择更正后/修订版。
 
@@ -74,11 +85,11 @@ raw/reports/2026Q1/南山铝业-2026Q1.pdf
 raw/reports/2026Q1/南山铝业-2026Q1.txt
 ```
 
-If TXT conversion fails because `pdfplumber` is unavailable or a PDF is malformed, keep the PDF and report the conversion error. For a new machine, install `pdfplumber` before expecting TXT output.
+Downloaded content must start with a valid PDF signature before it replaces the target path. HTML error/rate-limit pages are rejected, and both PDF and TXT writes use a temporary file plus atomic rename. If TXT conversion fails because no converter is available or a PDF is malformed, keep the validated PDF and any existing TXT, then report the conversion error.
 
 ## After Download
 
-After a successful download, ask the user whether to continue into parsing and analysis.
+After a successful download, continue into parsing and analysis only when the request includes that work; otherwise briefly suggest the next command.
 
 Recommended next step for PDFs:
 
@@ -102,4 +113,8 @@ After parsing succeeds, pass the parsed directory to the relevant analysis entry
 | Treating 半年度报告 as 年报 | Parse `半年度报告` before generic `年度报告` |
 | Downloading older-year correction as latest annual report | Sort annual reports by report year first, announcement time only within the same year |
 | Inferring market from `orgId` | Infer market from stock code prefix |
+| Saving an HTML error page as `.pdf` | Verify the `%PDF-` signature before the atomic write |
+| Reading only the first announcement page | Follow `totalpages`/`hasMore` with a bounded safety limit |
 | Skipping TXT status | Report TXT conversion success, skip, or failure explicitly |
+
+发布状态及其边界见 [release-evaluation.md](references/release-evaluation.md)。

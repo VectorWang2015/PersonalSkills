@@ -1,0 +1,316 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.kan-tou-yin-hang.earnings-quality-normalization",
+  "revision": 2,
+  "status": "draft",
+  "slug": "earnings-quality-normalization",
+  "title": "银行利润质量与口径归一",
+  "one_liner": "从总营收到拨备前利润、信用减值和净利润逐层重建，并把重分类、总额列报和一次性项目从可持续经营结果中分开。",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "ktbank-txt-2021.fw.ch05.l547-profit-front-risk-back",
+      "ktbank-txt-2021.pr.ch05.l560-preprovision-profit",
+      "ktbank-txt-2021.ce.ch04.l496-noninterest-reclassification",
+      "ktbank-txt-2021.ce.ch04.l515-interest-to-fee",
+      "ktbank-txt-2021.pr.ch05.l572-expense-quality",
+      "ktbank-txt-2021.fw.ch09.l1254-income-statement",
+      "ktbank-txt-2021.ce.ch09.l1292-cash-flow"
+    ],
+    "aliases": [
+      "legacy.provision-profit-identification",
+      "legacy.fee-income-authenticity"
+    ],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "判断银行净利润增长有多少来自真实收入能力，有多少来自会计分类、减值节奏、一次性交易或总额列报。",
+    "distinctive_value": "银行利润前置、风险后置，且利息/手续费/其他非息与保险收入可能发生口径错位；本能力给出可勾稽的归一桥而非只报同比。",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ktb-ch05-l547-risk",
+          "ev-ktb-ch05-l560-ppop",
+          "ev-ktb-ch04-l496-reclass",
+          "ev-ktb-ch04-l515-fee",
+          "ev-ktb-ch05-l572-expense",
+          "ev-ktb-ch09-l1255-income",
+          "ev-ktb-ch09-l1293-cashflow"
+        ],
+        "rationale": "证据覆盖拨备平滑、拨备前利润、非息重分类、息转费、费用质量、损益表读法和现金流边界；可持续/一次性标签是本轮操作化。"
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "以损益表、附注、重述说明、减值和业务分部数据可构建报告口径与分析口径两套桥。"
+      },
+      "incremental_utility": {
+        "status": "hypothesis",
+        "comparison": "预计减少净利润增速幻觉、非息占比误判、保险总额列报虚增营收和费用越低越好的机械判断；尚未独立评测。"
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "无法取得重分类、减值和分项附注时不输出精确调整后利润；不擅自改写法定报表。"
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "利润平滑、手续费口径、营运投入和现金流误用在第4、5、8、9、10章多次出现。"
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "评估银行净利润含金量",
+      "统一不同银行或不同时期的收入费用分类",
+      "解释拨备、保险并表或手续费重分类造成的表面增长"
+    ],
+    "trigger_signals": [
+      "净利润与营收或拨备前利润方向不一致",
+      "信用减值大幅下降、手续费占比突然提高或其他业务收入暴增",
+      "跨期会计准则、分期手续费或保险业务列报发生变化",
+      "用户用单年银行经营现金流判断利润真假"
+    ],
+    "do_not_trigger": [
+      "核心问题是不良生成和拨备余额桥时使用信用风险能力",
+      "核心问题是NIM资产负债驱动时使用净息差能力",
+      "需要审计调整分录或会计准则法律意见时应升级专业判断"
+    ],
+    "neighbor_distinctions": [
+      {
+        "capability_id": "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+        "use_this_when": "要解释利润表上的减值力度和净利润含金量。",
+        "use_neighbor_when": "要重建贷款不良、核销和准备余额的风险动态。"
+      },
+      {
+        "capability_id": "cap.kan-tou-yin-hang.net-interest-margin-analysis",
+        "use_this_when": "要统一整个损益表口径与可持续性。",
+        "use_neighbor_when": "只需解释净利息收入及NIM驱动。"
+      }
+    ]
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ktb-ch05-l547-risk",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第5章 > 5.1信用减值损失 > 发生原因 > TXT lines 545-548；EPUB text/part0010.html#cha5_5_1_1_1_1",
+        "claim_type": "explicit",
+        "excerpt": "银行今天收到的利润不一定就是真实的利润",
+        "paraphrase": "贷款收益先确认而风险后暴露，减值计提既服务风险抵补，也可能改变净利润的时间分布。",
+        "note": "不是说已确认利润必然虚假，而是要求结合未来损失和拨备判断。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch05-l560-ppop",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第5章 > 5.1 > 信用减值损失对银行利润的影响 > TXT lines 559-564；EPUB text/part0010.html#cha5_5_1_1_1_3",
+        "claim_type": "explicit",
+        "excerpt": "两家银行的净利润增速相似，并不代表两家银行的实际经营情况相近",
+        "paraphrase": "拨备前税前利润与减值变化可以揭示净利润增速被拨备节奏遮蔽的情况。",
+        "note": "形成净利润桥的直接依据。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch04-l496-reclass",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第4章 > 4.2.1非利息收入的构成 > TXT lines 493-501；EPUB text/part0009.html#cha4_4_1_2_7",
+        "claim_type": "explicit",
+        "excerpt": "在对比2018年之前和2018年以后的非利息收入时，要注意其统计口径发生了较大的变化",
+        "paraphrase": "会计分类变化可把原利息收入改列为其他非息，导致跨期非息占比不可直接比较。",
+        "note": "年份和具体准则状态是历史信息；保留的是先查重分类再比较的规则。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch04-l515-fee",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第4章 > 4.2.1—4.2.2 > TXT lines 512-539；EPUB text/part0009.html#cha4_4_1_2_8",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "信贷相关收费或信用卡分期可被列入手续费，抬高表面中收；应按实际附注统一同类经济业务的比较口径。",
+        "note": "不采用作者按交易额估测各行手续费的历史假设作为通用公式。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch05-l572-expense",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第5章 > 5.2业务及管理费 > TXT lines 565-579；EPUB text/part0010.html#cha5_5_1_2",
+        "claim_type": "explicit",
+        "excerpt": "业务及管理费并不是越低越好。",
+        "paraphrase": "营运费用应结合投入用途、未来效率、客户增长和折旧政策判断，不能把低费用率自动视为优秀。",
+        "note": "投入产生回报仍需后续数据验证。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch09-l1255-income",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第9章 > 9.2损益表 > TXT lines 1254-1290；EPUB text/part0014.html#cha9_9_1_2",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "损益分析依次关注总营收、净利息收入、手续费、其他非息与信用减值，并通过附注识别保险总额列报和减值构成。",
+        "note": "综合第9章损益表实操。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch09-l1293-cashflow",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第9章 > 9.3现金流量表 > TXT lines 1292-1324；EPUB text/part0014.html#cha9_9_1_3",
+        "claim_type": "explicit",
+        "excerpt": "单独看经营现金流是不合理的。",
+        "paraphrase": "银行的存贷、投资和债券融资分布在三类现金流中，且资产久期不匹配日历年，因此单年经营现金流不能直接判定利润质量。",
+        "note": "现金流仍需用于流动性与勾稽，不能解读为完全无用。"
+      }
+    ],
+    "interpretation": {
+      "model": "先保留法定报表，再建立分析口径：总营收分为净利息、可复核手续费和其他非息；扣除营运费用得到拨备前利润，再扣信用减值得到税前利润。跨期比较时单独列重分类、总额/净额、一次性和估值波动。",
+      "decision_rules": [
+        "总营收、拨备前利润、信用减值和净利润至少四层同时比较。",
+        "手续费与非息占比先核对经济业务和列报口径，不按科目名称自动视为低风险收入。",
+        "保险或类似业务的收入与成本总额同时看，必要时改用净贡献作分析口径。",
+        "营运费用按维持性投入、增长性投入和会计政策影响分解，不以最低为目标。",
+        "信用减值下降带来的利润增长必须与资产质量、核销和拨备余额核对，但不能仅凭剪刀差推断蓄水、放水或操纵意图。",
+        "银行现金流三类合看并拉长周期；单年经营净现金流只作结构线索。"
+      ],
+      "assumptions": [
+        "有足够附注识别主要收入和减值构成。",
+        "分析口径调整不改变法定报表，只作为透明的桥接层。"
+      ]
+    },
+    "application": {
+      "past_cases": [
+        {
+          "case_id": "case-ktb-provision-smoothing",
+          "problem": "两家银行净利润都增长，但一家拨备前利润下降且减值大幅减少。",
+          "method_use": "作者比较净利润、拨备前税前利润和减值损失增速。",
+          "result": "识别出净利润表现被降低计提力度支撑，实际经营趋势弱于表面。",
+          "evidence_ids": [
+            "ev-ktb-ch05-l560-ppop"
+          ]
+        },
+        {
+          "case_id": "case-ktb-insurance-grossing",
+          "problem": "银行并表保险业务后其他业务收入大幅增长。",
+          "method_use": "作者同时比较其他业务收入与成本的净差额。",
+          "result": "发现总额列报放大收入增速，净贡献远小于表面收入增量。",
+          "evidence_ids": [
+            "ev-ktb-ch09-l1255-income"
+          ]
+        }
+      ],
+      "future_scenarios": [
+        {
+          "scenario": "银行净利润增速稳定，但营收、手续费和拨备均大幅波动。",
+          "recognition_signal": "利润增速与拨备前利润背离，或会计分类变更跨越比较期。",
+          "expected_use": "建立报告口径与归一口径桥，分出经营改善、拨备平滑和列报变化。"
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "至少三期损益表与相关附注",
+        "净利息收入、手续费及佣金、其他非息收入分项",
+        "业务及管理费、成本收入比、折旧摊销和重大投入说明",
+        "信用减值损失分资产类别、拨备前利润和净利润",
+        "重述、会计政策/分类变更、一次性项目与并购并表说明",
+        "经营、投资、筹资现金流及现金余额变化",
+        "期间、币种、单位、合并范围和税前/税后口径"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "建立报告口径表，锁定主体、期间、单位、重述、会计政策和收入确认变化。",
+          "completion_check": "跨期不可比项均有映射或明确保留为断点。",
+          "stop_if": "重大重述或分类变化无法量化且足以改变结论。"
+        },
+        {
+          "step_id": "step-02",
+          "action": "构建法定损益桥：净利息+手续费及佣金+其他非息=营收；营收-业务管理费等=拨备前利润；再扣减值、税等到净利润。",
+          "completion_check": "主表与附注基本勾稽，差异有列报解释。",
+          "stop_if": "无法从公开数据勾稽关键层级。"
+        },
+        {
+          "step_id": "step-03",
+          "action": "标记并量化重分类、总额/净额、一次性、交易估值与并表变化；生成不覆盖法定报表的分析口径桥。",
+          "completion_check": "每项调整有来源、方向、税前/税后和可持续性标签。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-04",
+          "action": "分析费用质量：人员、科技、渠道、折旧与一般行政费用的用途、效率结果和折旧政策。",
+          "completion_check": "高费用或低费用均有业务结果和会计政策支持，不用单一成本收入比判优。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-05",
+          "action": "把信用减值与拨备前利润、资产质量、核销和准备余额交叉，列出余额、迁徙、宏观情景、模型、管理叠加等相容解释。",
+          "completion_check": "净利润变化中收入、费用、拨备、税和一次性贡献可区分，且没有把相关性升级为主观意图。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-06",
+          "action": "将三类现金流作为勾稽和资产负债配置线索拉长观察，不用单年经营现金流给真假利润结论。",
+          "completion_check": "现金变化能与存款、贷款、投资和债券融资主要变动对应。",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "法定损益桥与归一损益桥",
+        "可持续、周期性、一次性和列报变化分类表",
+        "拨备前利润、信用减值和净利润贡献分析",
+        "费用投入质量与现金流勾稽说明",
+        "无法量化的口径风险清单"
+      ],
+      "stop_conditions": [
+        "净利润主要驱动可归因、调整来源可复核且资产质量交叉完成。",
+        "附注不足时保留法定口径并停止伪精确调整。",
+        "需要审计判断、会计政策裁决或欺诈结论时升级。"
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "不擅自重编或改写法定财务报表。",
+        "不把分析口径称为GAAP/IFRS/企业会计准则下的官方指标。",
+        "不因单年经营现金流为负或费用增长就直接判定经营恶化。"
+      ],
+      "failure_modes": [
+        "只看净利润同比，不看拨备前利润和减值。",
+        "把所有手续费和其他非息视为无风险收入。",
+        "忽略保险或其他业务总额列报对营收的放大。",
+        "沿用作者历史估测费率重建当前手续费。",
+        "把低成本收入比自动解释为高效率。"
+      ],
+      "limitations": [
+        "公开披露未必足以将所有一次性与可持续项目精确分开。",
+        "拨备管理判断不能仅凭相关性证明利润操纵。",
+        "跨法域银行收入确认、保险并表和减值准则差异显著。"
+      ],
+      "ask_user_when": [
+        "用户希望保留公司报告口径还是建立可比分析口径。",
+        "比较期跨越重大并购、会计准则或业务分部变化。"
+      ],
+      "escalate_when": [
+        "审计意见、监管调查或重述涉及收入确认和贷款减值。",
+        "任务需要正式会计判断、鉴证或法律责任结论。"
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [
+      "cap.kan-tou-yin-hang.business-model-map"
+    ],
+    "contrasts_with": [
+      "cap.kan-tou-yin-hang.net-interest-margin-analysis",
+      "cap.kan-tou-yin-hang.credit-risk-lifecycle"
+    ],
+    "composes_with": [
+      "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+      "cap.kan-tou-yin-hang.capital-growth-analysis",
+      "cap.kan-tou-yin-hang.bank-valuation"
+    ],
+    "routes_to": [
+      "cap.kan-tou-yin-hang.capital-growth-analysis"
+    ]
+  },
+  "compilation": {
+    "destination": "reference_only",
+    "skill_name": null,
+    "skill_description": null,
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": "../../test-prompts.json"
+  }
+}

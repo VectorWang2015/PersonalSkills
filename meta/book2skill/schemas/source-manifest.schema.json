@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "book2skill/source-manifest.schema.json",
+  "title": "book2skill source manifest",
+  "description": "The fields required by build_source_manifest.py form the minimum contract. The remaining properties are optional audit enrichments.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "title", "author", "version", "base_directory", "source_count", "sources"],
+  "allOf": [
+    {
+      "if": {
+        "required": ["local_paths_redacted"],
+        "properties": {
+          "local_paths_redacted": { "const": true }
+        }
+      },
+      "then": {
+        "properties": {
+          "base_directory": { "type": "null" },
+          "sources": {
+            "items": {
+              "properties": {
+                "absolute_path": { "type": "null" }
+              }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "base_directory": { "type": "string", "minLength": 1 },
+          "sources": {
+            "items": {
+              "properties": {
+                "absolute_path": { "type": "string", "minLength": 1 }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "title": { "type": ["string", "null"] },
+    "author": { "type": ["string", "null"] },
+    "version": { "type": ["string", "null"] },
+    "base_directory": { "type": ["string", "null"], "minLength": 1 },
+    "local_paths_redacted": { "type": "boolean" },
+    "portability_note": { "type": "string" },
+    "source_count": { "type": "integer", "minimum": 1 },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["absolute_path", "relative_path", "sha256", "bytes", "format"],
+        "properties": {
+          "absolute_path": { "type": ["string", "null"], "minLength": 1 },
+          "relative_path": { "type": "string", "minLength": 1 },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "bytes": { "type": "integer", "minimum": 0 },
+          "format": { "type": "string", "minLength": 1 },
+          "source_id": { "type": "string", "pattern": "^src-[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "role": { "enum": ["primary", "supplementary", "counterevidence"] },
+          "kind": { "enum": ["book", "article", "transcript", "course", "interview", "dataset", "other"] },
+          "rights": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["basis", "redistribution", "notes"],
+            "properties": {
+              "basis": { "enum": ["user-provided", "public-domain", "licensed", "unknown"] },
+              "redistribution": { "enum": ["allowed", "restricted", "unknown"] },
+              "notes": { "type": "string" }
+            }
+          },
+          "extraction": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["parser", "parser_version", "text_artifact", "locator_scheme", "coverage"],
+            "properties": {
+              "parser": { "type": "string", "minLength": 1 },
+              "parser_version": { "type": "string" },
+              "text_artifact": { "type": "string", "minLength": 1 },
+              "locator_scheme": { "type": "string", "minLength": 1 },
+              "coverage": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["unit", "expected_units", "processed_units", "omitted_ranges", "notes"],
+                "properties": {
+                  "unit": { "enum": ["pages", "chapters", "sections", "chunks", "tokens", "other"] },
+                  "expected_units": { "type": ["integer", "null"], "minimum": 0 },
+                  "processed_units": { "type": "integer", "minimum": 0 },
+                  "omitted_ranges": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["range", "reason"],
+                      "properties": {
+                        "range": { "type": "string", "minLength": 1 },
+                        "reason": { "type": "string", "minLength": 1 }
+                      }
+                    }
+                  },
+                  "notes": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "manifest_id": { "type": "string", "pattern": "^manifest\\.[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "work": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["work_id", "language", "publication_year", "user_goal", "scope"],
+      "properties": {
+        "work_id": { "type": "string", "pattern": "^work\\.[a-z0-9]+(?:-[a-z0-9]+)*$" },
+        "language": { "type": "string", "minLength": 2 },
+        "publication_year": { "type": ["integer", "string", "null"] },
+        "user_goal": { "type": "string", "minLength": 1 },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["included", "excluded"],
+          "properties": {
+            "included": { "type": "array", "items": { "type": "string" } },
+            "excluded": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "known_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gap_id", "description", "impact", "resolution"],
+        "properties": {
+          "gap_id": { "type": "string", "pattern": "^gap-[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "description": { "type": "string", "minLength": 1 },
+          "impact": { "type": "string", "minLength": 1 },
+          "resolution": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exact_version_identified", "integrity_recorded", "rights_reviewed", "coverage_reviewed", "ready_for_distillation"],
+      "properties": {
+        "exact_version_identified": { "type": "boolean" },
+        "integrity_recorded": { "type": "boolean" },
+        "rights_reviewed": { "type": "boolean" },
+        "coverage_reviewed": { "type": "boolean" },
+        "ready_for_distillation": { "type": "boolean" }
+      }
+    }
+  }
+}

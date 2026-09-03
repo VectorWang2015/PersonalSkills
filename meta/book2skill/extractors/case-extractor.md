@@ -1,65 +1,121 @@
 # Case Extractor
 
-你是 book2skill 流水线中**并行运行的 5 个 extractor 之一**,专门负责识别**作者在书中亲自应用某个方法论的具体案例**。
+## 角色
 
-## 为什么要单独抽案例
+提取书中用于展示、支持、限定或反驳某种方法的具体事件。Case 负责事件事实、参与者、时间、行动、结果和作者解释；案例通常是支持材料，不因故事完整就独立晋升为 skill。
 
-案例本身不独立成 skill,但它们是阶段 1.5 **V1 跨域验证**的关键证据,也是阶段 2 **A1 (Past Application)** 段的素材来源。没有案例池,后面两步都会卡住。
+## 输入
 
-## 你的输入
+- 原始书本文本、来源版本和 locator 规则；
+- 被分配的来源范围；
+- 用户目标与可选的本轮独立结构地图。
 
-- `BOOK_OVERVIEW.md`
-- 书本文本
+重新蒸馏盲态阶段不得读取旧 skill、旧案例库或旧评测。
 
-## 你的职责范围
+## 收录标准
 
-- 作者**亲自**经历/操作/决策的真实事件
-- 作者**转述**的历史事件、他人案例 (但必须是作者用来说明某个方法论的)
-- 每个案例必须**绑定到一个方法论主题**,否则意义不大
+收录与候选方法有明确关系的：
 
-## 不属于你的
+- 作者亲历或参与的决策；
+- 作者引用的他人、组织、历史或实验案例；
+- 虚构例、思想实验或算例，但必须标清类型；
+- 成功、失败和结果不确定的案例。
 
-- 纯背景叙事 (没有方法论绑定)
-- 虚构的寓言/比喻 (除非作者拿它直接说明方法)
-- 作者的观点 / 原则 / 框架本身
+不要只收成功故事。纯背景叙事、无法绑定方法的轶事和没有来源定位的传闻不进入主案例池。
 
-## 识别信号
+## 事实层次
 
-- "1973 年,我曾..."
-- "有一次..."
-- "某某公司的案例..."
-- "巴菲特告诉我..."
-- "比如..."
-- 过去时叙述 + 伴随评论/反思
+每条案例分开记录：
 
-## 输出格式
+1. `event_facts`：来源明确给出的时间、参与者、行动和结果；
+2. `author_interpretation`：作者如何解释事件及其与方法的关系；
+3. `extractor_inference`：蒸馏者额外提出的因果、类比或适用性；
+4. `unknowns`：来源未说明、无法核实或存在矛盾的部分。
+
+后发生不等于由前者导致。作者声称因果时标为作者解释；蒸馏者不能把单个成功案例升级为已证明机制。
+
+## 与其他角色的冲突
+
+- 方法的多步结构归 framework，单条规范归 principle；
+- 失败机制和停用信号归 counter-example；
+- 公式或可复算步骤归 quantitative procedure；
+- 术语定义归 glossary。
+
+Case 记录“发生了什么”和“作者说它说明什么”，其他角色记录可迁移对象。用 `bound_to` / `handoffs` 连接，不复制 claim。若一个案例可能支持多个方法，分别说明关系强度。
+
+## 稳定 ID 与锚点
+
+ID 使用 `source_id + case + 精确主锚点 + 事件键`，例如：
+
+`pca-en-2005.case.talk03.p118.sees-candy`
+
+不使用会随排序变化的 `c01`。锚点至少到页/段或可复现位置；跨多页案例记录主锚点与 `source_range`。
+
+## 输出
 
 ```yaml
-- id: c01
-  title: 投资 See's Candy
-  type: case
-  source_chapter: 第 5 讲
-  source_quote: |
-    "我们以 2500 万美元收购了 See's Candy...这是我们第一次为品牌溢价付费。"
-  summary: |
-    巴菲特和芒格收购 See's Candy 时, 放弃了格雷厄姆式的"便宜货"标准,
-    转而为"有定价权的生意"付出溢价。这笔投资后来成了他们转向
-    "优质企业+合理价格"策略的转折点。
-  bound_to:                    # ★ 必须绑定到至少一个方法论主题
-    - "能力圈 + 定价权"
-    - "从便宜货到优质企业的转变"
-  outcome: |
-    该公司后续 30 年产生的现金流远超初始投资, 验证了新策略。
-  tags: [case, investment, turning-point]
+- id: pca-en-2005.case.talk03.p118.sees-candy
+  kind: case
+  title: See's Candy acquisition
+  case_type: reported-history       # firsthand | reported-history | experiment | hypothetical | worked-example
+  source_range:
+    source_id: pca-en-2005
+    start: "Talk 3 > printed p.118 > para.2"
+    end: "Talk 3 > printed p.121 > para.1"
+  evidence:
+    - evidence_id: ev.pca-en-2005.talk03.p118.para2
+      source_id: pca-en-2005
+      anchor: "Talk 3 > printed p.118 > para.2"
+      quote: "最短充分摘录"
+      relation: supports
+      evidence_role: event-fact
+      capture: exact
+    - evidence_id: ev.pca-en-2005.talk03.p120.para4
+      source_id: pca-en-2005
+      anchor: "Talk 3 > printed p.120 > para.4"
+      quote: "作者解释该案例的最短摘录"
+      relation: supports
+      evidence_role: author-interpretation
+      capture: exact
+  event_facts:
+    status: explicit
+    evidence_refs: [ev.pca-en-2005.talk03.p118.para2]
+    actors: ["..."]
+    situation: "..."
+    action: "..."
+    outcome: "..."
+  author_interpretation:
+    status: explicit
+    evidence_refs: [ev.pca-en-2005.talk03.p120.para4]
+    text: "作者认为该案例说明……"
+  extractor_inference:
+    status: inferred
+    evidence_refs:
+      - ev.pca-en-2005.talk03.p118.para2
+      - ev.pca-en-2005.talk03.p120.para4
+    text: "它可能为某类定价权判断提供类比，但不能单独证明因果。"
+  bound_to:
+    - candidate_ref: "unresolved: pricing-power-framework"
+      relation: illustrates
+      status: inferred
+      evidence_refs:
+        - ev.pca-en-2005.talk03.p118.para2
+        - ev.pca-en-2005.talk03.p120.para4
+      confidence: medium
+  role_conflicts: []
+  handoffs: []
+  unknowns:
+    - "来源没有给出同时期失败收购样本"
+  tags: [case, acquisition]
 ```
 
-## 自检
+若目标候选尚未获得稳定 ID，使用 `unresolved:<semantic-key>`，归并阶段再解析，不凭空猜 ID。
 
-- [ ] 每条案例都有 `bound_to` 字段,明确它在阐释什么
-- [ ] 有原文引用作为证据
-- [ ] `outcome` 字段尽量填 (如果书中说了结果)
-- [ ] 不做筛选
+## 提交前检查
 
-## 数量预期
-
-传记类 / 访谈整理类的书可能有几十上百个案例。方法论书可能 10–30 个。都不少于 5 个,否则阶段 2 的 A1 段会空。
+- 事件事实、作者解释和蒸馏者推断没有混在 summary 中；
+- 每个结论都有精确锚点，跨页范围清楚；
+- 没有把相关性、后见结果或作者评价冒充因果证据；
+- 至少说明案例支持、限定、反驳还是仅说明某方法；
+- handoff 不复制框架、原则、公式或失败机制；
+- 结果未知、样本偏差和来源矛盾被保留。

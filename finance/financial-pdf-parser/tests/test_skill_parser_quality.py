@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[1] / "scripts"))
-from parse_financial_pdf import assign_merged_table_ids, assign_title_by_bbox, build_analysis_context, confidence_proxy, infer_table_unit, merge_continued_tables, normalize_table_section
+from parse_financial_pdf import assign_merged_table_ids, assign_title_by_bbox, build_analysis_context, build_parse_report, confidence_proxy, infer_table_unit, merge_continued_tables, normalize_table_section, title_near_page
 
 
 def test_title_uses_table_bbox_proximity():
@@ -13,9 +13,23 @@ def test_title_uses_table_bbox_proximity():
     assert assign_title_by_bbox([55, 70, 540, 700], lines) == "母公司利润表"
 
 
+def test_combined_bank_statement_title_is_not_downgraded_to_parent_only():
+    text = "四、财务报表\n合并及母公司资产负债表\n单位：百万元人民币"
+
+    assert title_near_page(text) == "合并及母公司资产负债表"
+    assert normalize_table_section("合并及母公司资产负债表", "四、财务报表") == "二、财务报表"
+
+
 def test_unit_uses_nearby_table_context():
     lines = [{"text": "单位：元", "bbox": [55, 60, 120, 75]}, {"text": "实收资本（或股本）", "bbox": [55, 500, 200, 515]}]
     assert infer_table_unit([55, 80, 540, 700], lines, rows=[["实收资本（或股本）", 1]]) == "元"
+
+
+def test_declared_scaled_unit_overrides_monetary_row_default():
+    lines = [{"text": "金额单位：人民币万元", "bbox": [400, 60, 535, 75]}]
+    rows = [["资产总计", 12345], ["负债合计", 6789]]
+
+    assert infer_table_unit([55, 80, 540, 700], lines, rows=rows) == "万元"
 
 
 def test_profit_statement_continuation_unit_is_money_not_per_share():
@@ -66,6 +80,37 @@ def test_analysis_context_points_downstream_skills_to_merged_validated_tables():
     assert "Use `tables_merged/` first" in context
     assert "tables_merged/merged_table_0001.json" in context
     assert "合并资产负债表" in context
+
+
+def test_parse_report_truthfully_identifies_engine_and_manual_fallback():
+    report = build_parse_report(
+        {"tables": [], "merged_tables": [], "chunks": [], "parser_warnings": [{"page": 1}]},
+        [{"check": "validation_coverage", "status": "warn"}],
+    )
+
+    assert "parser: pymupdf_find_tables" in report
+    assert "automatic fallback: not attempted" in report
+    assert "hybrid" not in report
+    assert "parser warnings: 1" in report
+    assert "parser warning unknown: pages 1" in report
+
+
+def test_analysis_context_lists_parser_warning_pages():
+    context = build_analysis_context(
+        {
+            "source_file": "测试.pdf",
+            "tables": [],
+            "merged_tables": [],
+            "chunks": [],
+            "parser_warnings": [
+                {"page": 4, "code": "no_table_detected_on_statement_page", "title": "合并利润表"}
+            ],
+        },
+        [{"check": "statement_table_coverage", "status": "fail"}],
+    )
+
+    assert "page 4: no_table_detected_on_statement_page" in context
+    assert "manual comparison/fallback" in context
 
 
 def test_assign_merged_table_ids_matches_written_file_names():

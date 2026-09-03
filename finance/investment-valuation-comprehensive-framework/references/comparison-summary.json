@@ -1,0 +1,27 @@
+{
+  "schema": "book2skill/merged-lineage@local-1",
+  "comparison_id": "compare.investment-valuation-4e.2026-09-03",
+  "blind_freeze_sha256": "4bb5735942b12fd34504309edbb6a0cf77fd70f92298ffafba3dfca8d4768607",
+  "status": "released",
+  "record_role": "historical-pre-release-comparison",
+  "historical_note": "This comparison records the pre-release merge decision. The current release decision is documented in release-evaluation.md.",
+  "release_evaluation": "release-evaluation.md",
+  "preserved_from_baseline": [
+    "practical stock classification and output skeleton",
+    "upstream validation-failure propagation",
+    "cycle-peak low-PE warning"
+  ],
+  "adopted_from_blind_candidate": [
+    "source/evidence lineage",
+    "formula and stop contracts",
+    "final-deliverable routing",
+    "reverse-DCF and full equity bridge"
+  ],
+  "removed": [
+    "synthetic quotations",
+    "unsupported frontmatter",
+    "fixed parameter bands",
+    "mandatory save prompt",
+    "runtime sibling dependency"
+  ]
+}

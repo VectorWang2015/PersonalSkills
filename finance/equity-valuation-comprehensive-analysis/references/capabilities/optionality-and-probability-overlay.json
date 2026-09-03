@@ -1,0 +1,217 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.investment-valuation-4e.optionality-and-probability-overlay",
+  "revision": 1,
+  "status": "draft",
+  "slug": "optionality-and-probability-overlay",
+  "title": "Optionality and probability overlay",
+  "one_liner": "Add contingent-right or probabilistic analysis only when it captures decision flexibility or risk structure absent from the base valuation.",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "iv4.fw.ch28.l22065.optionality",
+      "iv4.fw.ch33.l23990.probabilistic"
+    ],
+    "aliases": [],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "Represent conditional, sequential or distributed outcomes without arbitrary scenario stacking or double-counted risk.",
+    "distinctive_value": "Encodes claim, unit, growth/reinvestment, terminal, bridge and stop-condition checks that are commonly omitted in ad hoc valuation.",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ch28-real-options",
+          "ev-ch29-flexibility",
+          "ev-ch30-distressed-option",
+          "ev-ch33-probability"
+        ],
+        "rationale": "Core doctrine is directly supported at the cited chapter/line anchors; workflow routing and current-data requirements are explicitly operational synthesis."
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "The card has explicit inputs, ordered actions, observable outputs and hard stop conditions."
+      },
+      "incremental_utility": {
+        "status": "hypothesis",
+        "comparison": "The package-level release evaluation does not provide per-card attribution; individual behavioral evidence for this reference-only card remains pending."
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "Non-use cases and invalid-input conditions alter routing or force a stop."
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "The governing consistency principles recur across multiple chapters; specific formulas remain valuable even when stated once."
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "value a real option",
+      "build scenarios",
+      "decision tree",
+      "Monte Carlo valuation"
+    ],
+    "trigger_signals": [
+      "delay",
+      "expand",
+      "abandon",
+      "distressed equity option",
+      "sequential uncertainty",
+      "probability distribution"
+    ],
+    "do_not_trigger": [
+      "Ordinary uncertainty with no discretionary contingent right and no need for outcome distribution."
+    ],
+    "neighbor_distinctions": []
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ch28-real-options",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 28 > Real Options: Promise and Pitfalls > TXT lines 22065-22356",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Optionality is relevant when management has a real right to delay or act after uncertainty resolves; not every uncertain project deserves an option premium.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch29-flexibility",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 29 > Options to Expand and Abandon > TXT lines 22387-22606",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Expansion, abandonment and financial flexibility can add value only when the contingent right and exercise decision are identifiable.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch30-distressed-option",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 30 > Estimating Equity as an Option > TXT lines 22642-22852",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Deeply troubled, highly levered equity may retain time value as a call on firm assets because of limited liability.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch33-probability",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 33 > Scenario Analysis, Decision Trees, Simulations > TXT lines 23990-24236; EPUB OPS/c033.xhtml",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Use scenarios for coherent states, trees for sequential discrete risks, and simulations for distributions; avoid double-counting risk.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      }
+    ],
+    "interpretation": {
+      "model": "Add contingent-right or probabilistic analysis only when it captures decision flexibility or risk structure absent from the base valuation.",
+      "decision_rules": [
+        "Identify right or uncertainty topology.",
+        "Choose scenario/tree/simulation/option model.",
+        "Keep state assumptions coherent.",
+        "Reconcile with base DCF and remove double counting."
+      ],
+      "assumptions": [
+        "Current company, market, accounting and regulatory facts are obtained at runtime from authoritative sources.",
+        "Book examples illustrate mechanics and are not current defaults."
+      ]
+    },
+    "application": {
+      "past_cases": [],
+      "future_scenarios": [
+        {
+          "scenario": "Represent conditional, sequential or distributed outcomes without arbitrary scenario stacking or double-counted risk.",
+          "recognition_signal": "delay; expand; abandon",
+          "expected_use": "Execute the steps, disclose assumptions, and stop rather than invent missing current inputs."
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "base value",
+        "contingent right and exercise rule",
+        "state variables",
+        "probabilities/distributions",
+        "risk-treatment convention"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "Identify right or uncertainty topology.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": "A required identity, unit, claim, formula, current-data or survival input is unresolved."
+        },
+        {
+          "step_id": "step-02",
+          "action": "Choose scenario/tree/simulation/option model.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-03",
+          "action": "Keep state assumptions coherent.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-04",
+          "action": "Reconcile with base DCF and remove double counting.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "probability/value distribution",
+        "option increment if justified",
+        "risk reconciliation"
+      ],
+      "stop_conditions": [
+        "Required current facts or market inputs cannot be sourced or bounded.",
+        "Cash-flow claim and discount rate cannot be made consistent.",
+        "Terminal or reverse-valuation system is mathematically invalid or underidentified."
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "adding an option premium merely because the future is uncertain"
+      ],
+      "failure_modes": [
+        "Using book case numbers or U.S. historical observations as current universal defaults.",
+        "Hiding uncertainty behind a precise point value.",
+        "Continuing after unresolved entity, period, currency, unit, formula or data-vintage mismatch."
+      ],
+      "limitations": [
+        "The source is a 2025 valuation text; current accounting, tax, regulatory and market facts require separate verification.",
+        "Stage 0-1.6 validates evidence and contract design, not live-model investment performance."
+      ],
+      "ask_user_when": [
+        "Valuation purpose, claim, date, currency or control/minority perspective would materially change the model.",
+        "Several plausible narratives produce materially different values and the user must choose a scenario policy."
+      ],
+      "escalate_when": [
+        "A regulated fairness opinion, tax/legal conclusion or transaction execution is requested.",
+        "Complex derivatives, insolvency waterfall or jurisdiction-specific regulatory capital requires specialist review."
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [
+      "cap.investment-valuation-4e.valuation-input-and-identity-contract"
+    ],
+    "contrasts_with": [],
+    "composes_with": [],
+    "routes_to": []
+  },
+  "compilation": {
+    "destination": "reference_only",
+    "skill_name": null,
+    "skill_description": null,
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": null
+  }
+}

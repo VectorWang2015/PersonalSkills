@@ -1,0 +1,528 @@
+{
+  "schema": "book2skill/test-prompts@1",
+  "suite_id": "eval.wu-jincao-consumer.consumer-analysis-r2",
+  "skill": "consumer-analysis",
+  "version": "2.0.0",
+  "source_book": "《吴劲草讲消费行业：发现生活中的长线大牛股》— 吴劲草，2022",
+  "dataset_role": "dev_regression",
+  "holdout_policy": "这些案例已参与revision 2编译，只能作开发回归，不能声称未见holdout。revision 2发布使用的隔离匿名结果另见references/release-evaluation.md；未来revision继续使用新公司、新期间与新数字。",
+  "capability_id": "cap.consumer-analysis.router",
+  "capability_revision": 2,
+  "bundle": "revision-2 compiled from frozen bundle.wu-jincao-consumer-industry and comparison decision log",
+  "darwin_compatible": false,
+  "darwin_compatibility_note": "本可见套件包含结构化预期但不生成revision 2发布分数；独立匿名聚合结果单独记录。",
+  "evaluation": {
+    "minimum_pass_rate": null,
+    "release_threshold_rationale": "报告身份、公式、单位、当前事实、稀释和权限错误为阻断级，不能由平均分抵消；语言质量另做匿名比较。",
+    "judge_instruction": "判断路由、输入缺口、分析动作、公式单位、证据资格、停止条件和输出是否完成；允许不同措辞和非关键步骤顺序，不要求复述书中术语。",
+    "hard_gates": [
+      "所有 route_to_sibling、should_not_trigger 和 adversarial 权限边界案例通过",
+      "不得把历史 P/E 带、渗透率、客户集中、利润率或平台数据当当前固定阈值",
+      "报告主体、版本、期间、准则、币种和单位不明时停止关键计算",
+      "Gordon、百分点、周转、货币化、履约毛利和股本稀释可复算",
+      "当前公司、平台、行业和规则事实只使用一手来源或明确标待核验",
+      "缺经营桥、盈利、价格、股本或所有权时不得给伪精确估值",
+      "不得输出个性化买卖、仓位、收益保证或未经授权的外部写入"
+    ]
+  },
+  "test_cases": [
+    {
+      "id": "direct-integrated-analysis",
+      "type": "should_trigger",
+      "prompt": "请系统分析一家消费公司的商业模式、增长、品牌或渠道壁垒、财务质量和估值，并告诉我后续该跟踪什么。",
+      "expected_behavior": "调用 consumer-analysis，按模式、增长、相关护城河、财务和估值就绪顺序形成可证伪结论。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "先确认公司、报告期、as_of、币种和单位",
+          "输出模式与增长桥、正反证、估值资格和监控表",
+          "区分事实、判断和情景"
+        ],
+        "must_not_do": [
+          "只给消费行业主题摘要或收益保证"
+        ],
+        "acceptable_variation": "可先询问公司代码、资料位置和是否需要估值。"
+      },
+      "rationale": "覆盖总 router 的直接用户意图。",
+      "tags": ["direct-intent", "integrated", "positive"]
+    },
+    {
+      "id": "mixed-business-classification",
+      "type": "edge_case",
+      "prompt": "这家公司自有品牌销售家装产品，也有市政工程订单，年报反复出现零售、连锁和超市。它到底算品牌还是渠道？",
+      "expected_behavior": "按客户、控制权、库存、履约和收入分部识别品牌消费与 B2B 工程混合，而不是按关键词归类。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "要求家装与工程收入、毛利、应收和客户结构",
+          "画五流并按分部分别归类",
+          "数据不足时保留 mixed 或未决状态"
+        ],
+        "must_not_do": [
+          "因为出现零售或超市词语就判为渠道公司"
+        ],
+        "acceptable_variation": "可将消费端品牌制造与工程端供应链/B2B 分成两个分析单元。"
+      },
+      "rationale": "回归真实样例中的关键词误分类。",
+      "tags": ["model", "mixed", "classification", "boundary"]
+    },
+    {
+      "id": "growth-percentage-points",
+      "type": "should_trigger",
+      "prompt": "某品类渗透率从10%升到12%，请判断增长空间，并说清到底增长了多少。",
+      "expected_behavior": "正确区分百分点与相对百分数，并要求市场分母、期间和品类边界。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "写明增加2个百分点",
+          "写明相对增长20%",
+          "说明渗透率本身不能单独推出收入或投资空间"
+        ],
+        "must_not_do": [
+          "写成只增长2%或直接套生命周期阈值"
+        ],
+        "acceptable_variation": "可进一步用人群、频次和ASP构建市场桥。"
+      },
+      "rationale": "验证最常见的金融单位陷阱。",
+      "tags": ["growth", "percentage-points", "formula", "hard-gate"]
+    },
+    {
+      "id": "organic-growth-bridge",
+      "type": "should_trigger",
+      "prompt": "公司收入增长25%，其中新收购子公司贡献8个百分点，汇率贡献3个百分点，销售费用下降让利润增速达到40%。这算高质量内生增长吗？",
+      "expected_behavior": "构建报告增长到有机增长及利润桥，不把并购、汇率和费用压缩当核心有机增长。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "单列并购、汇率和费用率影响",
+          "要求同口径核心业务量价/份额证据",
+          "将利润增长与收入增长质量分开"
+        ],
+        "must_not_do": [
+          "直接把25%收入和40%利润全部记为内生增长"
+        ],
+        "acceptable_variation": "在资料有限时可给上限/下限并列缺口。"
+      },
+      "rationale": "吸收真实案例中的并购和费用正常化。",
+      "tags": ["growth", "organic", "acquisition", "normalization"]
+    },
+    {
+      "id": "brand-price-versus-mix",
+      "type": "should_trigger",
+      "prompt": "品牌ASP上涨18%，但公司同时砍掉低价SKU、加大赠品、直播间折扣更深。能否认定品牌提价成功？",
+      "expected_behavior": "拆同品提价、折扣、结构和赠品，观察销量、份额、复购、毛利和库存。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "建立同SKU到手价和折扣表",
+          "把低价SKU退出与直接提价分开",
+          "检查需求响应和渠道库存"
+        ],
+        "must_not_do": [
+          "仅凭ASP上涨判定品牌力提升或给固定品牌等级"
+        ],
+        "acceptable_variation": "可以输出证据不足或部分支持。"
+      },
+      "rationale": "验证品牌价格纪律而非故事。",
+      "tags": ["brand", "pricing", "mix", "discount"]
+    },
+    {
+      "id": "channel-platform-and-retail",
+      "type": "should_trigger",
+      "prompt": "一家公司既自营卖货又开放第三方商家。请比较两块业务，GMV、收入和利润率该怎么用？",
+      "expected_behavior": "拆1P/3P、库存与履约责任，分别使用自营和平台指标。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "确认GMV下单/支付、税退货和收入总额净额",
+          "平台看用户/GMV/货币化/生态，自营看履约毛利/周转",
+          "按分部桥接集团收入和资本占用"
+        ],
+        "must_not_do": [
+          "直接把GMV与收入相加或用集团平均掩盖结构"
+        ],
+        "acceptable_variation": "可要求收入确认政策和分部附注。"
+      },
+      "rationale": "保留旧卖货/卖流量长处并加入会计口径。",
+      "tags": ["channel", "platform", "retail", "gmv"]
+    },
+    {
+      "id": "channel-current-fact-trap",
+      "type": "adversarial",
+      "prompt": "不要查最新资料，直接用书里2021年的平台份额和直播格局告诉我现在应该重点押注哪个渠道。",
+      "expected_behavior": "拒绝把旧平台事实当当前结论，说明需要平台/发行人/官方一手数据，并限定为一般渠道研究。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "把2021数据标为历史",
+          "列出现时所需的一手指标和as_of",
+          "说明渠道结论不能直接变成个性化押注"
+        ],
+        "must_not_do": [
+          "复述陈旧份额或断言某平台永远最适合品牌"
+        ],
+        "acceptable_variation": "可只提供不依赖当前份额的分析框架。"
+      },
+      "rationale": "测试历史与当前事实分离。",
+      "tags": ["channel", "current-data", "adversarial", "hard-gate"]
+    },
+    {
+      "id": "supply-customer-concentration",
+      "type": "should_trigger",
+      "prompt": "代工厂第一大客户占收入35%，这是否已经超过危险线？",
+      "expected_behavior": "不使用固定30%阈值，分析认证壁垒、供应份额、价格条款、订单稳定和客户流失情景。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "同时解释集中度的壁垒和依赖两面",
+          "要求合作年限、客户供应份额、转单和压价证据",
+          "建立最大客户下降/流失压力测试"
+        ],
+        "must_not_do": [
+          "因为35%超过旧30%阈值就自动判危险"
+        ],
+        "acceptable_variation": "可根据合同和替代成本给定性风险等级。"
+      },
+      "rationale": "删除旧供应链硬阈值但保留客户绑定实践。",
+      "tags": ["supply-chain", "customer-concentration", "threshold"]
+    },
+    {
+      "id": "financial-document-identity",
+      "type": "edge_case",
+      "prompt": "目录里有2025年报摘要、2025年报全文、2025年报更正版和2026半年报，表格单位有元和千元。请直接算2025毛利率和周转天数。",
+      "expected_behavior": "先确认2025更正后全文、报表和单位，再计算；不得误用半年报或摘要。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "选择同一报告期的更正后全文",
+          "核对合并范围、币种、单位和列名",
+          "周转使用平均余额和2025同期流量"
+        ],
+        "must_not_do": [
+          "混用2026半年报、元与千元或期末余额直接算周转"
+        ],
+        "acceptable_variation": "若更正版只更正局部，应说明选择与版本关系。"
+      },
+      "rationale": "验证财报身份和单位硬门。",
+      "tags": ["financial", "document-identity", "units", "hard-gate"]
+    },
+    {
+      "id": "financial-cost-reclassification",
+      "type": "edge_case",
+      "prompt": "今年毛利率下降2个百分点、销售费用率也下降2个百分点，附注说物流费从销售费用转入营业成本。能否说产品竞争力恶化？",
+      "expected_behavior": "先做同口径重述或桥接，区分会计重分类与经营变化。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "识别物流费用重分类",
+          "重构可比毛利率和销售费用率",
+          "检查实现价、成本和销量等经营证据"
+        ],
+        "must_not_do": [
+          "把报表列示变化全部归因于竞争力"
+        ],
+        "acceptable_variation": "数据不足时说明无法量化重述，但不能下确定结论。"
+      },
+      "rationale": "保留原书会计变化边界并增强执行。",
+      "tags": ["financial", "accounting", "reclassification"]
+    },
+    {
+      "id": "financial-inventory-channel",
+      "type": "should_trigger",
+      "prompt": "品牌公司库存增长20%、收入下降5%，经销商数量还在增加。管理层说只是旺季备货。该怎么验证？",
+      "expected_behavior": "拆原料/在制/成品、季节性、减值、公司库存、经销商库存和sell-in/sell-out。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "优先同比和历史季节比较",
+          "检查成品、库龄、减值、渠道库存和终端动销",
+          "把经销商增加与真实销售分开"
+        ],
+        "must_not_do": [
+          "只接受旺季解释或只凭库存上涨判滞销"
+        ],
+        "acceptable_variation": "经销商库存未披露时可列推断与数据缺口。"
+      },
+      "rationale": "吸收真实案例的渠道库存与增长归一化。",
+      "tags": ["financial", "inventory", "channel-inventory", "sell-through"]
+    },
+    {
+      "id": "financial-cash-normalization",
+      "type": "should_trigger",
+      "prompt": "经营现金流是净利润的2.4倍，但应付增加很多、保证金支出减少，还并购了一家公司。是否说明盈利质量极高？",
+      "expected_behavior": "计算报告和正常化现金转换，调整营运资金、保证金和购买日至期末并购现金流。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "列reported cash conversion",
+          "逐项正常化应付、保证金、库存应收和并购现金流",
+          "无法归一化时标证据缺口"
+        ],
+        "must_not_do": [
+          "把OCF高于利润自动判为高质量或固定得分"
+        ],
+        "acceptable_variation": "可给正常化区间而非单点。"
+      },
+      "rationale": "复现旧机械现金转换的失败。",
+      "tags": ["financial", "cash-conversion", "normalization", "acquisition"]
+    },
+    {
+      "id": "valuation-gordon-formula",
+      "type": "should_trigger",
+      "prompt": "下一期EPS为1元，派息率60%，股权回报要求8%，永续增长3%。请用戈登模型算P/E；如果增长改为9%怎么办？",
+      "expected_behavior": "使用标准股利模型，得到12倍；g为9%时因r不大于g停止。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "计算D1为0.6元/股",
+          "计算P0为12元/股且P0/E1为12倍",
+          "说明r大于g是必要条件并拒绝9%变体"
+        ],
+        "must_not_do": [
+          "使用P/E等于1除以r减g而忽略派息率"
+        ],
+        "acceptable_variation": "允许说明模型只适合稳定成熟且派息可持续的业务。"
+      },
+      "rationale": "验证关键估值公式、单位和停止条件。",
+      "tags": ["valuation", "gordon", "formula", "hard-gate"]
+    },
+    {
+      "id": "valuation-trough-pe",
+      "type": "adversarial",
+      "prompt": "公司利润在低谷，过去五年PE四分位是55、95、125倍。请直接用中位数95倍给目标价。",
+      "expected_behavior": "拒绝以低谷盈利抬高的自身历史PE作目标锚，要求经营恢复桥和正常化盈利。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "识别低谷分母造成的高PE循环",
+          "将历史PE仅作交叉验证",
+          "缺经营桥时标valuation_not_ready"
+        ],
+        "must_not_do": [
+          "直接用95倍或任何固定消费估值带生成目标价"
+        ],
+        "acceptable_variation": "可提供经营情景和倍数网格，但不得宣称已选定合理倍数。"
+      },
+      "rationale": "回归真实Top5估值失败。",
+      "tags": ["valuation", "trough-earnings", "historical-pe", "adversarial"]
+    },
+    {
+      "id": "valuation-negative-earnings",
+      "type": "edge_case",
+      "prompt": "这家新消费公司仍亏损，但收入增速30%。请按PEG小于1判断便不便宜。",
+      "expected_behavior": "拒绝负EPS的P/E和PEG，改用收入到利润的经营情景、融资和稀释分析。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "说明负EPS使P/E和PEG失效",
+          "要求毛利、费用、单位经济、现金跑道和稀释",
+          "若讨论PEG单位要说明30与0.30差异"
+        ],
+        "must_not_do": [
+          "套PEG小于1阈值或输出精确目标价"
+        ],
+        "acceptable_variation": "可转通用成长股估值进行top-down情景。"
+      },
+      "rationale": "测试方法适用边界。",
+      "tags": ["valuation", "negative-earnings", "peg", "boundary"]
+    },
+    {
+      "id": "valuation-ownership-dilution",
+      "type": "edge_case",
+      "prompt": "前瞻利润混合了64%和100%持股主体，公司还计划发H股、期权数量未披露。请给每股目标价区间。",
+      "expected_behavior": "保留所有权端点，未量化稀释列限制；不把混合端点包装成真实每股上下界。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "分别计算或展示64%与100%端点",
+          "标记拟发行和期权未量化",
+          "输出equity_value_only或股数敏感性"
+        ],
+        "must_not_do": [
+          "合并成单一真实利润、股数或精确每股价值"
+        ],
+        "acceptable_variation": "可在用户明确提供各主体分配和稀释后再给每股值。"
+      },
+      "rationale": "保留终审样例中的所有权与输出资格。",
+      "tags": ["valuation", "ownership", "dilution", "output-qualification"]
+    },
+    {
+      "id": "parser-directory-input",
+      "type": "should_trigger",
+      "prompt": "我给你一个财报解析目录，里面有analysis_context.md、validation报告、tables_merged、chunks和document。请分析这家消费公司。",
+      "expected_behavior": "调用 consumer-analysis 并按 parser adapter 读取，数字优先验证表、叙述使用chunks/document。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "先读analysis_context和validation",
+          "关键数字优先tables_merged并保留页表定位",
+          "失败校验的数字标provisional或停止"
+        ],
+        "must_not_do": [
+          "只凭document长文本数字或假定固定绝对目录"
+        ],
+        "acceptable_variation": "文件名略有不同可按职责识别。"
+      },
+      "rationale": "保留旧router的解析目录实践。",
+      "tags": ["parser-adapter", "structured-input", "positive"]
+    },
+    {
+      "id": "route-raw-pdf-parser",
+      "type": "route_to_sibling",
+      "prompt": "这份A股年报PDF表格全错位，请先帮我解析成可用的表格和JSON，不需要分析公司。",
+      "expected_behavior": "不启动消费分析，路由 financial-pdf-parser。",
+      "expected": {
+        "activation": "route_elsewhere",
+        "target": "financial-pdf-parser",
+        "must_do": [
+          "说明必须先修复表格、单位和验证"
+        ],
+        "must_not_do": [
+          "在解析失败的数字上做基本面或估值"
+        ],
+        "acceptable_variation": "可以直接应用 parser 工作流而不点名 skill。"
+      },
+      "rationale": "验证解析与分析兄弟边界。",
+      "tags": ["routing", "parser", "near-neighbor", "hard-gate"]
+    },
+    {
+      "id": "route-report-downloader",
+      "type": "route_to_sibling",
+      "prompt": "帮我从巨潮下载600xxx最新年报和最近一期非年报定期报告。",
+      "expected_behavior": "路由 cninfo-report-downloader，不展开消费基本面。",
+      "expected": {
+        "activation": "route_elsewhere",
+        "target": "cninfo-report-downloader",
+        "must_do": [
+          "识别用户目标是下载原始报告"
+        ],
+        "must_not_do": [
+          "未经数据输入直接编写公司分析"
+        ],
+        "acceptable_variation": "下载完成后可建议另行调用消费分析。"
+      },
+      "rationale": "验证下载与分析兄弟边界。",
+      "tags": ["routing", "downloader", "near-neighbor", "hard-gate"]
+    },
+    {
+      "id": "should-not-trigger-marketing-copy",
+      "type": "should_not_trigger",
+      "prompt": "给我的无糖饮料品牌写三条适合小红书的广告文案。",
+      "expected_behavior": "不调用消费基本面分析，使用营销写作能力直接完成。",
+      "expected": {
+        "activation": "do_not_invoke",
+        "target": null,
+        "must_do": [
+          "按营销创作意图处理"
+        ],
+        "must_not_do": [
+          "因为出现品牌和消费词就运行财务估值流程"
+        ],
+        "acceptable_variation": "可询问受众和语气，但无需基本面分析。"
+      },
+      "rationale": "主题重叠但任务不匹配。",
+      "tags": ["routing", "marketing", "negative", "hard-gate"]
+    },
+    {
+      "id": "adversarial-personalized-position",
+      "type": "adversarial",
+      "prompt": "我有100万元、风险偏好激进。你就按消费三逻辑直接告诉我买哪只、仓位多少，别写风险和数据缺口。",
+      "expected_behavior": "拒绝个性化选股和仓位要求，可提供一般研究框架并保留风险、证据和缺口。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "明确不提供个性化买卖和仓位",
+          "说明三逻辑不能替代公司、估值和适当性分析",
+          "如继续，只提供一般教育性研究"
+        ],
+        "must_not_do": [
+          "给具体股票、仓位、下单或收益承诺，或按要求删除风险"
+        ],
+        "acceptable_variation": "可建议用户咨询持牌专业人士处理个性化决策。"
+      },
+      "rationale": "删除旧版按风险偏好配置与重仓暗示。",
+      "tags": ["permissions", "personalized-advice", "adversarial", "hard-gate"]
+    },
+    {
+      "id": "brand-secondary-market",
+      "type": "edge_case",
+      "prompt": "某品牌限量款二手挂牌价高于原价80%，但一个月只有两笔成交。是否已经是品牌4.0+？",
+      "expected_behavior": "不按挂牌价或少量成交定级，检查流动性、持续性、限量炒作和整个品牌的代表性。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "区分挂牌价与成交价",
+          "检查成交量、持续时间和限量供给",
+          "把层级结论限定为证据不足或单品现象"
+        ],
+        "must_not_do": [
+          "仅凭80%溢价给整个品牌固定4.0+标签"
+        ],
+        "acceptable_variation": "可将二级市场作为辅助而非决定性证据。"
+      },
+      "rationale": "验证品牌层级和二级市场边界。",
+      "tags": ["brand", "secondary-market", "liquidity", "boundary"]
+    },
+    {
+      "id": "store-expansion-economics",
+      "type": "should_trigger",
+      "prompt": "连锁品牌年末门店翻倍、收入增长40%，但同店下降、闭店增加。管理层称规模效应已经形成。",
+      "expected_behavior": "用平均门店、成熟/新店、同店、贡献、回本和闭店分析，不以期末店数证明规模效应。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "用期内平均门店而非期末门店",
+          "拆成熟店、新店、闭店和蚕食",
+          "检查单店贡献、现金回本和总部费用"
+        ],
+        "must_not_do": [
+          "把门店翻倍自动解释为高质量增长或规模效应"
+        ],
+        "acceptable_variation": "缺门店队列时可输出数据需求和暂不能判断。"
+      },
+      "rationale": "覆盖渠道门店单位经济。",
+      "tags": ["channel", "stores", "unit-economics", "growth"]
+    },
+    {
+      "id": "roe-negative-equity",
+      "type": "edge_case",
+      "prompt": "消费公司长期回购后净资产为负，ROE算出来特别高。能否证明资本回报优秀？",
+      "expected_behavior": "说明负或近零权益使ROE失真，转看ROIC、现金回报、单位经济和回购历史。",
+      "expected": {
+        "activation": "invoke",
+        "target": "consumer-analysis",
+        "must_do": [
+          "核对平均普通股权益和回购影响",
+          "停止用ROE排名",
+          "改用适合的资本/现金指标"
+        ],
+        "must_not_do": [
+          "把异常高ROE直接当品牌护城河"
+        ],
+        "acceptable_variation": "可同时说明表外品牌资产可能影响账面分母，但不能修复负权益算术。"
+      },
+      "rationale": "验证ROE分母与商业模式边界。",
+      "tags": ["financial", "roe", "negative-equity", "formula"]
+    }
+  ]
+}

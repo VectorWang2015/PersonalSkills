@@ -1,0 +1,199 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.investment-valuation-4e.valuation-input-and-identity-contract",
+  "revision": 1,
+  "status": "draft",
+  "slug": "valuation-input-and-identity-contract",
+  "title": "Valuation input and identity contract",
+  "one_liner": "Freeze entity, security, period, currency, units, accounting perimeter and data vintage before calculating value.",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "iv4.qp.ch10.l6813.cashflow-contract"
+    ],
+    "aliases": [],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "Prevent valuation errors caused by mismatched entity, period, currency, units or stale inputs.",
+    "distinctive_value": "Encodes claim, unit, growth/reinvestment, terminal, bridge and stop-condition checks that are commonly omitted in ad hoc valuation.",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ch09-earnings-cleanup",
+          "ev-ch10-tax-transition",
+          "ev-ch23-young-framework"
+        ],
+        "rationale": "Core doctrine is directly supported at the cited chapter/line anchors; workflow routing and current-data requirements are explicitly operational synthesis."
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "The card has explicit inputs, ordered actions, observable outputs and hard stop conditions."
+      },
+      "incremental_utility": {
+        "status": "hypothesis",
+        "comparison": "The package-level release evaluation does not provide per-card attribution; individual behavioral evidence for this reference-only card remains pending."
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "Non-use cases and invalid-input conditions alter routing or force a stop."
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "The governing consistency principles recur across multiple chapters; specific formulas remain valuable even when stated once."
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "prepare valuation inputs",
+      "audit a model's data identity"
+    ],
+    "trigger_signals": [
+      "multiple filings",
+      "TTM versus fiscal-year data",
+      "restatement",
+      "cross-currency inputs"
+    ],
+    "do_not_trigger": [
+      "Pure qualitative company discussion with no numerical valuation."
+    ],
+    "neighbor_distinctions": []
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ch09-earnings-cleanup",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 9 > Adjusting Earnings > TXT lines 6158-6759",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Operating, financing and capital expenses must be classified consistently; leases, R&D and unusual items can require adjustments.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch10-tax-transition",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 10 > Effects of Tax Rate on Value > TXT lines 6848-6875",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Current effective tax effects may be modeled during transition, but terminal assumptions should reflect sustainable marginal tax economics.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch23-young-framework",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 23 > General Framework for Analysis > TXT lines 18806-19335",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Young-firm valuation starts with current trailing data, then revenue scale, sustainable margin, reinvestment, risk, survival and uncertainty.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      }
+    ],
+    "interpretation": {
+      "model": "Freeze entity, security, period, currency, units, accounting perimeter and data vintage before calculating value.",
+      "decision_rules": [
+        "Build identity header.",
+        "Reconcile periods and restatements.",
+        "Tag every point-in-time input with source and date.",
+        "List unresolved gaps before formulas run."
+      ],
+      "assumptions": [
+        "Current company, market, accounting and regulatory facts are obtained at runtime from authoritative sources.",
+        "Book examples illustrate mechanics and are not current defaults."
+      ]
+    },
+    "application": {
+      "past_cases": [],
+      "future_scenarios": [
+        {
+          "scenario": "Prevent valuation errors caused by mismatched entity, period, currency, units or stale inputs.",
+          "recognition_signal": "multiple filings; TTM versus fiscal-year data; restatement",
+          "expected_use": "Execute the steps, disclose assumptions, and stop rather than invent missing current inputs."
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "entity and security identifiers",
+        "filing versions and periods",
+        "currency/unit",
+        "market-data timestamps"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "Build identity header.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": "A required identity, unit, claim, formula, current-data or survival input is unresolved."
+        },
+        {
+          "step_id": "step-02",
+          "action": "Reconcile periods and restatements.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-03",
+          "action": "Tag every point-in-time input with source and date.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-04",
+          "action": "List unresolved gaps before formulas run.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "input ledger",
+        "identity header",
+        "data-gap ledger"
+      ],
+      "stop_conditions": [
+        "Required current facts or market inputs cannot be sourced or bounded.",
+        "Cash-flow claim and discount rate cannot be made consistent.",
+        "Terminal or reverse-valuation system is mathematically invalid or underidentified."
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "guessing missing current market inputs"
+      ],
+      "failure_modes": [
+        "Using book case numbers or U.S. historical observations as current universal defaults.",
+        "Hiding uncertainty behind a precise point value.",
+        "Continuing after unresolved entity, period, currency, unit, formula or data-vintage mismatch."
+      ],
+      "limitations": [
+        "The source is a 2025 valuation text; current accounting, tax, regulatory and market facts require separate verification.",
+        "Stage 0-1.6 validates evidence and contract design, not live-model investment performance."
+      ],
+      "ask_user_when": [
+        "Valuation purpose, claim, date, currency or control/minority perspective would materially change the model.",
+        "Several plausible narratives produce materially different values and the user must choose a scenario policy."
+      ],
+      "escalate_when": [
+        "A regulated fairness opinion, tax/legal conclusion or transaction execution is requested.",
+        "Complex derivatives, insolvency waterfall or jurisdiction-specific regulatory capital requires specialist review."
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [],
+    "contrasts_with": [],
+    "composes_with": [],
+    "routes_to": []
+  },
+  "compilation": {
+    "destination": "reference_only",
+    "skill_name": null,
+    "skill_description": null,
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": null
+  }
+}

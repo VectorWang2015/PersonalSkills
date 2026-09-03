@@ -1,0 +1,207 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.investment-valuation-4e.acquisition-control-and-synergy",
+  "revision": 1,
+  "status": "draft",
+  "slug": "acquisition-control-and-synergy",
+  "title": "Acquisition control and synergy",
+  "one_liner": "Separate target stand-alone value, control improvement, synergy, implementation costs and price paid to protect the acquirer from overpayment.",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "iv4.fw.ch25.l19949.acquisition"
+    ],
+    "aliases": [],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "Determine what an acquirer can rationally pay for a target and who captures synergy.",
+    "distinctive_value": "Encodes claim, unit, growth/reinvestment, terminal, bridge and stop-condition checks that are commonly omitted in ad hoc valuation.",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ch25-acquisition",
+          "ev-ch25-bias"
+        ],
+        "rationale": "Core doctrine is directly supported at the cited chapter/line anchors; workflow routing and current-data requirements are explicitly operational synthesis."
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "The card has explicit inputs, ordered actions, observable outputs and hard stop conditions."
+      },
+      "incremental_utility": {
+        "status": "hypothesis",
+        "comparison": "The package-level release evaluation does not provide per-card attribution; individual behavioral evidence for this reference-only card remains pending."
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "Non-use cases and invalid-input conditions alter routing or force a stop."
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "The governing consistency principles recur across multiple chapters; specific formulas remain valuable even when stated once."
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "value an acquisition",
+      "estimate synergy",
+      "set maximum bid"
+    ],
+    "trigger_signals": [
+      "M&A",
+      "takeover premium",
+      "control value",
+      "synergy"
+    ],
+    "do_not_trigger": [
+      "Ordinary minority public-equity valuation with no control transaction."
+    ],
+    "neighbor_distinctions": []
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ch25-acquisition",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 25 > Steps in an Acquisition > TXT lines 19949-20925",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Value target stand-alone, value control and synergy separately, set a maximum price, then assess financing and execution.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch25-bias",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 25 > Takeover Valuation: Biases and Common Errors > TXT lines 20609-20618",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Comparable selection, multiple selection, transaction multiples and subjective adjustments can be chosen to justify a desired acquisition price.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      }
+    ],
+    "interpretation": {
+      "model": "Separate target stand-alone value, control improvement, synergy, implementation costs and price paid to protect the acquirer from overpayment.",
+      "decision_rules": [
+        "Value both firms stand-alone.",
+        "Value control changes separately.",
+        "Value synergy from changed cash flows/risk.",
+        "Subtract implementation costs.",
+        "Allocate capturable value and set maximum price.",
+        "Audit transaction-multiple bias."
+      ],
+      "assumptions": [
+        "Current company, market, accounting and regulatory facts are obtained at runtime from authoritative sources.",
+        "Book examples illustrate mechanics and are not current defaults."
+      ]
+    },
+    "application": {
+      "past_cases": [],
+      "future_scenarios": [
+        {
+          "scenario": "Determine what an acquirer can rationally pay for a target and who captures synergy.",
+          "recognition_signal": "M&A; takeover premium; control value",
+          "expected_use": "Execute the steps, disclose assumptions, and stop rather than invent missing current inputs."
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "stand-alone forecasts",
+        "control changes",
+        "synergy drivers/timing",
+        "implementation costs",
+        "financing and offer terms"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "Value both firms stand-alone.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": "A required identity, unit, claim, formula, current-data or survival input is unresolved."
+        },
+        {
+          "step_id": "step-02",
+          "action": "Value control changes separately.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-03",
+          "action": "Value synergy from changed cash flows/risk.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-04",
+          "action": "Subtract implementation costs.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-05",
+          "action": "Allocate capturable value and set maximum price.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-06",
+          "action": "Audit transaction-multiple bias.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "stand-alone/control/synergy waterfall",
+        "maximum rational price",
+        "value transfer analysis"
+      ],
+      "stop_conditions": [
+        "Required current facts or market inputs cannot be sourced or bounded.",
+        "Cash-flow claim and discount rate cannot be made consistent.",
+        "Terminal or reverse-valuation system is mathematically invalid or underidentified."
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "using acquisition transaction multiples as unbiased comparables"
+      ],
+      "failure_modes": [
+        "Using book case numbers or U.S. historical observations as current universal defaults.",
+        "Hiding uncertainty behind a precise point value.",
+        "Continuing after unresolved entity, period, currency, unit, formula or data-vintage mismatch."
+      ],
+      "limitations": [
+        "The source is a 2025 valuation text; current accounting, tax, regulatory and market facts require separate verification.",
+        "Stage 0-1.6 validates evidence and contract design, not live-model investment performance."
+      ],
+      "ask_user_when": [
+        "Valuation purpose, claim, date, currency or control/minority perspective would materially change the model.",
+        "Several plausible narratives produce materially different values and the user must choose a scenario policy."
+      ],
+      "escalate_when": [
+        "A regulated fairness opinion, tax/legal conclusion or transaction execution is requested.",
+        "Complex derivatives, insolvency waterfall or jurisdiction-specific regulatory capital requires specialist review."
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [
+      "cap.investment-valuation-4e.valuation-input-and-identity-contract"
+    ],
+    "contrasts_with": [],
+    "composes_with": [],
+    "routes_to": []
+  },
+  "compilation": {
+    "destination": "reference_only",
+    "skill_name": null,
+    "skill_description": null,
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": null
+  }
+}

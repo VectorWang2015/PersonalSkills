@@ -1,42 +1,80 @@
 ---
 name: consumer-analysis
-description: |
-  用户需要分析消费行业公司基本面时使用。触发器：用户说"分析这家消费品公司""帮我看看茅台的竞争力""消费股怎么分析"。不适用于：非消费行业公司分析、纯技术面分析。
-source_book: 《吴劲草讲消费行业》 吴劲草 (2022)
-tags: [consumer, brand, channel, supply-chain, fundamental-analysis]
+description: 分析消费企业的商业模式、增长、品牌/渠道/供应链护城河、财务证据与估值，并形成可证伪的基本面结论。适用于“系统分析这家消费公司”“增长是否可持续”“品牌或渠道竞争力怎样”；不用于只下载或解析财报、查询实时行情、技术分析或个性化交易建议。
+metadata:
+  status: active
+  release-record: references/release-evaluation.md
 ---
 
-# 消费行业公司分析
+# 消费企业分析
 
-## 定位
+## 目标
 
-聚合 skill，消费行业公司基本面分析的唯一入口。按品牌-渠道-供应链三角框架编排 9 个原子 skill。
+把“好赛道、好品牌”转成可核验的论证：企业靠什么角色赚钱，增长来自哪里，经营与财务是否互相验证，当前价格依赖哪些假设，什么事实会推翻结论。
 
-## 输入要求
+原书中的公司、平台、比例、倍数和行业判断均是历史材料。凡涉及当前公司状态、规则、价格、份额或市场数据，只使用发行人、监管/交易所、官方统计等一手来源，并记录 `as_of`；无法取得时标为待核验，不用旧案例补空白。
 
-优先接受 `financial-pdf-parser` 生成的解析目录。若用户只给 PDF，先解析再分析。使用解析目录时先读 `analysis_context.md` 和 `validation/validation_report.md`，财务数字以 `tables_merged/*.json` 为准，品牌/渠道/供应链叙述用 `chunks.jsonl` 和 `document.md` 补充。
+## 路由
 
-## 执行流水线
+- 陌生公司、混合业务、行业阶段或增长来源：读 [模式与增长](references/capabilities/model-and-growth.md)。
+- 消费者认知、提价、折扣、品牌升级或危机：读 [品牌](references/capabilities/brand.md)。
+- 平台、自营零售、门店、直播/内容渠道或渠道迁移：读 [渠道](references/capabilities/channel.md)。
+- 代工、制造、产能、快反、客户集中或扩产：读 [供应链](references/capabilities/supply-chain.md)。
+- 财报、量价、库存、现金、有机增长或资本回报：读 [财务证据](references/capabilities/financial-evidence.md)。
+- 当前估值、盈利与倍数分解、情景价值或稀释：在财务基准就绪后读 [估值](references/capabilities/valuation.md)。
+- 用户提供结构化财报解析目录时，按 [解析目录适配](references/parser-input-adapter.md) 取数。
 
-```
-第一层：分类与赛道
-├─ 品牌-渠道-供应链三角分类 (atomic/ing-pai-qu-dao-ong-ying-lian-san-jia/SKILL.md)
-└─ 行业赛道分析 (atomic/ing-hang-ye-sai-dao-fen-xi/SKILL.md)
+通常只读与任务有关的分支。完整公司分析按“模式与增长 → 相关护城河分支 → 财务证据 → 估值（如需要）”组合。
 
-第二层：核心竞争力
-├─ 品牌分级与品牌力 (atomic/ping-pai-fen-ji/SKILL.md)
-├─ 品牌计分板 (atomic/ing-pai-ji-fen-ban/SKILL.md)
-├─ 渠道变革分析 (atomic/u-dao-bian-ge-fen-xi/SKILL.md)
-└─ 供应链分析 (atomic/ong-ying-lian-fen-xi/SKILL.md)
+## 先过数据门
 
-第三层：增长与财务
-├─ 消费品增长三逻辑 (atomic/ing-zeng-zhan-san-luo-ji/SKILL.md)
-└─ 消费品公司财务分析 (atomic/ai-wu-ong-si-cai-wu-fen-xi/SKILL.md)
+开始数值分析前确认：
 
-第四层：估值
-└─ 消费品企业估值方法 (atomic/iao-fei-pin-qi-ye-gu-zhi/SKILL.md)
-```
+1. 公司全称、证券代码、合并范围与主要业务；
+2. 分析时点和历史/当前/预测口径；
+3. 年报、半年报或季报，全文或摘要，原版或更正版；
+4. 会计准则、币种、单位、单季/累计/TTM；
+5. 分部、收入确认、库存/退货/履约责任；
+6. 关键数字能回到报表、附注或发行人经营披露。
 
-## 保存分析结果
+身份、单位或表格结构不可靠时停止关键计算。标准无保留以外的审计意见要读具体事项和影响，不能只贴“有问题”标签。
 
-分析完成后主动询问用户是否保存为 Markdown 文件到 `reports/<报告期>/`。
+## 执行主线
+
+1. 画商品、现金、库存/退货、消费者数据、定价/流量五条流，按经济实质拆分品牌、平台渠道、自营渠道、线下连锁、供应链和非消费业务。
+2. 固定品类、地域、渠道、客群、价格带和期间，建立市场与公司增长桥；把并购、汇率、会计和补贴单列。
+3. 按模式验证护城河。每项至少列一条正证据、一条反证和一个替代解释。
+4. 用分部、量价、利润率、营运资金、现金流和资本回报验证经营叙事；先列不利证据，再写结论。
+5. 只有盈利、股本/所有权、当前价格和方法条件就绪时估值；否则输出 `valuation_not_ready` 或限定的股权价值敏感性。
+6. 交付事实、来源框架、分析判断、情景假设、最强反方、失效条件和监控表。
+
+## 输出契约
+
+完整分析至少包含：
+
+- 主体、报告身份、币种/单位和 `as_of`；
+- 商业模式与混合分部；
+- 行业阶段和可复算增长桥；
+- 品牌/渠道/供应链证据与反证；
+- 不利证据、一次性/并购、有机增长、库存/渠道库存、现金与资本配置；
+- 估值资格、方法、情景和敏感性（如用户需要）；
+- 数据缺口、最强反方、至少三个可观察失效条件；
+- 监控项：指标、频率、来源和触发动作；
+- 结论的证据强度，不给收益保证。
+
+## 兄弟能力
+
+- 只要求下载 A 股定期报告：使用 `cninfo-report-downloader`。
+- 只要求把 PDF 解析为可靠表格/文本：使用 `financial-pdf-parser`。
+- 已有完整基本面、只审计复杂 DCF/WACC/终值：转通用股票估值能力；本 skill 只提供消费经营假设。
+- 只查询实时价格、新闻、营销文案或技术走势：不要启动本流程。
+
+## 硬边界
+
+- 不把渗透率、客户集中、利润率、周转天数或 P/E 的历史范围固化为阈值。
+- 不把某平台、某渠道或某类品牌的旧结论写成永恒规律。
+- 不因高毛利、高 ROE、经营现金流高于利润或高市占率单独认定护城河。
+- 不在缺少单位、期间、分母或股本时补造数字。
+- 不输出个性化买卖、仓位、下单、发布或其他未授权行动。
+
+来源、能力 lineage 与历史案例边界见 [证据与沿革](references/evidence.md)，聚合发布评测见 [发布记录](references/release-evaluation.md)。

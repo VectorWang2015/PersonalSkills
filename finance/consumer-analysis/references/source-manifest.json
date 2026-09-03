@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "title": "吴劲草讲消费行业：发现生活中的长线大牛股",
+  "author": "吴劲草",
+  "version": "电子版；EPUB 元数据日期 2022-07-01；ISBN 978-7-111-71184-1；文件版本由 SHA-256 固定",
+  "base_directory": null,
+  "local_paths_redacted": true,
+  "portability_note": "Revision 2 发布态 portable manifest；本机路径和原 EPUB 长文件名已规范化。TXT 与 EPUB 是同一作品载体，不视为独立证据。",
+  "source_count": 2,
+  "sources": [
+    {
+      "absolute_path": null,
+      "relative_path": "source/consumer-industry-book.txt",
+      "sha256": "48913d9290908dafbf3cc80e65bb33701d4786ef6a7932c9597d8e9fa08344b5",
+      "bytes": 360064,
+      "format": "txt",
+      "source_id": "src-primary-text",
+      "role": "primary",
+      "kind": "book",
+      "rights": {
+        "basis": "unknown",
+        "redistribution": "restricted",
+        "notes": "未提供可再分发许可；skill 只保留释义和行号定位。"
+      },
+      "extraction": {
+        "parser": "UTF-8 文本逐行审阅",
+        "parser_version": "manual-review-2026-09-03",
+        "text_artifact": "受限来源 TXT，line 1-3024",
+        "locator_scheme": "章 > 节 > UTF-8 TXT 行号范围",
+        "coverage": {
+          "unit": "chapters",
+          "expected_units": 10,
+          "processed_units": 10,
+          "omitted_ranges": [],
+          "notes": "引言、十章正文和前置材料已处理；图表多数只在正文保留解释，未恢复全部单元格。"
+        }
+      }
+    },
+    {
+      "absolute_path": null,
+      "relative_path": "source/consumer-industry-book.epub",
+      "sha256": "3ed4a8261fb63ae6641f94c83bda5d1f6769fbd38f6ea174688ed4ecd845cce1",
+      "bytes": 11514555,
+      "format": "epub",
+      "source_id": "src-edition-epub",
+      "role": "supplementary",
+      "kind": "book",
+      "rights": {
+        "basis": "unknown",
+        "redistribution": "restricted",
+        "notes": "只用于元数据、目录和载体完整性核对，不随 skill 分发正文或图片。"
+      },
+      "extraction": {
+        "parser": "EPUB container/OPF/NCX inspection",
+        "parser_version": "Info-ZIP-compatible-inspection-2026-09-03",
+        "text_artifact": "EPUB spine：60 个 XHTML 部件及内嵌图像",
+        "locator_scheme": "EPUB OPF spine > NCX 章/节 > XHTML fragment",
+        "coverage": {
+          "unit": "chapters",
+          "expected_units": 10,
+          "processed_units": 10,
+          "omitted_ranges": [],
+          "notes": "核对 OPF 元数据和 NCX 目录；能力证据统一使用 TXT 行号。图表图片未 OCR。"
+        }
+      }
+    }
+  ],
+  "manifest_id": "manifest.wu-jincao-consumer-industry-revision-2",
+  "created_at": "2026-09-03T05:05:13Z",
+  "updated_at": "2026-09-03T05:05:13Z",
+  "work": {
+    "work_id": "work.wu-jincao-consumer-industry",
+    "language": "zh-CN",
+    "publication_year": 2022,
+    "user_goal": "编译一个精简消费企业分析 router，以内部能力支持商业模式、增长、品牌、渠道、供应链、财务证据和估值，并严格处理时点、公式、单位与停止条件。",
+    "scope": {
+      "included": [
+        "消费企业基本面与混合分部",
+        "行业阶段、增长桥和有机增长",
+        "品牌、渠道、供应链护城河及不利证据",
+        "财报身份、库存/渠道库存、现金与资本配置",
+        "估值就绪、所有权稀释和情景敏感性",
+        "parser 结构化目录的条件兼容"
+      ],
+      "excluded": [
+        "固定估值带、渗透率/客户/利润率硬阈值",
+        "陈旧平台份额、费率和绝对行业结论",
+        "个性化买卖、仓位、下单或发布",
+        "从缺失图表或未校验解析结果臆造数字"
+      ]
+    }
+  },
+  "known_gaps": [
+    {
+      "gap_id": "gap-table-cells",
+      "description": "TXT 没有完整保留多数图表单元格。",
+      "impact": "不能从本来源复算所有历史行业和公司表格。",
+      "resolution": "现实分析回到发行人、监管/交易所或官方统计一手材料；不从图题猜值。"
+    },
+    {
+      "gap_id": "gap-current-facts",
+      "description": "书稿主要使用 2021 年及 2022 年初以前的数据和平台案例。",
+      "impact": "公司状态、渠道格局、行业份额、规则和倍数可能已经变化。",
+      "resolution": "运行时记录 as_of 并使用当前一手来源；无法取得即标待核验。"
+    },
+    {
+      "gap_id": "gap-holdout",
+      "description": "Revision 2 编译阶段曾缺少匿名聚合holdout；该预发布缺口现已关闭。",
+      "impact": "历史上静态校验不能单独证明相对no-skill或legacy的行为增益。",
+      "resolution": "隔离匿名评测结果为candidate 99、old skill 94、no skill 92.5；发布记录见release-evaluation.md。"
+    }
+  ],
+  "readiness": {
+    "exact_version_identified": true,
+    "integrity_recorded": true,
+    "rights_reviewed": true,
+    "coverage_reviewed": true,
+    "ready_for_distillation": true
+  }
+}

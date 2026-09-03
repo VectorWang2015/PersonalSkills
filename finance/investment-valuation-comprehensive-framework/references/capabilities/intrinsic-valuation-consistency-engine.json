@@ -1,0 +1,244 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.investment-valuation-4e.intrinsic-valuation-consistency-engine",
+  "revision": 1,
+  "status": "draft",
+  "slug": "intrinsic-valuation-consistency-engine",
+  "title": "Intrinsic valuation consistency engine",
+  "one_liner": "Keep cash flows, discount rates, growth, reinvestment, returns and terminal assumptions mathematically and economically consistent.",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "iv4.qp.ch10.l6813.cashflow-contract",
+      "iv4.qp.ch07.l4515.discount-rate-contract",
+      "iv4.qp.ch11.l7940.growth-reinvestment",
+      "iv4.qp.ch12.l8728.terminal-closure"
+    ],
+    "aliases": [],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "Build or audit an intrinsic valuation whose major components do not contradict one another.",
+    "distinctive_value": "Encodes claim, unit, growth/reinvestment, terminal, bridge and stop-condition checks that are commonly omitted in ad hoc valuation.",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ch02-cashflow-rate-match",
+          "ev-ch07-rate-consistency",
+          "ev-ch10-cashflow-definitions",
+          "ev-ch11-fundamental-growth",
+          "ev-ch12-terminal",
+          "ev-ch15-model-equivalence"
+        ],
+        "rationale": "Core doctrine is directly supported at the cited chapter/line anchors; workflow routing and current-data requirements are explicitly operational synthesis."
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "The card has explicit inputs, ordered actions, observable outputs and hard stop conditions."
+      },
+      "incremental_utility": {
+        "status": "hypothesis",
+        "comparison": "The package-level release evaluation does not provide per-card attribution; individual behavioral evidence for this reference-only card remains pending."
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "Non-use cases and invalid-input conditions alter routing or force a stop."
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "The governing consistency principles recur across multiple chapters; specific formulas remain valuable even when stated once."
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "build DCF",
+      "audit FCFF/FCFE",
+      "check terminal value"
+    ],
+    "trigger_signals": [
+      "DCF",
+      "FCFF",
+      "FCFE",
+      "WACC",
+      "terminal value"
+    ],
+    "do_not_trigger": [
+      "Asset that will never generate cash flows and has no contingent cash-flow right."
+    ],
+    "neighbor_distinctions": []
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ch02-cashflow-rate-match",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 2 > Intrinsic Valuation > TXT lines 2088-2110",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Cash flow to equity is discounted at cost of equity; cash flow to the firm is discounted at cost of capital.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch07-rate-consistency",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 7 > Cash Flows and Risk-Free Rates: The Consistency Principle > TXT lines 4515-4544; Conclusion lines 5023-5026",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Risk-free rate must match cash-flow currency, nominal/real basis and duration.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch10-cashflow-definitions",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 10 > TXT lines 6813-6820; Reinvestment formula line 7547; Conclusion lines 7558-7565",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "FCFF is after tax and reinvestment but before debt payments; FCFE is after debt payments.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch11-fundamental-growth",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 11 > Fundamental Determinants of Growth > formulas TXT lines 7940, 7957, 8058, 8078",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Expected growth is linked to reinvestment and the return earned on that reinvestment, for equity and firm cash flows.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch12-terminal",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 12 > Closure in Valuation > formulas TXT lines 8728, 8745, 8835-8845; Closing Thoughts lines 9126-9138",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Terminal value requires a coherent stable-growth state, survival assessment and reinvestment consistent with stable growth.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch15-model-equivalence",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 15 > Firm Valuation > formulas TXT lines 11301-11305; Chapter 34 lines 24354-24363",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Equity and firm approaches should reconcile when leverage, cash flows and discount rates are modeled consistently; unstable leverage favors firm/APV approaches.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      }
+    ],
+    "interpretation": {
+      "model": "Keep cash flows, discount rates, growth, reinvestment, returns and terminal assumptions mathematically and economically consistent.",
+      "decision_rules": [
+        "Choose claim and cash flow.",
+        "Construct matching rate.",
+        "Tie growth to reinvestment and returns.",
+        "Define stable state and survival.",
+        "Cross-check equity and firm approaches where feasible."
+      ],
+      "assumptions": [
+        "Current company, market, accounting and regulatory facts are obtained at runtime from authoritative sources.",
+        "Book examples illustrate mechanics and are not current defaults."
+      ]
+    },
+    "application": {
+      "past_cases": [],
+      "future_scenarios": [
+        {
+          "scenario": "Build or audit an intrinsic valuation whose major components do not contradict one another.",
+          "recognition_signal": "DCF; FCFF; FCFE",
+          "expected_use": "Execute the steps, disclose assumptions, and stop rather than invent missing current inputs."
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "normalized base earnings",
+        "reinvestment drivers",
+        "claimholder definition",
+        "dated discount-rate inputs",
+        "stable-state assumptions"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "Choose claim and cash flow.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": "A required identity, unit, claim, formula, current-data or survival input is unresolved."
+        },
+        {
+          "step_id": "step-02",
+          "action": "Construct matching rate.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-03",
+          "action": "Tie growth to reinvestment and returns.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-04",
+          "action": "Define stable state and survival.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-05",
+          "action": "Cross-check equity and firm approaches where feasible.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "explicit forecast",
+        "terminal-state contract",
+        "consistency diagnostics"
+      ],
+      "stop_conditions": [
+        "Required current facts or market inputs cannot be sourced or bounded.",
+        "Cash-flow claim and discount rate cannot be made consistent.",
+        "Terminal or reverse-valuation system is mathematically invalid or underidentified."
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "using a perpetual-growth denominator with r <= g"
+      ],
+      "failure_modes": [
+        "Using book case numbers or U.S. historical observations as current universal defaults.",
+        "Hiding uncertainty behind a precise point value.",
+        "Continuing after unresolved entity, period, currency, unit, formula or data-vintage mismatch."
+      ],
+      "limitations": [
+        "The source is a 2025 valuation text; current accounting, tax, regulatory and market facts require separate verification.",
+        "Stage 0-1.6 validates evidence and contract design, not live-model investment performance."
+      ],
+      "ask_user_when": [
+        "Valuation purpose, claim, date, currency or control/minority perspective would materially change the model.",
+        "Several plausible narratives produce materially different values and the user must choose a scenario policy."
+      ],
+      "escalate_when": [
+        "A regulated fairness opinion, tax/legal conclusion or transaction execution is requested.",
+        "Complex derivatives, insolvency waterfall or jurisdiction-specific regulatory capital requires specialist review."
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [
+      "cap.investment-valuation-4e.valuation-input-and-identity-contract"
+    ],
+    "contrasts_with": [],
+    "composes_with": [],
+    "routes_to": []
+  },
+  "compilation": {
+    "destination": "reference_only",
+    "skill_name": null,
+    "skill_description": null,
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": null
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "schema": "book2skill/capability-bundle@1",
+  "bundle_id": "bundle.equity-valuation-comprehensive-analysis",
+  "revision": 1,
+  "created_at": "2026-09-03T20:00:00+08:00",
+  "updated_at": "2026-09-03T20:00:00+08:00",
+  "source_manifest": "source-manifest.json",
+  "lineage": {
+    "derived_from_bundle": "bundle.investment-valuation-4e",
+    "redistillation_comparison": "comparison-summary.json"
+  },
+  "output": {
+    "mode": "single",
+    "promotion_budget": 1,
+    "promotion_policy": "The public standalone entry is released and active after the anonymous aggregate evaluation scored candidate 99.5, old skill 99, and no skill 97.5. Seven reference-only capabilities remain draft because the aggregate result does not provide per-card attribution; see release-evaluation.md.",
+    "router": {
+      "name": "equity-valuation-comprehensive-analysis",
+      "description": "Produce and audit a named public company's per-share valuation, relative pricing and market-implied expectations without inventing current inputs."
+    }
+  },
+  "capabilities": [
+    {
+      "capability_id": "cap.investment-valuation-4e.equity-valuation-comprehensive-analysis",
+      "revision": 1,
+      "status": "active",
+      "card": "capabilities/equity-valuation-comprehensive-analysis.json",
+      "promotion": {
+        "promotion_id": "promo.merged.equity-valuation-comprehensive-analysis",
+        "decision": "standalone-skill",
+        "gain_hypothesis": "Reduce material routing, formula, current-input and bridge errors relative to no-skill.",
+        "falsifier": "A fresh anonymous evaluation shows no material improvement or any hard-gate regression.",
+        "portfolio_conflicts": [],
+        "rationale": "Public entry has a distinct final deliverable."
+      },
+      "destination": "standalone_skill",
+      "delivery_path": null,
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.investment-valuation-4e.valuation-input-and-identity-contract",
+      "revision": 1,
+      "status": "draft",
+      "card": "capabilities/valuation-input-and-identity-contract.json",
+      "promotion": {
+        "promotion_id": "promo.merged.valuation-input-and-identity-contract",
+        "decision": "shared-component",
+        "gain_hypothesis": "Reduce material routing, formula, current-input and bridge errors relative to no-skill.",
+        "falsifier": "A fresh anonymous evaluation shows no material improvement or any hard-gate regression.",
+        "portfolio_conflicts": [],
+        "rationale": "Local shared component prevents runtime dependency on the sibling public entry."
+      },
+      "destination": "reference_only",
+      "delivery_path": null,
+      "test_suite": null
+    },
+    {
+      "capability_id": "cap.investment-valuation-4e.intrinsic-valuation-consistency-engine",
+      "revision": 1,
+      "status": "draft",
+      "card": "capabilities/intrinsic-valuation-consistency-engine.json",
+      "promotion": {
+        "promotion_id": "promo.merged.intrinsic-valuation-consistency-engine",
+        "decision": "shared-component",
+        "gain_hypothesis": "Reduce material routing, formula, current-input and bridge errors relative to no-skill.",
+        "falsifier": "A fresh anonymous evaluation shows no material improvement or any hard-gate regression.",
+        "portfolio_conflicts": [],
+        "rationale": "Local shared component prevents runtime dependency on the sibling public entry."
+      },
+      "destination": "reference_only",
+      "delivery_path": null,
+      "test_suite": null
+    },
+    {
+      "capability_id": "cap.investment-valuation-4e.enterprise-to-equity-per-share-bridge",
+      "revision": 1,
+      "status": "draft",
+      "card": "capabilities/enterprise-to-equity-per-share-bridge.json",
+      "promotion": {
+        "promotion_id": "promo.merged.enterprise-to-equity-per-share-bridge",
+        "decision": "shared-component",
+        "gain_hypothesis": "Reduce material routing, formula, current-input and bridge errors relative to no-skill.",
+        "falsifier": "A fresh anonymous evaluation shows no material improvement or any hard-gate regression.",
+        "portfolio_conflicts": [],
+        "rationale": "Local shared component prevents runtime dependency on the sibling public entry."
+      },
+      "destination": "reference_only",
+      "delivery_path": null,
+      "test_suite": null
+    },
+    {
+      "capability_id": "cap.investment-valuation-4e.fundamentals-driven-relative-pricing",
+      "revision": 1,
+      "status": "draft",
+      "card": "capabilities/fundamentals-driven-relative-pricing.json",
+      "promotion": {
+        "promotion_id": "promo.merged.fundamentals-driven-relative-pricing",
+        "decision": "shared-component",
+        "gain_hypothesis": "Reduce material routing, formula, current-input and bridge errors relative to no-skill.",
+        "falsifier": "A fresh anonymous evaluation shows no material improvement or any hard-gate regression.",
+        "portfolio_conflicts": [],
+        "rationale": "Local shared component prevents runtime dependency on the sibling public entry."
+      },
+      "destination": "reference_only",
+      "delivery_path": null,
+      "test_suite": null
+    },
+    {
+      "capability_id": "cap.investment-valuation-4e.special-situation-valuation-router",
+      "revision": 1,
+      "status": "draft",
+      "card": "capabilities/special-situation-valuation-router.json",
+      "promotion": {
+        "promotion_id": "promo.merged.special-situation-valuation-router",
+        "decision": "shared-component",
+        "gain_hypothesis": "Reduce material routing, formula, current-input and bridge errors relative to no-skill.",
+        "falsifier": "A fresh anonymous evaluation shows no material improvement or any hard-gate regression.",
+        "portfolio_conflicts": [],
+        "rationale": "Local shared component prevents runtime dependency on the sibling public entry."
+      },
+      "destination": "reference_only",
+      "delivery_path": null,
+      "test_suite": null
+    },
+    {
+      "capability_id": "cap.investment-valuation-4e.optionality-and-probability-overlay",
+      "revision": 1,
+      "status": "draft",
+      "card": "capabilities/optionality-and-probability-overlay.json",
+      "promotion": {
+        "promotion_id": "promo.merged.optionality-and-probability-overlay",
+        "decision": "shared-component",
+        "gain_hypothesis": "Reduce material routing, formula, current-input and bridge errors relative to no-skill.",
+        "falsifier": "A fresh anonymous evaluation shows no material improvement or any hard-gate regression.",
+        "portfolio_conflicts": [],
+        "rationale": "Local shared component prevents runtime dependency on the sibling public entry."
+      },
+      "destination": "reference_only",
+      "delivery_path": null,
+      "test_suite": null
+    },
+    {
+      "capability_id": "cap.investment-valuation-4e.reverse-dcf-and-valuation-audit",
+      "revision": 1,
+      "status": "draft",
+      "card": "capabilities/reverse-dcf-and-valuation-audit.json",
+      "promotion": {
+        "promotion_id": "promo.merged.reverse-dcf-and-valuation-audit",
+        "decision": "shared-component",
+        "gain_hypothesis": "Reduce material routing, formula, current-input and bridge errors relative to no-skill.",
+        "falsifier": "A fresh anonymous evaluation shows no material improvement or any hard-gate regression.",
+        "portfolio_conflicts": [],
+        "rationale": "Local shared component prevents runtime dependency on the sibling public entry."
+      },
+      "destination": "reference_only",
+      "delivery_path": null,
+      "test_suite": null
+    }
+  ],
+  "relationships": [
+    {
+      "from": "cap.investment-valuation-4e.equity-valuation-comprehensive-analysis",
+      "type": "depends_on",
+      "to": "cap.investment-valuation-4e.valuation-input-and-identity-contract",
+      "execution_rationale": "Read this local reference only when the valuation reaches its branch."
+    },
+    {
+      "from": "cap.investment-valuation-4e.equity-valuation-comprehensive-analysis",
+      "type": "depends_on",
+      "to": "cap.investment-valuation-4e.intrinsic-valuation-consistency-engine",
+      "execution_rationale": "Read this local reference only when the valuation reaches its branch."
+    },
+    {
+      "from": "cap.investment-valuation-4e.equity-valuation-comprehensive-analysis",
+      "type": "depends_on",
+      "to": "cap.investment-valuation-4e.enterprise-to-equity-per-share-bridge",
+      "execution_rationale": "Read this local reference only when the valuation reaches its branch."
+    },
+    {
+      "from": "cap.investment-valuation-4e.equity-valuation-comprehensive-analysis",
+      "type": "depends_on",
+      "to": "cap.investment-valuation-4e.fundamentals-driven-relative-pricing",
+      "execution_rationale": "Read this local reference only when the valuation reaches its branch."
+    },
+    {
+      "from": "cap.investment-valuation-4e.equity-valuation-comprehensive-analysis",
+      "type": "depends_on",
+      "to": "cap.investment-valuation-4e.special-situation-valuation-router",
+      "execution_rationale": "Read this local reference only when the valuation reaches its branch."
+    },
+    {
+      "from": "cap.investment-valuation-4e.equity-valuation-comprehensive-analysis",
+      "type": "depends_on",
+      "to": "cap.investment-valuation-4e.optionality-and-probability-overlay",
+      "execution_rationale": "Read this local reference only when the valuation reaches its branch."
+    },
+    {
+      "from": "cap.investment-valuation-4e.equity-valuation-comprehensive-analysis",
+      "type": "depends_on",
+      "to": "cap.investment-valuation-4e.reverse-dcf-and-valuation-audit",
+      "execution_rationale": "Read this local reference only when the valuation reaches its branch."
+    }
+  ],
+  "quality": {
+    "required_gates": [
+      "source-faithfulness-passed",
+      "formula-contracts-checked",
+      "cross-references-valid",
+      "frontmatter-valid",
+      "relative-links-valid",
+      "behavioral-evaluation-passed"
+    ],
+    "passed_gates": [
+      "source-faithfulness-passed",
+      "formula-contracts-checked",
+      "cross-references-valid",
+      "frontmatter-valid",
+      "relative-links-valid",
+      "behavioral-evaluation-passed"
+    ],
+    "open_issues": [
+      {
+        "issue_id": "internal-card-attribution-not-evaluated",
+        "severity": "low",
+        "description": "The released aggregate evaluation supports the public standalone entry, but it does not attribute incremental utility to any of the seven reference-only cards.",
+        "owner": "post-release evaluator",
+        "next_action": "Keep reference-only cards draft/hypothesis unless a future targeted evaluation or ablation supports an individual card."
+      }
+    ]
+  }
+}

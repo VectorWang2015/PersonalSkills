@@ -1,0 +1,228 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.investment-valuation-4e.fundamentals-driven-relative-pricing",
+  "revision": 1,
+  "status": "draft",
+  "slug": "fundamentals-driven-relative-pricing",
+  "title": "Fundamentals-driven relative pricing",
+  "one_liner": "Use multiples only after numerator/denominator consistency, distribution, driver and comparability checks.",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "iv4.fw.ch17.l12828.relative-audit"
+    ],
+    "aliases": [],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "Decide whether a security is under- or overpriced relative to genuinely comparable assets.",
+    "distinctive_value": "Encodes claim, unit, growth/reinvestment, terminal, bridge and stop-condition checks that are commonly omitted in ad hoc valuation.",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ch17-four-tests",
+          "ev-ch17-comparables",
+          "ev-ch17-driver-formulas",
+          "ev-ch20-sales-driver"
+        ],
+        "rationale": "Core doctrine is directly supported at the cited chapter/line anchors; workflow routing and current-data requirements are explicitly operational synthesis."
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "The card has explicit inputs, ordered actions, observable outputs and hard stop conditions."
+      },
+      "incremental_utility": {
+        "status": "hypothesis",
+        "comparison": "The package-level release evaluation does not provide per-card attribution; individual behavioral evidence for this reference-only card remains pending."
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "Non-use cases and invalid-input conditions alter routing or force a stop."
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "The governing consistency principles recur across multiple chapters; specific formulas remain valuable even when stated once."
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "relative valuation",
+      "peer multiples",
+      "pricing regression"
+    ],
+    "trigger_signals": [
+      "PE",
+      "EV/EBITDA",
+      "PBV",
+      "EV/Sales",
+      "peer group"
+    ],
+    "do_not_trigger": [
+      "Treating a sector median as intrinsic value or using a multiple with inconsistent claims."
+    ],
+    "neighbor_distinctions": []
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ch17-four-tests",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 17 > Four Basic Steps to Using Multiples > TXT lines 12828-13020; EPUB OPS/c017.xhtml#c017-sec-0009",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "A multiple must be consistently defined, uniformly measured, distribution-aware, linked to fundamentals and compared after controlling for differences.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch17-comparables",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 17 > What Is a Comparable Firm? > TXT lines 12935-12980",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Comparable means similar cash flow, growth and risk, not merely the same industry; broader samples can work if differences are controlled.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch17-driver-formulas",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 17 > Analytical tests > formulas TXT lines 12863-12873",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "PE, PBV and enterprise multiples are functions of payout/reinvestment, return on capital/equity, growth and risk.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch20-sales-driver",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 20 > Revenue Multiples > formulas TXT lines 15555-15614",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "EV/Sales is driven principally by after-tax operating margin, reinvestment, growth and cost of capital.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      }
+    ],
+    "interpretation": {
+      "model": "Use multiples only after numerator/denominator consistency, distribution, driver and comparability checks.",
+      "decision_rules": [
+        "Define numerator and denominator consistently.",
+        "Measure uniformly.",
+        "Inspect distribution and selection bias.",
+        "Identify fundamental drivers.",
+        "Control peer differences.",
+        "State whether conclusion is relative to sector or market."
+      ],
+      "assumptions": [
+        "Current company, market, accounting and regulatory facts are obtained at runtime from authoritative sources.",
+        "Book examples illustrate mechanics and are not current defaults."
+      ]
+    },
+    "application": {
+      "past_cases": [],
+      "future_scenarios": [
+        {
+          "scenario": "Decide whether a security is under- or overpriced relative to genuinely comparable assets.",
+          "recognition_signal": "PE; EV/EBITDA; PBV",
+          "expected_use": "Execute the steps, disclose assumptions, and stop rather than invent missing current inputs."
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "uniform company data",
+        "multiple definition",
+        "candidate peer universe",
+        "growth/risk/cash-flow drivers",
+        "distribution and outlier policy"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "Define numerator and denominator consistently.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": "A required identity, unit, claim, formula, current-data or survival input is unresolved."
+        },
+        {
+          "step_id": "step-02",
+          "action": "Measure uniformly.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-03",
+          "action": "Inspect distribution and selection bias.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-04",
+          "action": "Identify fundamental drivers.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-05",
+          "action": "Control peer differences.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-06",
+          "action": "State whether conclusion is relative to sector or market.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "peer set and exclusion log",
+        "driver-adjusted predicted multiple",
+        "relative pricing range"
+      ],
+      "stop_conditions": [
+        "Required current facts or market inputs cannot be sourced or bounded.",
+        "Cash-flow claim and discount rate cannot be made consistent.",
+        "Terminal or reverse-valuation system is mathematically invalid or underidentified."
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "hard-coded historical median multiples"
+      ],
+      "failure_modes": [
+        "Using book case numbers or U.S. historical observations as current universal defaults.",
+        "Hiding uncertainty behind a precise point value.",
+        "Continuing after unresolved entity, period, currency, unit, formula or data-vintage mismatch."
+      ],
+      "limitations": [
+        "The source is a 2025 valuation text; current accounting, tax, regulatory and market facts require separate verification.",
+        "Stage 0-1.6 validates evidence and contract design, not live-model investment performance."
+      ],
+      "ask_user_when": [
+        "Valuation purpose, claim, date, currency or control/minority perspective would materially change the model.",
+        "Several plausible narratives produce materially different values and the user must choose a scenario policy."
+      ],
+      "escalate_when": [
+        "A regulated fairness opinion, tax/legal conclusion or transaction execution is requested.",
+        "Complex derivatives, insolvency waterfall or jurisdiction-specific regulatory capital requires specialist review."
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [
+      "cap.investment-valuation-4e.valuation-input-and-identity-contract"
+    ],
+    "contrasts_with": [],
+    "composes_with": [],
+    "routes_to": []
+  },
+  "compilation": {
+    "destination": "reference_only",
+    "skill_name": null,
+    "skill_description": null,
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": null
+  }
+}

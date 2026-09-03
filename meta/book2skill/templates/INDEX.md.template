@@ -1,69 +1,71 @@
-# {{BOOK_TITLE}} — Skill Index
+# {{BOOK_TITLE}} — Capability index
 
-> 本书由 book2skill 蒸馏, 共产出 **{{N}}** 个 skills。
-> 处理时间: {{DATE}}
+> Navigation view generated from `.book2skill/independent/capability-bundle.json`. Edit the bundle and capability cards, then regenerate this file; do not treat this index as the source of truth.
 
-## 关于这本书
+## Start here
 
-- **作者**: {{AUTHOR}}
-- **出版年**: {{YEAR}}
-- **一句话主旨**: {{ONE_LINE_THEME}}
-- **整书理解**: 见 [BOOK_OVERVIEW.md](./BOOK_OVERVIEW.md)
+- **Use the book router when**: {{一个问题需要先在本书多项能力之间选择，或需要组合多个能力}}
+- **Call a standalone skill when**: {{用户意图已明确匹配某个能力}}
+- **Use as reference only when**: {{材料能提供背景，但不足以形成独立执行契约}}
+- **One-sentence thesis**: {{ONE_LINE_THEME}}
 
----
+## Reproducibility
 
-## Skill 列表 (按主题分组)
+| Artifact | Purpose | Status |
+|---|---|---|
+| [`.book2skill/source-manifest.json`](./.book2skill/source-manifest.json) | Exact source version, rights, parsing and coverage | {{complete / incomplete}} |
+| [`.book2skill/overview.md`](./.book2skill/overview.md) | Whole-book argument and critical model | {{accepted / pending}} |
+| [`.book2skill/independent/capability-bundle.json`](./.book2skill/independent/capability-bundle.json) | Canonical frozen capability inventory and routing | revision {{revision}} |
+| [`.book2skill/pipeline-state.json`](./.book2skill/pipeline-state.json) | Resume point, checks and decisions | {{status}} |
+| {{REFRESH_ONLY_COMPARISON_LINK_OR_DELETE_ROW}} | Independent-run comparison and merge rationale | {{complete / limited / pending}} |
 
-### {{主题 1}}
+## Capability catalog
 
-- [`{{skill-slug-1}}`](./{{skill-slug-1}}/SKILL.md) — {{一句话描述}}
-- [`{{skill-slug-2}}`](./{{skill-slug-2}}/SKILL.md) — {{一句话描述}}
+| Capability ID | Skill or route | User problem | Outcome | Status | Evaluation evidence |
+|---|---|---|---|---|---|
+| `{{capability-id-1}}` | [`{{skill-slug-1}}`](./{{skill-slug-1}}/SKILL.md) | {{atomic user problem}} | {{observable result}} | {{standalone / routed / reference / deprecated}} | {{release state, held-out comparison, and any critical failure}} |
+| `{{capability-id-2}}` | {{router section or relative link}} | {{atomic user problem}} | {{observable result}} | {{status}} | {{evaluation}} |
 
-### {{主题 2}}
+## Routing distinctions
 
-- [`{{skill-slug-3}}`](./{{skill-slug-3}}/SKILL.md) — {{一句话描述}}
+| If the request looks like… | Use | Do not use | Reason |
+|---|---|---|---|
+| {{scenario A}} | `{{capability-id-1}}` | `{{capability-id-2}}` | {{decisive distinction}} |
 
----
+## Relationships
 
-## 引用图
+| From | Relation | To | Why it matters in execution |
+|---|---|---|---|
+| `{{capability-id-1}}` | {{depends-on / contrasts-with / composes-with / routes-to / supersedes}} | `{{capability-id-2}}` | {{ordering, choice, replacement or combination rule}} |
 
-```mermaid
-graph LR
-    A[skill-a] -->|depends-on| B[skill-b]
-    A -.->|contrasts-with| C[skill-c]
-    B ===>|composes-with| D[skill-d]
-```
+Add a Mermaid graph only when it makes a non-trivial dependency or composition structure clearer than the table.
 
-图例:
-- `-->`  depends-on
-- `-.->` contrasts-with
-- `===>` composes-with
+## Suggested paths
 
----
+### Solve a specific problem
 
-## 推荐学习顺序
+1. Match the request against the routing distinctions.
+2. Open only the selected skill.
+3. Load its capability card only if source grounding or a boundary case matters.
 
-(从依赖图的叶子节点开始, 向上)
+### Learn the book's system
 
-1. **{{skill-a}}** — 最基础, 没有前置
-2. **{{skill-b}}** — 依赖 skill-a
-3. **{{skill-c}}** — 依赖 skill-a, 与 skill-b 互补
-...
+1. {{Foundational capability ID and why}}
+2. {{Next capability ID and dependency}}
+3. {{Composition or contrast exercise}}
 
----
+## Evaluation summary
 
-## 接入 darwin-skill
+- **Bundle revision**: {{revision}}
+- **Active capabilities**: {{N}}
+- **Hard routing gates**: {{passed / failed; list failures}}
+- **Known weak spots**: {{ambiguous intents, missing evidence, untested host behavior}}
+- **Next review trigger**: {{new source edition, failed real request, changed host contract, or scheduled audit}}
 
-所有 skill 均带有 `test-prompts.json` (darwin-skill 兼容格式), 可直接接入自动进化:
+## Audit trail
 
-```
-darwin evolve books/{{book-slug}}/
-```
-
----
-
-## 审计轨迹
-
-- 候选单元池: [candidates/](./candidates/)
-- 被淘汰的候选 (含原因): [rejected/](./rejected/)
-- BOOK_OVERVIEW: [BOOK_OVERVIEW.md](./BOOK_OVERVIEW.md)
+- Candidate extraction: [`.book2skill/candidates/`](./.book2skill/candidates/)
+- Rejections with reasons: [`.book2skill/rejected/`](./.book2skill/rejected/)
+- Source and coverage: [`.book2skill/source-manifest.json`](./.book2skill/source-manifest.json)
+- Canonical cards and decisions: [`.book2skill/independent/capability-bundle.json`](./.book2skill/independent/capability-bundle.json)
+- {{REFRESH_ONLY_COMPARISON_AUDIT_LINK_OR_DELETE_ITEM}}

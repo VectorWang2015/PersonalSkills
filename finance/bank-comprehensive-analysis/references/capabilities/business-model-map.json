@@ -1,0 +1,283 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.kan-tou-yin-hang.business-model-map",
+  "revision": 2,
+  "status": "draft",
+  "slug": "business-model-map",
+  "title": "银行经营模型映射",
+  "one_liner": "把银行的负债来源、资产投向、中间业务、收入费用、风险与资本约束连成一张可核对的经营因果图。",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "ktbank-txt-2021.fw.ch01.l101-liability-funds-assets",
+      "ktbank-txt-2021.fw.ch02.l229-asset-risk-return",
+      "ktbank-txt-2021.fw.ch04.l363-income-engine",
+      "ktbank-txt-2021.fw.ch05.l543-cost-engine",
+      "ktbank-txt-2021.fw.ch06.l587-leverage-risk",
+      "ktbank-txt-2021.fw.ch09.l1225-statement-map"
+    ],
+    "aliases": [
+      "legacy.bank-comprehensive-analysis"
+    ],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "用户拿到一家银行的定期报告，却无法把大量科目还原为它如何获取资金、承担风险并形成利润。",
+    "distinctive_value": "以银行特有的资金中介链而非制造业模板组织分析，防止把高负债率、单年经营现金流等普通企业指标机械套用到银行。",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ktb-ch01-l101-liability",
+          "ev-ktb-ch02-l232-balance",
+          "ev-ktb-ch04-l363-income",
+          "ev-ktb-ch05-l543-cost",
+          "ev-ktb-ch06-l592-leverage",
+          "ev-ktb-ch09-l1225-map"
+        ],
+        "rationale": "六处证据分别覆盖资金来源、资产配置、收入、费用、杠杆和财报入口；运行时因果图属于对这些章节的综合，不冒充作者单句原话。"
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "输入为同一主体、同一期间的报告及附注；步骤可产出经营模型图、驱动因素表、风险与数据缺口。"
+      },
+      "incremental_utility": {
+        "status": "hypothesis",
+        "comparison": "相对无专门流程，预计减少把银行当普通工商企业分析、只盯净利润或漏掉资本约束的错误；尚未做独立holdout。"
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "若报告身份、合并范围或关键附注不全则停止定量结论；该能力不负责当前监管核验、精确估值或交易建议。"
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "全书从业务到财报再到估值反复使用同一经营链，且第9章给出明确报表阅读入口。"
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "从零梳理一家银行怎么赚钱、主要风险在哪里",
+      "把银行年报科目转换成基本面驱动树",
+      "确定深入分析应先调用哪些银行专项能力"
+    ],
+    "trigger_signals": [
+      "请求对一家银行做全面基本面初筛或财报导读",
+      "已有报表但尚未建立资产负债、利润、风险和资本之间的关系",
+      "分析中出现用普通企业负债率或单年经营现金流直接否定银行的倾向"
+    ],
+    "do_not_trigger": [
+      "只需复算一个明确公式时应直接使用对应量化能力",
+      "只需下载或解析报告文件时应转给文档获取/解析能力",
+      "需要实时监管合规结论、投资适当性或买卖执行时不由本能力接管"
+    ],
+    "neighbor_distinctions": [
+      {
+        "capability_id": "cap.kan-tou-yin-hang.funding-liquidity-analysis",
+        "use_this_when": "需要先建立全局经营地图或确定分析顺序。",
+        "use_neighbor_when": "问题已聚焦负债成本、稳定性、期限错配或流动性。"
+      },
+      {
+        "capability_id": "cap.kan-tou-yin-hang.bank-valuation",
+        "use_this_when": "尚未完成基本面事实与驱动因素整理。",
+        "use_neighbor_when": "基本面已经规范化，需要形成估值区间与敏感性。"
+      }
+    ]
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ktb-ch01-l101-liability",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第1章 > 1.1负债概述 > TXT lines 101-103；EPUB text/part0006.html#cha1_1_1_1",
+        "claim_type": "explicit",
+        "excerpt": "银行放贷的资金只有很少一部分是自有的",
+        "paraphrase": "负债业务为银行的资产投放提供主要资金，负债能力需同时观察直接利息成本与获客营运成本。",
+        "note": "说明经营链的资金起点；间接成本的具体分摊假设只是书中示例，不能直接固化。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch02-l232-balance",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第2章 > 2.1资产业务概述 > 收益与风险的平衡、久期与期限错配 > TXT lines 230-236；EPUB text/part0007.html#cha2_2_1_1",
+        "claim_type": "explicit",
+        "excerpt": "要在风险和收益之间寻找利益最大化的平衡点。",
+        "paraphrase": "资产端不能只追求收益率，还要同时权衡信用风险、流动性、久期和资本消耗。",
+        "note": "给经营链加入风险和流动性约束。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch04-l363-income",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第4章 > 银行的收入 > TXT lines 363-366；EPUB text/part0009.html#cha4_4",
+        "claim_type": "explicit",
+        "excerpt": "银行的收入主要分为净利息收入和非利息收入两大部分。",
+        "paraphrase": "利息收入链来自资产与负债的利差，非利息收入主要来自服务和中间业务。",
+        "note": "构成利润表收入端的第一层分类。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch05-l543-cost",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第5章 > 银行的费用 > TXT lines 543-548；EPUB text/part0010.html#cha5_5",
+        "claim_type": "explicit",
+        "excerpt": "利润前置而风险后置。",
+        "paraphrase": "费用端要把信用减值与业务管理费分开；减值既吸收未来风险，也可能平滑当期利润。",
+        "note": "解释为何净利润不能脱离拨备和资产质量单看。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch06-l592-leverage",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第6章 > 6.1高杠杆 > TXT lines 587-595；EPUB text/part0011.html#cha6_6_1_1",
+        "claim_type": "explicit",
+        "excerpt": "高杠杆是一柄双刃剑",
+        "paraphrase": "银行以高杠杆放大资产回报，也放大资产损失，因此资本充足与资产质量是经营模型的硬约束。",
+        "note": "把收益分析与偿付能力约束连接起来。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch09-l1225-map",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第9章 > 9.1资产负债表、9.2损益表、9.3现金流量表 > TXT lines 1224-1324；EPUB text/part0014.html#cha9_9_1_1",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "资产负债表应下钻到贷款、投资、存款、同业和债券；损益表聚焦收入驱动与减值；银行现金流需三类合看，不能用单年经营现金流作普通企业式结论。",
+        "note": "综合第9章三张报表的操作顺序。"
+      }
+    ],
+    "interpretation": {
+      "model": "将银行视为受资本与流动性约束的风险中介：先取得负债与权益，配置到贷款、投资和同业资产，形成净利息收入；服务与中间业务形成手续费；营运费用和信用减值消耗收入；留存利润补充资本并决定可持续扩表能力。",
+      "decision_rules": [
+        "任何单项亮点都必须追溯其资金来源、风险承担、会计列报和资本消耗，不能只看表面增速。",
+        "先确认报表主体、合并范围、期间、币种、单位和版本，再比较趋势或同业。",
+        "把事实、作者框架与本轮分析推断分栏；当前监管口径和市场数据必须另行核验。",
+        "结论至少同时回答盈利从何而来、风险在哪里、资本是否支持延续。"
+      ],
+      "assumptions": [
+        "输入报告包含主要报表与关键附注。",
+        "跨期或跨行比较能够对齐合并范围、会计分类和期间。"
+      ]
+    },
+    "application": {
+      "past_cases": [
+        {
+          "case_id": "case-ktb-ch09-bank-cash-flow",
+          "problem": "把银行单年经营现金流为负直接解释为主营业务失血。",
+          "method_use": "作者把经营、投资、筹资现金流与银行的存贷、投资、同业存单业务重新对应。",
+          "result": "指出银行的原料、产品和利润都以货币表现，单独经营现金流不能完整描述经营。",
+          "evidence_ids": [
+            "ev-ktb-ch09-l1225-map"
+          ]
+        }
+      ],
+      "future_scenarios": [
+        {
+          "scenario": "首次评估一家上市银行的年度报告。",
+          "recognition_signal": "用户要求全面分析，但尚未指定净息差、信用风险或估值中的某一模块。",
+          "expected_use": "先产出一页经营模型和数据缺口，再路由到专项卡，避免边读边下结论。"
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "银行名称、证券/主体标识与合并范围",
+        "至少一期完整定期报告及关键附注；做趋势时至少三期同口径数据",
+        "报告期、币种、单位、会计准则/口径与是否更正重述",
+        "用户要回答的基本面问题或比较对象"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "建立文档身份表：主体、合并/母行、年度/中期、报告版本、期间、币种、单位、会计口径。",
+          "completion_check": "所有后续数字都能指向同一身份表；任何不一致已列为缺口。",
+          "stop_if": "无法确定主体、期间、单位或报告版本。"
+        },
+        {
+          "step_id": "step-02",
+          "action": "把资产端拆为贷款、金融投资、同业/央行及其他，把负债端拆为存款、同业/存单、央行借款和权益，并记录规模、占比、增速、收益/成本与期限特征。",
+          "completion_check": "主要资产和负债科目覆盖总额的绝大部分，合计差异已解释。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-03",
+          "action": "把利润表还原为净利息收入、手续费与佣金、其他非息、业务管理费、信用减值、税与净利润；为每项标记对应业务和风险。",
+          "completion_check": "收入费用桥能够从营收到净利润基本勾稽，异常分类已标注。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-04",
+          "action": "补入信用风险、流动性、资本充足与风险加权资产，连接‘增长—收益—风险—资本’反馈回路。",
+          "completion_check": "每个主要增长驱动都注明其风险、资金和资本代价。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-05",
+          "action": "输出经营模型图、三到五个关键驱动、反证、数据缺口，并为净息差、风险、利润质量、资本与估值选择后续能力。",
+          "completion_check": "交付物能够解释银行如何赚钱、最可能如何出问题、下一步需要算什么。",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "银行经营模型与报表科目映射",
+        "关键盈利驱动、风险约束和资本约束清单",
+        "跨期/跨行数据口径表与缺口",
+        "专项分析路由建议"
+      ],
+      "stop_conditions": [
+        "全局经营链已经闭环且专项问题已明确时停止扩展背景材料。",
+        "关键附注或身份信息缺失时只交付缺口，不给确定性优劣结论。",
+        "需要当前法规、市场价格或个性化建议时转交外部核验或专业流程。"
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "不替代报告下载、OCR、表格抽取或审计鉴证。",
+        "不单独给出股票目标价、仓位或买卖动作。",
+        "不把书中2017—2020年前后的行业数据和监管阈值当作当前事实。"
+      ],
+      "failure_modes": [
+        "用普通企业的负债率、库存、毛利率或单年经营现金流机械评价银行。",
+        "只读三张主表、不读贷款分类、投资资产、净利息收入和资本附注。",
+        "把高收入增长与低风险、低资本消耗自动等同。"
+      ],
+      "limitations": [
+        "该经营链是跨章节综合，具体科目会因法域、准则、业务牌照和报告期而变化。",
+        "原书案例集中于中国上市银行和2010年代数据，迁移到其他法域需重建口径。"
+      ],
+      "ask_user_when": [
+        "用户未说明分析的是合并集团还是母行口径。",
+        "比较对象或目标问题不同会显著改变需要下钻的附注。"
+      ],
+      "escalate_when": [
+        "报告存在重大重述、审计保留意见或复杂并表，影响核心数字可比性。",
+        "任务需要当前资本监管、会计准则或法律结论。"
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [],
+    "contrasts_with": [],
+    "composes_with": [
+      "cap.kan-tou-yin-hang.funding-liquidity-analysis",
+      "cap.kan-tou-yin-hang.net-interest-margin-analysis",
+      "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+      "cap.kan-tou-yin-hang.earnings-quality-normalization",
+      "cap.kan-tou-yin-hang.capital-growth-analysis",
+      "cap.kan-tou-yin-hang.competitive-advantage-trace",
+      "cap.kan-tou-yin-hang.bank-valuation"
+    ],
+    "routes_to": [
+      "cap.kan-tou-yin-hang.funding-liquidity-analysis",
+      "cap.kan-tou-yin-hang.net-interest-margin-analysis",
+      "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+      "cap.kan-tou-yin-hang.earnings-quality-normalization",
+      "cap.kan-tou-yin-hang.capital-growth-analysis",
+      "cap.kan-tou-yin-hang.bank-valuation"
+    ]
+  },
+  "compilation": {
+    "destination": "reference_only",
+    "skill_name": null,
+    "skill_description": null,
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": "../../test-prompts.json"
+  }
+}

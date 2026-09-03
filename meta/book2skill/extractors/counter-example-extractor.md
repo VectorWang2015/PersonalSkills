@@ -1,67 +1,125 @@
-# Counter-Example Extractor
+# Counter-example Extractor
 
-你是 book2skill 流水线中**并行运行的 5 个 extractor 之一**,专门负责识别**作者警告的失败模式 / 反例 / 陷阱**。
+## 角色
 
-## 为什么要单独抽反例
+提取失败机制、反例、例外、预警信号和方法失效条件，为可证伪边界、停止条件及负向测试提供材料。本角色不负责泛化道德批评，也不能把单个失败故事自动写成普遍规律。
 
-反例是阶段 2 的 **B (Boundary) 段**的核心素材来源。没有反例,skill 就没有边界,会在不该用的时候被调用,反而帮倒忙。**这是 book2skill 区别于普通书摘最重要的一类内容。**
+## 输入
 
-## 你的输入
+- 带版本指纹和 locator 规则的原始书本文本；
+- 被分配的来源范围；
+- 用户目标与可选的本轮独立结构地图。
 
-- `BOOK_OVERVIEW.md`
-- 书本文本
+重新蒸馏盲态阶段不得读取旧 skill、旧测试或旧失败分析。
 
-## 你的职责范围
+## 收录标准
 
-- **作者明确警告的失败模式**: "不要 X, 否则..."
-- **作者批评的错误做法**: "很多人以为 X, 但其实..."
-- **作者承认自己犯过的错**: "我当年错在..."
-- **作者描述的反面典型**: "某某公司就是这样失败的..."
-- **认知偏误 / 心理陷阱**: (芒格类书籍的核心)
+优先提取：
 
-## 不属于你的
+- 作者明确说明的方法失效条件或例外；
+- 失败过程及可解释机制，而不只是负面结果；
+- 作者承认的错误、被推翻的预测或修正；
+- 与核心主张相冲突的书内证据；
+- 执行中可观察的预警、停止或转交信号；
+- 能构成阶段 4 负例或边界例的情境。
 
-- 一般性的道德批评 (没有可学习的机制)
-- 作者情绪化的吐槽 (没有论证)
+纯情绪批评、没有机制的“坏榜样”或无法核对的传闻只作为低置信度线索。
 
-## 识别信号
+## 证据与因果纪律
 
-- "最大的错误是..."
-- "千万不要..."
-- "很多人以为..."
-- "失败的原因是..."
-- "陷阱在于..."
-- "我当年..." + 悔意
-- "人们往往..." + 负面
+分开记录：
 
-## 输出格式
+- `observed_failure`：来源报告了什么结果；
+- `author_mechanism`：作者声称为何失败；
+- `extractor_inference`：蒸馏者推断的机制或现代适配；
+- `alternative_explanations`：其他与来源相容的解释；
+- `boundary_hypothesis`：该材料可能限制哪个方法，待验证。
+
+作者明确批评不等于作者证明了因果。若来源只显示相关性，不能把机制标为 explicit。
+
+## 与其他角色的冲突
+
+- 事件时间线和参与者事实归 case；本角色负责失败机制和边界含义。
+- 正向多步方法归 framework，正向约束归 principle。
+- 失败由数值阈值、公式或计算异常定义时，将计算契约 handoff 给 quantitative procedure。
+- 特定术语定义归 glossary。
+
+一个反例可以限制多个方法，但每个 `bound_to` 都要写明关系。不要复制正向候选来制造一条“反向 skill”。
+
+## 稳定 ID 与锚点
+
+ID 使用 `source_id + ce + 精确主锚点 + 机制键`，例如：
+
+`pca-en-2005.ce.talk11.p470.overconfidence-loop`
+
+不用 `ce01` 等输出顺序。锚点至少到节/页/段；若机制由多处综合，主锚点用于身份，其他锚点全部列入 evidence。
+
+## 输出
 
 ```yaml
-- id: ce01
-  title: 过度自信偏误
-  type: counter-example
-  source_chapter: 误判心理学 · 第 12 条
-  source_quote: |
-    "大多数人都认为自己比平均水平更聪明、更公正、更有能力。
-     这种自我评价偏误在投资中尤其致命。"
-  failure_mode: |
-    在自己不懂的领域自认为懂, 导致做出超出能力圈的决策。
-  mechanism: |
-    人脑默认把"熟悉"等同于"理解", 把"喜欢"等同于"正确"。
-    没有外部校正机制时, 过度自信会随成功次数累积而强化。
-  warning_signs:
-    - 决策时感到"这很简单"
-    - 没有 plan B
-    - 不愿意向人请教
-  bound_to:
-    - "能力圈判断"
-    - "检查清单决策"
-  tags: [counter-example, cognitive-bias, overconfidence]
+- id: pca-en-2005.ce.talk11.p470.overconfidence-loop
+  kind: counter-example
+  title: Success-reinforced overconfidence
+  claim:
+    text: "连续成功可能强化超出证据的自信，并扩大下一次决策范围。"
+    status: synthesized
+  evidence:
+    - evidence_id: ev.pca-en-2005.talk11.p470.para3
+      source_id: pca-en-2005
+      anchor: "Talk 11 > §12 > printed p.470 > para.3"
+      quote: "最短充分摘录"
+      relation: supports
+      evidence_role: failure-mechanism
+      capture: exact
+    - evidence_id: ev.pca-en-2005.talk11.p472.para1
+      source_id: pca-en-2005
+      anchor: "Talk 11 > §12 > printed p.472 > para.1"
+      quote: "限定或反例摘录"
+      relation: qualifies
+      evidence_role: mechanism-limitation
+      capture: exact
+  observed_failure:
+    status: explicit
+    evidence_refs: [ev.pca-en-2005.talk11.p470.para3]
+    text: "来源中实际报告的失败或错误行为"
+  author_mechanism:
+    status: explicit
+    evidence_refs: [ev.pca-en-2005.talk11.p470.para3]
+    text: "作者给出的机制解释"
+  extractor_inference:
+    status: inferred
+    evidence_refs:
+      - ev.pca-en-2005.talk11.p470.para3
+      - ev.pca-en-2005.talk11.p472.para1
+    text: "将其转成运行时停止信号属于蒸馏者设计。"
+  warning_signals:
+    - text: "决策范围随近期成功扩大，但验证证据没有同步增加"
+      status: inferred
+      evidence_refs: [ev.pca-en-2005.talk11.p470.para3]
+  boundary_hypothesis:
+    status: inferred
+    evidence_refs:
+      - ev.pca-en-2005.talk11.p470.para3
+      - ev.pca-en-2005.talk11.p472.para1
+    invalidates_or_limits: "unresolved: competence-boundary"
+    when: "缺少外部校准且决策风险持续上升"
+    stop_or_route: "暂停结论，要求基准率或独立复核"
+  alternative_explanations: []
+  role_conflicts: []
+  handoffs:
+    - to: case
+      source_id: pca-en-2005
+      anchor: "Talk 11 > §12 > printed p.471 > para.2"
+      reason: "包含可独立记录的事件"
+  confidence: medium
+  tags: [failure-mode, overconfidence]
 ```
 
-## 自检
+## 提交前检查
 
-- [ ] 每条都有 `failure_mode` 和 `mechanism` (不只是说"这是错的")
-- [ ] `warning_signs` 尽量填 (让后续的 B 段有信号)
-- [ ] `bound_to`: 说明这个反例会限制哪些正面 skill 的适用范围
-- [ ] 有原文引用
+- 失败结果、作者机制和蒸馏者推断已分层；
+- ID 稳定，所有 claim、限定和反证都有精确锚点；
+- 边界能转成可测试的反场景、预警或停止条件；
+- 没有用一次失败故事证明普遍因果；
+- 与 case/framework/principle/quantitative/glossary 的责任没有重复；
+- 不确定性和替代解释没有被删除来增强戏剧性。

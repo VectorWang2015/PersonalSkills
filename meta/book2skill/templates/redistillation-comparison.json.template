@@ -1,0 +1,120 @@
+{
+  "schema": "book2skill/redistillation-comparison@1",
+  "comparison_id": "compare.{{book-slug}}.{{run-id}}",
+  "compared_at": "{{ISO-8601 timestamp}}",
+  "baseline_bundle": "{{path to frozen existing capability-bundle.json}}",
+  "candidate_bundle": "{{path to independently produced capability-bundle.json}}",
+  "source_alignment": {
+    "baseline_manifest": "{{path to baseline source-manifest.json}}",
+    "candidate_manifest": "{{path to candidate source-manifest.json}}",
+    "same_content_digest": false,
+    "material_differences": []
+  },
+  "independence_controls": {
+    "blindness_level": "unverified",
+    "candidate_created_without_baseline_access": false,
+    "candidate_frozen_before_comparison": false,
+    "comparator_separate_from_candidate_run": false,
+    "candidate_freeze_manifest": "{{path to immutable candidate inventory and content digests}}",
+    "candidate_frozen_at": null,
+    "legacy_first_exposed_at": null,
+    "notes": "{{any unavoidable contamination or limitation}}"
+  },
+  "evaluation_evidence": {
+    "protocol": "anonymous_baseline_candidate_no_skill",
+    "holdout_suite": "{{path to the frozen holdout suite}}",
+    "variant_identity_map": "{{restricted path to the A/B/C identity mapping}}",
+    "environment_equalized": false,
+    "arms": [
+      "baseline",
+      "candidate",
+      "no_skill"
+    ],
+    "findings": [
+      {
+        "task_family": "{{real user task family}}",
+        "winner": "inconclusive",
+        "evidence": "{{mechanical assertions, blinded preference, failure counts, and confidence}}"
+      }
+    ],
+    "limitations": [
+      "{{sample, model, tool, leakage, or judging limitation}}"
+    ]
+  },
+  "summary": {
+    "baseline_capability_count": 0,
+    "candidate_capability_count": 0,
+    "matched_groups": 0,
+    "baseline_only": 0,
+    "candidate_only": 0,
+    "unresolved": 0
+  },
+  "dimension_findings": [
+    {
+      "dimension": "evidence_traceability",
+      "judgment": "mixed",
+      "evidence": [
+        "{{specific card IDs, tests, or source locators}}"
+      ],
+      "action": "{{what the merged version should preserve or change}}"
+    }
+  ],
+  "mappings": [
+    {
+      "mapping_id": "map-01",
+      "baseline_capability_ids": [
+        "cap.{{book-slug}}.{{baseline-slug}}"
+      ],
+      "candidate_capability_ids": [
+        "cap.{{book-slug}}.{{candidate-slug}}"
+      ],
+      "relationship": "overlap",
+      "evidence": [
+        "{{shared and divergent source evidence, contracts, or evaluation outcomes}}"
+      ],
+      "decision": "manual_review",
+      "target_capability_ids": [
+        "cap.{{book-slug}}.{{target-slug}}"
+      ],
+      "preserve_from_baseline": [
+        "{{strong boundary, example, trigger distinction, or execution detail}}"
+      ],
+      "preserve_from_candidate": [
+        "{{new coverage, clearer mechanism, better routing, or stronger test}}"
+      ],
+      "discard": [
+        "{{duplication, unsupported claim, vague advice, or overfitting}}"
+      ],
+      "rationale": "{{evidence-based reason for the decision; do not choose by recency alone}}",
+      "confidence": "low"
+    }
+  ],
+  "unmatched_baseline": [
+    {
+      "capability_id": "cap.{{book-slug}}.{{baseline-only-slug}}",
+      "decision": "manual_review",
+      "rationale": "{{why the independent run missed it and why evidence still supports retaining it}}"
+    }
+  ],
+  "unmatched_candidate": [
+    {
+      "capability_id": "cap.{{book-slug}}.{{candidate-only-slug}}",
+      "decision": "manual_review",
+      "rationale": "{{why it is genuinely new rather than a split caused by wording}}"
+    }
+  ],
+  "finalization": {
+    "target_bundle": "{{path to merged capability-bundle.json}}",
+    "merged_evaluation": "{{pending or path to the merged version's fresh evaluation}}",
+    "new_capability_ids": [],
+    "revised_capability_ids": [],
+    "deprecated_capability_ids": [],
+    "unresolved_items": [
+      {
+        "item_id": "unresolved-01",
+        "question": "{{material disagreement or missing evidence}}",
+        "required_resolution": "{{user choice, source check, or evaluation}}"
+      }
+    ]
+  }
+}

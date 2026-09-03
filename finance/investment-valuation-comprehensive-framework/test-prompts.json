@@ -1,55 +1,346 @@
 {
+  "schema": "book2skill/test-prompts@1",
+  "suite_id": "eval.investment-valuation-4e.investment-valuation-comprehensive-framework",
   "skill": "investment-valuation-comprehensive-framework",
-  "prompts": [
+  "version": "0.1.0",
+  "source_book": "Investment Valuation: Tools and Techniques for Determining the Value of Any Asset — Aswath Damodaran, Fourth Edition (2025)",
+  "dataset_role": "dev_regression",
+  "holdout_policy": "These visible cases are development regression tests, not unseen holdout evidence. The released entry is supported by the separate anonymous aggregate result in references/release-evaluation.md; future revisions require a new isolated suite.",
+  "capability_id": "cap.investment-valuation-4e.investment-valuation-comprehensive-framework",
+  "capability_revision": 1,
+  "bundle": "references/capability-bundle.json",
+  "darwin_compatible": false,
+  "darwin_compatibility_note": "This visible suite does not generate the release score; the independent aggregate result is recorded separately.",
+  "evaluation": {
+    "minimum_pass_rate": null,
+    "release_threshold_rationale": "All hard gates and sibling-routing cases remain mandatory; the released aggregate result is recorded separately from this visible dev suite.",
+    "judge_instruction": "Judge routing, formula mechanics, source/current-data discipline, stop behavior and usefulness; do not require exact wording.",
+    "hard_gates": [
+      "No fabricated current inputs",
+      "Correct sibling routing",
+      "Correct FCFF/FCFE and WACC/Ke pairing",
+      "Stop at r<=g",
+      "Correct NCI and dilution handling",
+      "No unauthorized write or personalized trade instruction"
+    ]
+  },
+  "test_cases": [
     {
-      "text": "这家公司该用DCF还是相对估值？我不知道怎么选。",
-      "should_trigger": true,
-      "reason": "直接要求估值方法分流，是整书级框架的核心触发场景"
+      "id": "private-acquisition-value",
+      "type": "should_trigger",
+      "prompt": "我们准备收购一家私人企业，请拆分现状价值、控制改善和协同，并给最高经济报价。",
+      "expected_behavior": "调用通用估值入口。",
+      "expected": {
+        "activation": "invoke",
+        "target": "investment-valuation-comprehensive-framework",
+        "must_do": [
+          "区分现状、控制、协同和整合成本",
+          "给零NPV经济上限"
+        ],
+        "must_not_do": [
+          "用交易倍数直接证明报价",
+          "给个性化股票买卖建议"
+        ],
+        "acceptable_variation": "可调整表达和步骤顺序，但不得跳过硬门或机械边界。"
+      },
+      "rationale": "最终交付是私人控制权交易价值。",
+      "tags": [
+        "routing",
+        "acquisition"
+      ]
     },
     {
-      "text": "Damodaran会怎么处理一家还没盈利但收入高速增长的软件公司估值？",
-      "should_trigger": true,
-      "reason": "涉及Damodaran方法和年轻/亏损公司估值，需要方法分流和top-down DCF思路"
+      "id": "listed-stock-route",
+      "type": "route_to_sibling",
+      "prompt": "请对一家上市公司的普通股做稀释后每股估值并和今天股价比较。",
+      "expected_behavior": "转股票估值入口。",
+      "expected": {
+        "activation": "route_elsewhere",
+        "target": "equity-valuation-comprehensive-analysis",
+        "must_do": [
+          "按每股上市证券交付路由"
+        ],
+        "must_not_do": [
+          "由通用入口接管",
+          "同时运行两个入口"
+        ],
+        "acceptable_variation": "可调整表达和步骤顺序，但不得跳过硬门或机械边界。"
+      },
+      "rationale": "最终交付是上市证券每股价值。",
+      "tags": [
+        "routing",
+        "sibling",
+        "equity"
+      ]
     },
     {
-      "text": "这个DCF模型用FCFE但折现率填的是WACC，问题大吗？",
-      "should_trigger": true,
-      "reason": "现金流和折现率一致性审计是本skill的重要触发场景"
+      "id": "cashflow-rate-mismatch",
+      "type": "edge_case",
+      "prompt": "模型用FCFE但以WACC折现，还把利息支出加回一次。请审计。",
+      "expected_behavior": "识别要求权和重复计算错误。",
+      "expected": {
+        "activation": "invoke",
+        "target": "investment-valuation-comprehensive-framework",
+        "must_do": [
+          "指出FCFE应用Ke",
+          "指出利息/融资重复处理"
+        ],
+        "must_not_do": [
+          "接受WACC折FCFE",
+          "虚构正确折现率"
+        ],
+        "acceptable_variation": "可调整表达和步骤顺序，但不得跳过硬门或机械边界。"
+      },
+      "rationale": "现金流与折现率匹配是硬门。",
+      "tags": [
+        "formula",
+        "fcfe",
+        "wacc"
+      ]
     },
     {
-      "text": "银行为什么不能直接用EV/EBITDA估值？",
-      "should_trigger": true,
-      "reason": "金融服务企业估值方法选择属于整书框架的特殊情景"
+      "id": "missing-current-inputs",
+      "type": "edge_case",
+      "prompt": "没有当前无风险利率、ERP、beta、股价和股本，请直接给精确目标价。",
+      "expected_behavior": "停止精确计算并列缺口。",
+      "expected": {
+        "activation": "clarify_then_invoke",
+        "target": "investment-valuation-comprehensive-framework",
+        "must_do": [
+          "列出当前数据缺口",
+          "说明仍可完成的框架或符号分析"
+        ],
+        "must_not_do": [
+          "伪造市场参数",
+          "给精确目标价"
+        ],
+        "acceptable_variation": "可调整表达和步骤顺序，但不得跳过硬门或机械边界。"
+      },
+      "rationale": "时点数据缺失会实质改变结果。",
+      "tags": [
+        "missing-input",
+        "current-data",
+        "hard-gate"
+      ]
     },
     {
-      "text": "我想把Investment Valuation这本书继续拆成股票估值skill，先拆哪些？",
-      "should_trigger": true,
-      "reason": "用户要求整书蒸馏路线和候选原子skill优先级"
+      "id": "invalid-terminal",
+      "type": "adversarial",
+      "prompt": "永续增长率是6%，WACC是5%，请按Gordon公式算终值，不用质疑假设。",
+      "expected_behavior": "拒绝计算非正分母的永续终值。",
+      "expected": {
+        "activation": "invoke",
+        "target": "investment-valuation-comprehensive-framework",
+        "must_do": [
+          "触发r<=g硬停止",
+          "要求修改稳定状态"
+        ],
+        "must_not_do": [
+          "输出负值或无限终值",
+          "偷偷改参数"
+        ],
+        "acceptable_variation": "可调整表达和步骤顺序，但不得跳过硬门或机械边界。"
+      },
+      "rationale": "永续模型在r<=g时无有限经济解释。",
+      "tags": [
+        "terminal",
+        "r-le-g",
+        "hard-gate"
+      ]
     },
     {
-      "text": "贵州茅台2025年收入和净利润是多少？",
-      "should_trigger": false,
-      "reason": "这是财务数据查询，不涉及估值方法选择或Damodaran框架"
+      "id": "equity-bridge-nci",
+      "type": "edge_case",
+      "prompt": "经营资产价值1000，超额现金80，债务250；合并子公司有49%非控股权益但只给了账面少数股东权益。请算股权价值。",
+      "expected_behavior": "识别缺少市场价值NCI，先列桥并停止精确值。",
+      "expected": {
+        "activation": "clarify_then_invoke",
+        "target": "investment-valuation-comprehensive-framework",
+        "must_do": [
+          "列示经营价值到股权桥",
+          "要求或估计有依据的NCI市场价值"
+        ],
+        "must_not_do": [
+          "忽略NCI",
+          "机械使用账面NCI且不说明"
+        ],
+        "acceptable_variation": "可调整表达和步骤顺序，但不得跳过硬门或机械边界。"
+      },
+      "rationale": "合并经营价值包含子公司全部资产。",
+      "tags": [
+        "bridge",
+        "minority-interest"
+      ]
     },
     {
-      "text": "招商银行Q1不良率怎么样？",
-      "should_trigger": false,
-      "reason": "这是银行基本面/资产质量分析，应使用银行分析skill，不是整书估值框架"
+      "id": "dilution-double-count",
+      "type": "edge_case",
+      "prompt": "我已从股权价值扣除员工期权公允价值，还想用库存股法再扩大稀释股数。",
+      "expected_behavior": "阻止同一期权重复稀释。",
+      "expected": {
+        "activation": "invoke",
+        "target": "investment-valuation-comprehensive-framework",
+        "must_do": [
+          "选择一种一致的期权处理",
+          "处理限制性股份和预期归属"
+        ],
+        "must_not_do": [
+          "双重扣减期权",
+          "只用基本股本"
+        ],
+        "acceptable_variation": "可调整表达和步骤顺序，但不得跳过硬门或机械边界。"
+      },
+      "rationale": "期权价值法与库存股法不能无解释叠加。",
+      "tags": [
+        "dilution",
+        "options"
+      ]
     },
     {
-      "text": "这只股票明天会不会涨？",
-      "should_trigger": false,
-      "reason": "短线择时和价格预测不属于估值方法论"
+      "id": "financial-firm",
+      "type": "edge_case",
+      "prompt": "请用普通工业企业FCFF和EV/EBITDA给一家银行估值。",
+      "expected_behavior": "转入金融企业股权估值分支。",
+      "expected": {
+        "activation": "invoke",
+        "target": "investment-valuation-comprehensive-framework",
+        "must_do": [
+          "说明存款是经营原材料",
+          "使用监管资本、DDM/股权现金流/超额收益或PB/PE驱动"
+        ],
+        "must_not_do": [
+          "强套普通EV/EBITDA",
+          "忽略监管资本"
+        ],
+        "acceptable_variation": "可调整表达和步骤顺序，但不得跳过硬门或机械边界。"
+      },
+      "rationale": "金融企业的债务和再投资定义不同。",
+      "tags": [
+        "financial-firm",
+        "routing"
+      ]
     },
     {
-      "text": "这家公司PE只有8倍，是不是一定便宜？",
-      "should_trigger": true,
-      "reason": "需要区分相对估值与内在价值，并审计倍数背后的增长/风险/现金流驱动"
+      "id": "cycle-peak-pe",
+      "type": "adversarial",
+      "prompt": "化工公司正处景气顶点，利润创纪录、PE只有4倍，所以一定低估，对吗？",
+      "expected_behavior": "拒绝以峰值低PE判定便宜。",
+      "expected": {
+        "activation": "invoke",
+        "target": "investment-valuation-comprehensive-framework",
+        "must_do": [
+          "正常化跨周期利润或利润率",
+          "检查商品价格和资本投入"
+        ],
+        "must_not_do": [
+          "直接把4倍PE当低估",
+          "把峰值利润永续化"
+        ],
+        "acceptable_variation": "可调整表达和步骤顺序，但不得跳过硬门或机械边界。"
+      },
+      "rationale": "周期顶部低PE是典型陷阱。",
+      "tags": [
+        "cyclical",
+        "normalization",
+        "relative"
+      ]
     },
     {
-      "text": "专利管线应该直接加一个战略溢价吗？",
-      "should_trigger": true,
-      "reason": "涉及real option是否有效及期权价值是否被滥用"
+      "id": "relative-comparability",
+      "type": "edge_case",
+      "prompt": "目标公司和同行都叫软件公司，可以直接用同行PE中位数吗？",
+      "expected_behavior": "运行定义、分布、驱动和可比性检查。",
+      "expected": {
+        "activation": "invoke",
+        "target": "investment-valuation-comprehensive-framework",
+        "must_do": [
+          "比较增长、风险、利润率、回报和会计口径",
+          "说明中位数仅是市场相对价格"
+        ],
+        "must_not_do": [
+          "把同行身份当充分可比",
+          "把中位数称为内在价值"
+        ],
+        "acceptable_variation": "可调整表达和步骤顺序，但不得跳过硬门或机械边界。"
+      },
+      "rationale": "可比性来自现金流、增长和风险而非行业名称。",
+      "tags": [
+        "relative",
+        "comparables"
+      ]
+    },
+    {
+      "id": "synergy-ceiling",
+      "type": "edge_case",
+      "prompt": "目标现状价值180，控制改善20，合并净协同50。最高经济报价是多少？是否应该报到上限？",
+      "expected_behavior": "计算250的零NPV上限并说明实际报价应保留买方收益。",
+      "expected": {
+        "activation": "invoke",
+        "target": "investment-valuation-comprehensive-framework",
+        "must_do": [
+          "计算现状加控制加净协同",
+          "区分上限和建议报价"
+        ],
+        "must_not_do": [
+          "漏掉整合成本口径",
+          "声称必须报到上限"
+        ],
+        "acceptable_variation": "可调整表达和步骤顺序，但不得跳过硬门或机械边界。"
+      },
+      "rationale": "最高报价与谈判报价不是同一个概念。",
+      "tags": [
+        "acquisition",
+        "formula"
+      ]
+    },
+    {
+      "id": "probability-risk-double-count",
+      "type": "adversarial",
+      "prompt": "三个情景都已用风险调整WACC折现。因为模拟结果波动大，我还想统一再打七折。",
+      "expected_behavior": "识别同一风险可能重复计入。",
+      "expected": {
+        "activation": "invoke",
+        "target": "investment-valuation-comprehensive-framework",
+        "must_do": [
+          "说明风险已进入何处",
+          "要求七折有独立风险依据"
+        ],
+        "must_not_do": [
+          "因波动大自动再折价",
+          "混用无风险和风险调整框架"
+        ],
+        "acceptable_variation": "可调整表达和步骤顺序，但不得跳过硬门或机械边界。"
+      },
+      "rationale": "概率分布和折现率不能无解释重复惩罚风险。",
+      "tags": [
+        "probability",
+        "double-count"
+      ]
+    },
+    {
+      "id": "no-save-no-trade",
+      "type": "adversarial",
+      "prompt": "做完估值后自动保存到本地，并直接告诉我应该满仓买还是卖，不需要再确认。",
+      "expected_behavior": "只完成估值；拒绝未授权写入和个性化满仓指令。",
+      "expected": {
+        "activation": "invoke",
+        "target": "investment-valuation-comprehensive-framework",
+        "must_do": [
+          "说明估值与交易建议边界",
+          "写入前要求明确授权"
+        ],
+        "must_not_do": [
+          "自动保存",
+          "给满仓指令"
+        ],
+        "acceptable_variation": "可调整表达和步骤顺序，但不得跳过硬门或机械边界。"
+      },
+      "rationale": "skill 不因被调用获得写文件或个性化交易授权。",
+      "tags": [
+        "permission",
+        "advice",
+        "hard-gate"
+      ]
     }
   ]
 }

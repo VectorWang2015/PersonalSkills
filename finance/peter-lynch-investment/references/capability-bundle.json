@@ -1,0 +1,206 @@
+{
+  "schema": "book2skill/capability-bundle@1",
+  "bundle_id": "bundle.peter-lynch-investment-merged",
+  "revision": 4,
+  "created_at": "2026-09-03T13:32:46+08:00",
+  "updated_at": "2026-09-03T14:16:02+08:00",
+  "source_manifest": "source-manifest.json",
+  "lineage": {
+    "derived_from_bundle": "bundle.peter-lynch-investment-merged@3",
+    "redistillation_comparison": "compare.peter-lynch.post-freeze-20260903"
+  },
+  "output": {
+    "mode": "single",
+    "promotion_budget": null,
+    "promotion_policy": "一个已发布的可发现router，五项内部能力按任务状态渐进加载。v4匿名聚合评测为候选99、旧实现98、无skill 94，支持根包active；结果不能逐卡归因，五项内部能力继续保持draft。详见release-evaluation.md。",
+    "router": {
+      "name": "peter-lynch-investment",
+      "description": "用于明确的彼得·林奇式公司分类、线索核验、增长与估值预期检查、持有论文和退出复核；不接管通用目标价、行业专门分析、市场择时或个性化数字配置。"
+    }
+  },
+  "capabilities": [
+    {
+      "capability_id": "cap.peter-lynch.company-category-contract",
+      "revision": 4,
+      "status": "draft",
+      "card": "capabilities/company-category-contract.md",
+      "promotion": {
+        "promotion_id": "promo.peter-lynch.company-category-contract.r4",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "按主导经济机制和类型迁移选择问题，可减少跨类型套用统一估值与卖出规则。",
+        "falsifier": "分类未改变后续问题，或高ROE、品牌、渠道、现金替代多期正常化增长证据把公司贴为中速增长型。",
+        "portfolio_conflicts": [],
+        "rationale": "分类是公司研究 router 的内部第一步，不需要独立入口。"
+      },
+      "destination": "router_only",
+      "delivery_path": "capabilities/company-category-contract.md",
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.peter-lynch.research-thesis-pressure-test",
+      "revision": 3,
+      "status": "draft",
+      "card": "capabilities/research-thesis-pressure-test.md",
+      "promotion": {
+        "promotion_id": "promo.peter-lynch.research-thesis-pressure-test.r3",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "把线索映射到主体、材料性、盈利机制和反证，可减少熟悉感、清单计分和故事驱动结论。",
+        "falsifier": "流程只增加篇幅，不能把单一报告分部造成的利润、现金、投入资本与ROIC缺口放进最强反例。",
+        "portfolio_conflicts": [],
+        "rationale": "整合正向特征与危险股票问题库，形成一个完整证据契约。"
+      },
+      "destination": "router_only",
+      "delivery_path": "capabilities/research-thesis-pressure-test.md",
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.peter-lynch.growth-valuation-consistency",
+      "revision": 4,
+      "status": "draft",
+      "card": "capabilities/growth-valuation-consistency.md",
+      "promotion": {
+        "promotion_id": "promo.peter-lynch.growth-valuation-consistency.r4",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "连接增长桥、利润质量、财务承受力和价格预期，可减少固定 PEG、周期低 P/E 和单位口径错误。",
+        "falsifier": "负 EPS、单位或期间不一致时仍输出精确估值，或重新引入 PEG 分档。",
+        "portfolio_conflicts": [
+          "equity-valuation-comprehensive-analysis"
+        ],
+        "rationale": "本能力只做预期一致性，正式目标价转交综合估值，避免入口竞争。"
+      },
+      "destination": "router_only",
+      "delivery_path": "capabilities/growth-valuation-consistency.md",
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.peter-lynch.thesis-monitor-exit-review",
+      "revision": 3,
+      "status": "draft",
+      "card": "capabilities/thesis-monitor-exit-review.md",
+      "promotion": {
+        "promotion_id": "promo.peter-lynch.thesis-monitor-exit-review.r3",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "冻结旧论文并逐项对比新证据，可减少价格驱动的过早卖出、死守和忽略类型迁移。",
+        "falsifier": "输出不能指出哪项假设改变，或使用固定涨跌、季度、分析师和机构阈值。",
+        "portfolio_conflicts": [],
+        "rationale": "监测与退出是同一个反馈环，合并后契约更完整。"
+      },
+      "destination": "router_only",
+      "delivery_path": "capabilities/thesis-monitor-exit-review.md",
+      "test_suite": "../test-prompts.json"
+    },
+    {
+      "capability_id": "cap.peter-lynch.decision-portfolio-boundaries",
+      "revision": 2,
+      "status": "draft",
+      "card": "capabilities/decision-portfolio-boundaries.md",
+      "promotion": {
+        "promotion_id": "promo.peter-lynch.decision-portfolio-boundaries.r2",
+        "decision": "merge-into-skill",
+        "gain_hypothesis": "把价格偏差、错失叙事和组合数量问题转成公司证据与正确路由，可减少固定持股数、满仓和越权仓位建议。",
+        "falsifier": "仍给数字配置，或鸡尾酒会和价格路径仍生成动作。",
+        "portfolio_conflicts": [
+          "personalized-portfolio-allocation"
+        ],
+        "rationale": "只保留一般论文和暴露检查；个性化配置明确转交。"
+      },
+      "destination": "router_only",
+      "delivery_path": "capabilities/decision-portfolio-boundaries.md",
+      "test_suite": "../test-prompts.json"
+    }
+  ],
+  "relationships": [
+    {
+      "from": "cap.peter-lynch.research-thesis-pressure-test",
+      "type": "composes_with",
+      "to": "cap.peter-lynch.company-category-contract",
+      "execution_rationale": "主体和材料性证据支持分类；分类反过来选择压力测试问题。"
+    },
+    {
+      "from": "cap.peter-lynch.growth-valuation-consistency",
+      "type": "depends_on",
+      "to": "cap.peter-lynch.company-category-contract",
+      "execution_rationale": "盈利与估值解释必须适配公司机制。"
+    },
+    {
+      "from": "cap.peter-lynch.thesis-monitor-exit-review",
+      "type": "depends_on",
+      "to": "cap.peter-lynch.research-thesis-pressure-test",
+      "execution_rationale": "监测需要可恢复且可证伪的旧论文。"
+    },
+    {
+      "from": "cap.peter-lynch.thesis-monitor-exit-review",
+      "type": "composes_with",
+      "to": "cap.peter-lynch.growth-valuation-consistency",
+      "execution_rationale": "退出复核需要更新价格要求与下行生存能力。"
+    },
+    {
+      "from": "cap.peter-lynch.decision-portfolio-boundaries",
+      "type": "composes_with",
+      "to": "cap.peter-lynch.thesis-monitor-exit-review",
+      "execution_rationale": "先剔除成本和价格锚定，再形成持有或退出研究状态。"
+    }
+  ],
+  "quality": {
+    "required_gates": [
+      "source-version-identified",
+      "blind-redistillation-frozen",
+      "post-freeze-comparison-recorded",
+      "source-faithfulness-reviewed",
+      "single-router-five-capabilities",
+      "current-data-identity-period-unit-gate",
+      "formula-and-negative-eps-gate",
+      "no-fixed-peg-holding-or-sell-thresholds",
+      "near-neighbor-routing-reviewed",
+      "first-round-aggregate-evaluation-recorded",
+      "second-round-aggregate-evaluation-recorded",
+      "source-manifest-schema-valid",
+      "capability-bundle-schema-valid",
+      "test-prompts-schema-valid",
+      "local-skill-tree-valid",
+      "official-quick-validate-valid",
+      "relative-links-json-placeholders-conflicts-valid",
+      "portable-path-scan-valid",
+      "read-only-freeze-and-hashes",
+      "v4-independent-behavior-holdout"
+    ],
+    "passed_gates": [
+      "source-version-identified",
+      "blind-redistillation-frozen",
+      "post-freeze-comparison-recorded",
+      "source-faithfulness-reviewed",
+      "single-router-five-capabilities",
+      "current-data-identity-period-unit-gate",
+      "formula-and-negative-eps-gate",
+      "no-fixed-peg-holding-or-sell-thresholds",
+      "near-neighbor-routing-reviewed",
+      "first-round-aggregate-evaluation-recorded",
+      "second-round-aggregate-evaluation-recorded",
+      "source-manifest-schema-valid",
+      "capability-bundle-schema-valid",
+      "test-prompts-schema-valid",
+      "local-skill-tree-valid",
+      "official-quick-validate-valid",
+      "relative-links-json-placeholders-conflicts-valid",
+      "portable-path-scan-valid",
+      "read-only-freeze-and-hashes",
+      "v4-independent-behavior-holdout"
+    ],
+    "open_issues": [
+      {
+        "issue_id": "issue-internal-card-attribution",
+        "severity": "low",
+        "description": "v4聚合结果支持已发布根包，但不等于五项内部能力分别通过。",
+        "owner": "post-release evaluator",
+        "next_action": "五项内部能力继续保持draft；只有逐卡隔离评测或消融结果才能改变单卡状态。"
+      },
+      {
+        "issue_id": "issue-portfolio-routing",
+        "severity": "low",
+        "description": "个性化组合配置的转交边界作为发布后定向路由监测项。",
+        "owner": "portfolio evaluator",
+        "next_action": "在发布后回归中用缺输入和行业集中诱饵检查本 skill 只做一般论文/暴露盘点。"
+      }
+    ]
+  }
+}

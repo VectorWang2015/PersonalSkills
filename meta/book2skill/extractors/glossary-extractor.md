@@ -1,53 +1,107 @@
 # Glossary Extractor
 
-你是 book2skill 流水线中**并行运行的 5 个 extractor 之一**,专门负责构建**关键概念词典**。
+## 角色
 
-## 为什么要单独抽术语
+提取会改变理解或执行的作者特定术语、定义、别名、概念边界和用法变化。术语表是共享解释资源，不因词频高或名字新颖就自动生成独立 skill。
 
-作者**用某个词的方式**往往和字典不一样。如果不统一术语,后面的 skill 会把"能力圈"(芒格的特定用法) 当成字典里的"能力范围"来用,完全失真。
+## 输入
 
-这个产出不会独立成 skill,但会作为**所有 skill 的共享词典**被引用。
+- 原始书本文本、版本指纹和 locator 规则；
+- 被分配的来源范围；
+- 用户目标与可选的本轮独立结构地图。
 
-## 你的输入
+重新蒸馏盲态阶段不得读取旧 glossary、旧 skill 或旧总结。字典定义只能帮助发现差异，不能替代作者用法。
 
-- `BOOK_OVERVIEW.md`
-- 书本文本
+## 收录标准
 
-## 你的职责范围
+收录至少符合一项且对下游决策有影响的词：
 
-挑出满足以下**任一**条件的词:
+- 作者显式定义或重新定义；
+- 普通词在书中有特殊技术含义；
+- 同一词在不同章节有需要说明的用法变化；
+- 多个关键主张依赖该词的精确边界；
+- 误解该词会导致错误 trigger、步骤、公式或结论。
 
-1. 作者反复使用 (全书出现 ≥3 次)
-2. 作者明确定义过 ("所谓 X, 是指...")
-3. 看起来像常用词但作者用法和常识不一样
-4. 是书的核心论点的组成词 (如《反脆弱》里的 antifragile)
+仅仅频繁出现不是充分理由。人名、地名、一般词汇和没有执行影响的修辞通常不收录。
 
-## 输出格式
+## 定义状态
+
+- `explicit`：来源有直接定义；
+- `synthesized`：从多个使用实例综合出作者用法；
+- `inferred`：蒸馏者提出的工作定义或现代映射。
+
+若作者在书中前后用法不一致，不要强行合成单一定义；记录 `usage_variants` 和可能的演变。
+
+## 与其他角色的冲突
+
+- 术语对应的多步方法归 framework，行动约束归 principle；
+- 术语的算式、测量定义或阈值归 quantitative procedure；
+- 案例与失败机制分别归 case 和 counter-example。
+
+Glossary 只维护“这个词在此来源中是什么意思、与什么不同、谁会使用”。其他候选通过 ID 引用它，不复制整段定义。若一个词本身也是完整操作协议，建议由相应方法角色 canonical ownership，术语记录只做定义入口。
+
+## 稳定 ID 与锚点
+
+ID 使用 `source_id + gl + 精确主锚点 + 术语键`，例如：
+
+`pca-en-2005.gl.talk02.p087.circle-of-competence`
+
+不使用 `g01`。显式定义所在位置作为主锚点；综合定义选择最具定义性的锚点作为身份，并列出其他用例。不同版本的术语不要静默共用同一 ID。
+
+## 输出
 
 ```yaml
-- id: g01
-  term: 能力圈
-  type: term
-  source_chapter: 第 2 讲
-  author_definition: |
-    "你真正能做出准确判断的知识边界。不是你知道什么, 而是你知道'你知道什么'和'你不知道什么'的边界。"
-  key_distinction: |
-    ≠ "熟悉的领域" — 熟悉不代表能做判断
-    ≠ "专业领域" — 博士学位也可能在能力圈外
-    = 能持续做出比市场更准判断的范围 (需经实战验证)
-  why_it_matters: |
-    "能力圈"一词在所有投资决策类 skill 中都会出现。
-    若沿用字典义, skill 会建议用户"评估一下是否熟悉该领域", 这是错的。
-    正确的用法是"评估自己过去在此领域的判断准确率"。
-  tags: [term, core-concept]
+- id: pca-en-2005.gl.talk02.p087.circle-of-competence
+  kind: term
+  term: circle of competence
+  aliases:
+    - "能力圈"
+  definition:
+    text: "知道自己在哪些问题上具有可验证判断优势，以及边界在哪里。"
+    status: synthesized
+  evidence:
+    - evidence_id: ev.pca-en-2005.talk02.p087.para2
+      source_id: pca-en-2005
+      anchor: "Talk 2 > §4 > printed p.87 > para.2"
+      quote: "最短充分定义摘录"
+      relation: supports
+      evidence_role: definition
+      capture: translated
+    - evidence_id: ev.pca-en-2005.talk02.p089.para1
+      source_id: pca-en-2005
+      anchor: "Talk 2 > §4 > printed p.89 > para.1"
+      quote: "用法或限定摘录"
+      relation: qualifies
+      evidence_role: usage-limitation
+      capture: exact
+  distinctions:
+    - from: "熟悉"
+      difference: "熟悉不等于具有经校准的判断能力"
+      status: synthesized
+      evidence_refs:
+        - ev.pca-en-2005.talk02.p087.para2
+        - ev.pca-en-2005.talk02.p089.para1
+  usage_variants: []
+  downstream_effect:
+    - text: "若按‘熟悉领域’理解，会错误扩大相关决策 skill 的适用范围"
+      status: inferred
+      evidence_refs:
+        - ev.pca-en-2005.talk02.p087.para2
+        - ev.pca-en-2005.talk02.p089.para1
+  consumers:
+    - "unresolved: competence-boundary"
+  role_conflicts: []
+  handoffs: []
+  confidence: medium
+  open_questions: []
+  tags: [term, decision-boundary]
 ```
 
-## 自检
+## 提交前检查
 
-- [ ] `author_definition` 尽量使用书中原文片段
-- [ ] `key_distinction`: 说明和"常识用法"的差异 (这是最有价值的字段)
-- [ ] `why_it_matters`: 为什么下游 skill 需要这个澄清
-
-## 数量预期
-
-每本书大约 5–20 条核心术语。多于 30 条说明你把一般词汇也收进来了 — 只挑真正关键的。
+- 词条会实质改变理解或执行，而不是一般词汇收藏；
+- 定义来自精确锚点，显式、综合和推断已区分；
+- 不同章节或版本的用法冲突没有被抹平；
+- 与框架、原则、量化过程、案例和反例没有重复职责；
+- downstream effect 和消费者明确，避免创建无人使用的 glossary；
+- 引用最短充分，不复制长篇版权文本。

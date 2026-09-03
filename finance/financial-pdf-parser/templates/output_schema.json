@@ -5,7 +5,6 @@
   "tables_dir": "tables/",
   "merged_tables_dir": "tables_merged/",
   "pages_dir": "pages/",
-  "images_dir": "images/",
   "validation_dir": "validation/",
   "parse_report": "parse_report.md"
 }

@@ -5,8 +5,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -17,6 +23,9 @@ STOCK_LIST_URL = "https://www.cninfo.com.cn/new/data/szse_stock.json"
 ANNOUNCEMENT_QUERY_URL = "https://www.cninfo.com.cn/new/hisAnnouncement/query"
 STATIC_PDF_BASE_URL = "https://static.cninfo.com.cn/"
 PERIODIC_CATEGORY = "category_ndbg_szsh;category_yjdbg_szsh;category_sjdbg_szsh;category_bndbg_szsh;"
+DEFAULT_PAGE_SIZE = 50
+DEFAULT_MAX_PAGES = 20
+REPORT_TYPE_CHOICES = ("both", "annual", "latest-periodic", "q1", "interim", "q3")
 
 
 class StockInfo(NamedTuple):
@@ -37,6 +46,24 @@ class DownloadedReport(NamedTuple):
     txt_status: str
 
 
+def open_with_retry(request: urllib.request.Request, timeout: int, attempts: int = 3) -> Any:
+    if attempts < 1:
+        raise ValueError("attempts must be at least 1")
+    last_error: Optional[Exception] = None
+    for attempt in range(attempts):
+        try:
+            return urllib.request.urlopen(request, timeout=timeout)
+        except urllib.error.HTTPError as exc:
+            if exc.code not in {429, 500, 502, 503, 504}:
+                raise
+            last_error = exc
+        except (urllib.error.URLError, TimeoutError) as exc:
+            last_error = exc
+        if attempt + 1 < attempts:
+            time.sleep(0.5 * (2**attempt))
+    raise RuntimeError(f"网络请求失败，已重试 {attempts} 次: {last_error}") from last_error
+
+
 def request_json(url: str, data: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
     headers = {
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/126 Safari/537.36",
@@ -45,8 +72,11 @@ def request_json(url: str, data: Optional[Dict[str, str]] = None) -> Dict[str, A
     }
     body = urllib.parse.urlencode(data).encode("utf-8") if data is not None else None
     req = urllib.request.Request(url, data=body, headers=headers)
-    with urllib.request.urlopen(req, timeout=30) as response:
-        return json.loads(response.read().decode("utf-8"))
+    with open_with_retry(req, timeout=30) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+    if not isinstance(payload, dict):
+        raise RuntimeError(f"接口返回的不是 JSON 对象: {url}")
+    return payload
 
 
 def market_for_code(stock_code: str) -> Tuple[str, str]:
@@ -76,26 +106,56 @@ def resolve_stock_info(stock_code: str) -> StockInfo:
     raise ValueError(f"未在巨潮股票表找到该代码: {stock_code}")
 
 
-def query_announcements(stock: StockInfo) -> List[Dict[str, Any]]:
-    data = {
-        "stock": f"{stock.code},{stock.org_id}",
-        "tabName": "fulltext",
-        "pageSize": "50",
-        "pageNum": "1",
-        "column": stock.column,
-        "category": PERIODIC_CATEGORY,
-        "plate": stock.plate,
-        "seDate": "",
-        "searchkey": "",
-        "secid": "",
-        "sortName": "",
-        "sortType": "",
-        "isHLtitle": "true",
-    }
-    payload = request_json(ANNOUNCEMENT_QUERY_URL, data)
-    announcements = payload.get("announcements") or []
+def query_announcements(
+    stock: StockInfo,
+    *,
+    page_size: int = DEFAULT_PAGE_SIZE,
+    max_pages: int = DEFAULT_MAX_PAGES,
+) -> List[Dict[str, Any]]:
+    if page_size < 1 or max_pages < 1:
+        raise ValueError("page_size and max_pages must be positive")
+    announcements: List[Dict[str, Any]] = []
+    seen: set[Any] = set()
+    for page_num in range(1, max_pages + 1):
+        data = {
+            "stock": f"{stock.code},{stock.org_id}",
+            "tabName": "fulltext",
+            "pageSize": str(page_size),
+            "pageNum": str(page_num),
+            "column": stock.column,
+            "category": PERIODIC_CATEGORY,
+            "plate": stock.plate,
+            "seDate": "",
+            "searchkey": "",
+            "secid": "",
+            "sortName": "",
+            "sortType": "",
+            "isHLtitle": "true",
+        }
+        payload = request_json(ANNOUNCEMENT_QUERY_URL, data)
+        page_items = payload.get("announcements") or []
+        for item in page_items:
+            key = item.get("announcementId") or item.get("adjunctUrl") or (
+                item.get("announcementTitle"),
+                item.get("announcementTime"),
+            )
+            if key not in seen:
+                seen.add(key)
+                announcements.append(item)
+
+        total_pages_value = payload.get("totalpages") or 0
+        try:
+            total_pages = int(total_pages_value)
+        except (TypeError, ValueError):
+            total_pages = 0
+        has_more = payload.get("hasMore") is True or str(payload.get("hasMore")).lower() == "true"
+        if not page_items or (total_pages and page_num >= total_pages) or (not total_pages and not has_more):
+            break
+    else:
+        raise RuntimeError(f"公告分页超过安全上限 {max_pages}，请增大 --max-pages 后重试")
+
     if not announcements:
-        raise RuntimeError(f"未查询到定期报告公告，请求参数: {data}")
+        raise RuntimeError(f"未查询到定期报告公告: {stock.code} {stock.name}")
     return announcements
 
 
@@ -149,13 +209,58 @@ def select_annual_report(announcements: List[Dict[str, Any]]) -> Dict[str, Any]:
 
 def select_latest_periodic_report(announcements: List[Dict[str, Any]]) -> Dict[str, Any]:
     included = ("一季度报告", "第一季度报告", "半年度报告", "三季度报告", "第三季度报告")
-    excluded = ("摘要", "英文", "更正", "取消")
+    excluded = ("摘要", "英文", "取消", "更正公告", "修订说明")
     matches = []
     for item in announcements:
         title = clean_title(str(item.get("announcementTitle") or ""))
         if any(word in title for word in included) and not any(word in title for word in excluded):
             matches.append(item)
     return select_newest(matches)
+
+
+def select_periodic_report(announcements: List[Dict[str, Any]], report_type: str) -> Dict[str, Any]:
+    included_by_type = {
+        "q1": ("一季度报告", "第一季度报告"),
+        "interim": ("半年度报告",),
+        "q3": ("三季度报告", "第三季度报告"),
+    }
+    if report_type not in included_by_type:
+        raise ValueError(f"不支持的定期报告类型: {report_type}")
+    excluded = ("摘要", "英文", "取消", "更正公告", "修订说明")
+    matches = []
+    for item in announcements:
+        title = clean_title(str(item.get("announcementTitle") or ""))
+        if any(word in title for word in included_by_type[report_type]) and not any(
+            word in title for word in excluded
+        ):
+            matches.append(item)
+    return select_newest(matches)
+
+
+def select_requested_reports(
+    announcements: List[Dict[str, Any]], report_type: str
+) -> Tuple[List[Dict[str, Any]], List[str]]:
+    if report_type not in REPORT_TYPE_CHOICES:
+        raise ValueError(f"不支持的报告类型: {report_type}")
+    requested = ("annual", "latest-periodic") if report_type == "both" else (report_type,)
+    selected: List[Dict[str, Any]] = []
+    missing: List[str] = []
+    for current_type in requested:
+        try:
+            if current_type == "annual":
+                item = select_annual_report(announcements)
+            elif current_type == "latest-periodic":
+                item = select_latest_periodic_report(announcements)
+            else:
+                item = select_periodic_report(announcements, current_type)
+            selected.append(item)
+        except ValueError:
+            missing.append(current_type)
+    if not selected:
+        raise ValueError(f"没有找到请求的报告类型: {', '.join(requested)}")
+    if report_type != "both" and missing:
+        raise ValueError(f"没有找到请求的报告类型: {report_type}")
+    return selected, missing
 
 
 def parse_report_period(title: str) -> Tuple[str, str]:
@@ -191,24 +296,87 @@ def download_file(url: str, target: Path, overwrite: bool) -> str:
     if target.exists() and not overwrite:
         return "skipped_existing"
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=60) as response:
-        target.write_bytes(response.read())
+    with open_with_retry(req, timeout=60) as response:
+        payload = response.read()
+        content_type = str(response.headers.get("Content-Type", "")).lower()
+    if not payload.startswith(b"%PDF-"):
+        raise RuntimeError(
+            f"下载内容不是有效 PDF: content-type={content_type or 'unknown'}, url={url}"
+        )
+    temporary_path: Optional[Path] = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="wb",
+            prefix=f".{target.name}.",
+            suffix=".part",
+            dir=target.parent,
+            delete=False,
+        ) as temporary:
+            temporary.write(payload)
+            temporary.flush()
+            os.fsync(temporary.fileno())
+            temporary_path = Path(temporary.name)
+        temporary_path.replace(target)
+    finally:
+        if temporary_path is not None and temporary_path.exists():
+            temporary_path.unlink()
     return "downloaded"
+
+
+def extract_pdf_text(pdf_path: Path) -> str:
+    try:
+        import pdfplumber
+    except ImportError:
+        pdftotext = shutil.which("pdftotext")
+        if pdftotext is None:
+            raise RuntimeError(
+                "TXT 转换需要 Python 包 pdfplumber 或系统命令 pdftotext (Poppler)"
+            )
+        completed = subprocess.run(
+            [pdftotext, "-layout", str(pdf_path), "-"],
+            check=True,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        return completed.stdout
+    else:
+        with pdfplumber.open(str(pdf_path)) as pdf:
+            pages = []
+            for page in pdf.pages:
+                pages.append(page.extract_text() or "")
+        return "\n\n".join(pages)
+
+
+def write_text_atomic(target: Path, text: str) -> None:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path: Optional[Path] = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            prefix=f".{target.name}.",
+            suffix=".part",
+            dir=target.parent,
+            delete=False,
+        ) as temporary:
+            temporary.write(text)
+            temporary.flush()
+            os.fsync(temporary.fileno())
+            temporary_path = Path(temporary.name)
+        temporary_path.replace(target)
+    finally:
+        if temporary_path is not None and temporary_path.exists():
+            temporary_path.unlink()
 
 
 def convert_pdf_to_txt(pdf_path: Path, txt_path: Path, overwrite: bool) -> str:
     if txt_path.exists() and not overwrite:
         return "skipped_existing"
     try:
-        import pdfplumber
-    except ImportError as exc:
-        return f"failed: missing pdfplumber ({exc})"
-    try:
-        with pdfplumber.open(str(pdf_path)) as pdf:
-            pages = []
-            for page in pdf.pages:
-                pages.append(page.extract_text() or "")
-        txt_path.write_text("\n\n".join(pages), encoding="utf-8")
+        text = extract_pdf_text(pdf_path)
+        write_text_atomic(txt_path, text)
         return "converted"
     except Exception as exc:  # noqa: BLE001 - CLI should report conversion errors without deleting PDF.
         return f"failed: {exc}"
@@ -262,6 +430,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--no-txt", action="store_true", help="只下载 PDF，不转换 TXT")
     parser.add_argument("--overwrite", action="store_true", help="覆盖已有 PDF/TXT")
     parser.add_argument("--dry-run", action="store_true", help="只查询和筛选公告，不下载文件")
+    parser.add_argument(
+        "--report-type",
+        choices=REPORT_TYPE_CHOICES,
+        default="both",
+        help="报告类型，默认 both（年报 + 最近一期非年报）",
+    )
+    parser.add_argument(
+        "--max-pages",
+        type=int,
+        default=DEFAULT_MAX_PAGES,
+        help=f"公告查询最大页数，默认 {DEFAULT_MAX_PAGES}",
+    )
     return parser
 
 
@@ -270,13 +450,15 @@ def main(argv: Optional[List[str]] = None) -> int:
     convert_txt = not args.no_txt
     try:
         stock = resolve_stock_info(args.stock_code)
-        announcements = query_announcements(stock)
-        selected = [select_annual_report(announcements), select_latest_periodic_report(announcements)]
+        announcements = query_announcements(stock, max_pages=args.max_pages)
+        selected, missing = select_requested_reports(announcements, args.report_type)
         reports = [
             handle_report(stock, item, Path(args.output_root), convert_txt, args.overwrite, args.dry_run)
             for item in selected
         ]
         print_summary(stock, reports)
+        if missing:
+            print(f"警告: 未找到以下报告类型，已保留其他成功结果: {', '.join(missing)}", file=sys.stderr)
         return 0
     except Exception as exc:  # noqa: BLE001 - CLI reports actionable errors.
         print(f"错误: {exc}", file=sys.stderr)

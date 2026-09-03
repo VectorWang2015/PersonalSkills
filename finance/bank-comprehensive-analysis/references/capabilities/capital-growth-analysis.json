@@ -1,0 +1,305 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.kan-tou-yin-hang.capital-growth-analysis",
+  "revision": 2,
+  "status": "draft",
+  "slug": "capital-growth-analysis",
+  "title": "资本效率与内生增长分析",
+  "one_liner": "用核心资本、风险加权资产、RORWA、分红与外部融资判断银行能否在不持续摊薄股东的情况下增长。",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "ktbank-txt-2021.qp.ch06.l593-roa-roe-leverage",
+      "ktbank-txt-2021.qp.ch06.l600-capital-ratio",
+      "ktbank-txt-2021.pr.ch06.l625-rwa-method",
+      "ktbank-txt-2021.qp.ch08.l1109-rorwa",
+      "ktbank-txt-2021.fw.ch08.l1127-endogenous-growth",
+      "ktbank-txt-2021.qp.ch08.l1168-required-rorwa",
+      "ktbank-txt-2021.ce.ch08.l1204-model-limits"
+    ],
+    "aliases": [
+      "legacy.rorwa-endogenous-growth",
+      "legacy.rwa-provision-ratio"
+    ],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "判断银行增长、分红和资本充足是否能同时维持，还是必须减速、降分红或外部融资。",
+    "distinctive_value": "把银行高杠杆下的利润能力转换为单位风险资产回报，并显式计算资本留存与RWA增长之间的缺口。",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ktb-ch06-l593-leverage",
+          "ev-ktb-ch06-l602-car",
+          "ev-ktb-ch06-l627-rwa",
+          "ev-ktb-ch08-l1109-rorwa",
+          "ev-ktb-ch08-l1131-endogenous",
+          "ev-ktb-ch08-l1168-required",
+          "ev-ktb-ch08-l1205-limits"
+        ],
+        "rationale": "主要公式、内生增长定义和简化模型限制均来自原书；对平均/期末分母和当前监管核验的要求属于质量门操作化。"
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "用净利润、RWA、核心一级资本、分红、股权融资和RWA增长即可复算历史资本桥并进行透明情景分析。"
+      },
+      "incremental_utility": {
+        "status": "hypothesis",
+        "comparison": "预计比只看ROE或资本充足率时点值更能识别外部融资依赖和分红不可持续；尚未holdout。"
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "简化公式假设无其他资本变动；若并购、OCI、扣除项、模型变更或监管缓冲显著，必须改用完整资本桥。"
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "资本约束和内生增长贯穿第6、7、8、9、10章，RORWA公式与所需RORWA公式提供了可复算核心。"
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "计算银行RORWA和资本效率",
+      "判断核心一级资本充足率能否在增长与分红后维持",
+      "评估银行外部融资和股东摊薄风险"
+    ],
+    "trigger_signals": [
+      "用户提到核心一级资本充足率、RWA、RORWA、分红率、增发或内生增长",
+      "ROE不错但银行仍频繁融资",
+      "需要比较增长速度、资本缓冲和股东回报之间的取舍"
+    ],
+    "do_not_trigger": [
+      "只需现行监管达标判定时必须先取得当前权威规则",
+      "只需分析信用风险准备而不涉及资本增长时使用信用风险能力",
+      "只需估值倍数而未完成利润和风险归一时先不要运行估值结论"
+    ],
+    "neighbor_distinctions": [
+      {
+        "capability_id": "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+        "use_this_when": "关注损失吸收后的资本与增长能力。",
+        "use_neighbor_when": "关注贷款不良和拨备动态本身。"
+      },
+      {
+        "capability_id": "cap.kan-tou-yin-hang.bank-valuation",
+        "use_this_when": "要先判断资本约束和可持续增长。",
+        "use_neighbor_when": "这些事实已完成，需要映射到估值情景。"
+      }
+    ]
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ktb-ch06-l593-leverage",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第6章 > 6.1高杠杆 > TXT lines 587-595；EPUB text/part0011.html#cha6_6_1_1",
+        "claim_type": "explicit",
+        "excerpt": "ROE/ROA=总资产／净资产=杠杆倍数。",
+        "paraphrase": "书中用ROE与ROA关系说明银行回报高度受杠杆影响，并提醒年报常披露平均口径ROAE/ROAA。",
+        "note": "实际关系还会受平均分母、归母口径和少数股东等影响，必须按报告定义复算。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch06-l602-car",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第6章 > 6.1.1资本充足率 > TXT lines 598-611；EPUB text/part0011.html#cha6_6_1_1_1_1",
+        "claim_type": "explicit",
+        "excerpt": "核心一级资本充足率=核心一级资本／风险加权资产",
+        "paraphrase": "资本充足率用不同层级资本相对RWA衡量损失吸收与扩表约束。",
+        "note": "书中更完整总资本公式及历史规则需按报告期和法域核验。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch06-l627-rwa",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第6章 > 6.1.2权重法和高级法 > TXT lines 623-648；EPUB text/part0011.html#cha6_6_1_1_2",
+        "claim_type": "explicit",
+        "excerpt": "权重法的风险系数是统一规定的",
+        "paraphrase": "RWA受计量方法和资产质量影响，因此跨行RORWA或RWA占比比较必须标注方法差异。",
+        "note": "具体权重、底线和审批状态是历史监管信息。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch08-l1109-rorwa",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第8章 > 8.3.2风险加权资产收益率 > TXT lines 1104-1126；EPUB text/part0013.html#cha8_8_1_3_2_15",
+        "claim_type": "explicit",
+        "excerpt": "RORWA=净利润÷风险加权资产。",
+        "paraphrase": "RORWA衡量单位风险加权资产创造的净利润，用来观察资本受限环境下的盈利效率。",
+        "note": "书中示例使用归母净利润和期末RWA；运行时可选平均RWA，但必须全样本一致。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch08-l1131-endogenous",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第8章 > 8.3.3内生性增长 > TXT lines 1127-1144；EPUB text/part0013.html#cha8_8_1_3_3",
+        "claim_type": "synthesized",
+        "excerpt": null,
+        "paraphrase": "内生增长是无需外部普通股融资仍能持续经营并回报股东的状态，可由核心一级资本充足率趋势、净派现和RORWA共同观察。",
+        "note": "‘黄金法则’是作者评价框架，不是官方定义。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch08-l1168-required",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第8章 > 8.3.4核心一级资本充足率和RORWA的关系 > TXT lines 1152-1180；EPUB text/part0013.html#cha8_8_1_3_4_21",
+        "claim_type": "explicit",
+        "excerpt": "R=（H×Ta）/（1-p）",
+        "paraphrase": "在简化假设下，为保持核心一级资本充足率H不变，所需RORWA R等于H乘RWA增速Ta，再除以留存率(1-p)。",
+        "note": "H、Ta、R、p均用一致小数；模型假设净利润留存全部补充核心资本且无其他资本变动。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch08-l1205-limits",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第8章 > 8.3.4关于RORWA的几个重要问题 > TXT lines 1204-1218；EPUB text/part0013.html#cha8_8_1_3_4_23",
+        "claim_type": "explicit",
+        "excerpt": "有些银行的一级核心资本细项中会受到“其他”项大幅变动的干扰",
+        "paraphrase": "作者承认简化推演可能被其他核心资本项目干扰，并注明未来判断部分写于2019年。",
+        "note": "这是限制模型和标注时效性的关键反证。"
+      }
+    ],
+    "interpretation": {
+      "model": "资本增长闭环是：期初核心资本+留存利润±其他变动-分配/扣除=期末核心资本；RWA随业务增长和计量变化扩大。RORWA越高、留存率越高、RWA增速越低，越容易维持资本率。",
+      "decision_rules": [
+        "先读取../current-standards.md，按银行档次和报告口径建立最低资本、储备资本、逆周期、系统重要性附加、第二支柱及杠杆目标栈。",
+        "先做完整核心资本与RWA桥，再把简化公式作为情景校验而非替代。",
+        "RORWA分子和分母口径必须一致；归母净利润对应何种RWA需明确。",
+        "跨行比较标注权重法、内部评级法、输出底线和合并范围差异。",
+        "资本率上升若伴随普通股融资，不能自动视为内生改善。",
+        "净派现至少列现金分红与普通股/可转股融资，不把所有债务资本等同股东摊薄。",
+        "书中资本下限、附加要求和历史银行排名一律不作为当前常量；RORWA不是监管指标。"
+      ],
+      "assumptions": [
+        "公开报告提供核心一级资本、RWA及变动说明。",
+        "简化公式仅在无重大OCI、扣除项、并购、汇率、模型或监管变化时近似成立。"
+      ]
+    },
+    "application": {
+      "past_cases": [
+        {
+          "case_id": "case-ktb-required-rorwa",
+          "problem": "给定核心一级资本充足率、RWA增长和分红率，判断现有盈利效率能否维持资本率。",
+          "method_use": "作者推导R=H×Ta/(1-p)，并用历史银行数据校验方向。",
+          "result": "公式把增长、资本缓冲和分红取舍转为可复算门槛；作者同时承认其他资本项目会干扰。",
+          "evidence_ids": [
+            "ev-ktb-ch08-l1168-required",
+            "ev-ktb-ch08-l1205-limits"
+          ]
+        }
+      ],
+      "future_scenarios": [
+        {
+          "scenario": "银行计划保持两位数RWA增长并提高分红。",
+          "recognition_signal": "实际RORWA接近或低于简化所需RORWA，资本缓冲不厚。",
+          "expected_use": "计算多情景资本缺口，并指出需提高盈利、降低增长/分红或补充资本。"
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "期初期末核心一级资本、一级资本、总资本与相关扣除项",
+        "期初期末风险加权资产及信用/市场/操作风险分项",
+        "归母净利润或与资本口径匹配的净利润",
+        "普通股现金分红、普通股增发、配股、可转债转股及其他资本变动",
+        "RWA计量方法、并行/输出底线、模型变更和监管调整说明",
+        "当前适用资本要求与缓冲的权威as-of（若要判断合规）",
+        "期间、币种、单位、集团/母行和平均/期末口径"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "读取current-standards并建立资本身份表：银行档次、资本层级、RWA口径、计量方法、合并范围、报告期和适用目标栈。",
+          "completion_check": "每个资本率都可追溯到明确分子、分母、银行适用范围和规则as-of。",
+          "stop_if": "要求合规判断但当前权威要求不可得。"
+        },
+        {
+          "step_id": "step-02",
+          "action": "复算核心一级资本充足率、一级资本充足率、总资本充足率及RWA占总资产比例。",
+          "completion_check": "复算与披露差异已由扣除项、底线或舍入解释。",
+          "stop_if": "关键差异无法解释。"
+        },
+        {
+          "step_id": "step-03",
+          "action": "选择并声明RORWA口径：书中口径为净利润/期末RWA；分析优先使用TTM净利润/平均RWA。季度乘4只可作为明确标注的敏感性，不作默认。",
+          "completion_check": "所有跨期/跨行样本使用相同口径；季度季节性、平均/期末和年化假设已展示。",
+          "stop_if": "只有单季利润且无历史季节性或TTM数据，却要求精确年度RORWA。"
+        },
+        {
+          "step_id": "step-04",
+          "action": "重建核心资本桥和净派现：留存利润、分红、普通股融资、转股、OCI/其他、扣除项与模型变化分别列示。",
+          "completion_check": "资本率变化能拆成分子变化、RWA变化和规则/模型变化。",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-05",
+          "action": "在简化情景下计算所需RORWA：R_required=H×g_RWA/(1-payout)。分别说明H是当前比率、管理目标还是适用监管目标；三者不可混为同一问题。",
+          "completion_check": "H、g、p均使用小数，p<1；输出实际减所需的百分点差、完整假设，并说明低于保持当前H只意味着该H在简化模型中下降。",
+          "stop_if": "payout大于等于100%、分母无意义，或其他资本变动足以使简化模型失真。"
+        },
+        {
+          "step_id": "step-06",
+          "action": "对RWA增速、分红率、RORWA和其他资本变动做低/基准/高情景，给出可持续增长区间与潜在资本动作。",
+          "completion_check": "每个情景都能复算，且不把历史监管阈值当当前输入。",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "资本率与RWA复算表",
+        "核心资本变动桥和净派现表",
+        "实际RORWA、所需RORWA与缺口",
+        "增长—分红—融资敏感性情景",
+        "当前监管口径待核验项"
+      ],
+      "stop_conditions": [
+        "资本率变化、融资依赖和简化门槛均已解释。",
+        "其他资本项目重大时停止用简化公式下确定结论，改用完整桥。",
+        "需要正式监管资本计划、压力测试或合规意见时升级。"
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "不提供监管资本申报、资本工具发行或处置计划。",
+        "不把RORWA单项视为银行质量的充分条件。",
+        "不使用原书历史资本下限判断当前达标。"
+      ],
+      "failure_modes": [
+        "把ROE高自动解释为经营效率高，忽略杠杆。",
+        "把期末RWA和平均RWA口径混用于排名。",
+        "忽略普通股融资导致的资本率上升。",
+        "在OCI、并购、模型切换或扣除项重大时仍机械使用R=H×g/(1-p)。",
+        "把债务资本工具与普通股摊薄混为一谈。"
+      ],
+      "limitations": [
+        "RORWA受RWA计量方法和监管模型影响，跨行并非纯经济风险比较。",
+        "简化公式未显式处理税、OCI、少数股东、监管扣除、资本工具和资产处置，既不是监管阈值也不能单独证明必然融资。",
+        "本内部能力卡使用的现行中国资本口径核验截至2026-09-03；银行特定第二支柱和未公开监管要求可能不可得。"
+      ],
+      "ask_user_when": [
+        "用户要采用书中期末RWA口径还是平均RWA分析口径。",
+        "可转债尚未转股，是否在净派现中按潜在摊薄单列。"
+      ],
+      "escalate_when": [
+        "任务涉及现行最低资本、监管缓冲、恢复与处置计划或资本工具法律条款。",
+        "重大模型变更、并购或重组使公开资本桥无法解释。"
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [
+      "cap.kan-tou-yin-hang.earnings-quality-normalization"
+    ],
+    "contrasts_with": [],
+    "composes_with": [
+      "cap.kan-tou-yin-hang.credit-risk-lifecycle",
+      "cap.kan-tou-yin-hang.competitive-advantage-trace",
+      "cap.kan-tou-yin-hang.bank-valuation"
+    ],
+    "routes_to": [
+      "cap.kan-tou-yin-hang.bank-valuation"
+    ]
+  },
+  "compilation": {
+    "destination": "reference_only",
+    "skill_name": null,
+    "skill_description": null,
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": "../../test-prompts.json"
+  }
+}

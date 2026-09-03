@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "book2skill/capability-bundle.schema.json",
+  "title": "book2skill capability bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "bundle_id", "revision", "created_at", "updated_at", "source_manifest", "lineage", "output", "capabilities", "relationships", "quality"],
+  "properties": {
+    "schema": { "const": "book2skill/capability-bundle@1" },
+    "bundle_id": { "type": "string", "pattern": "^bundle\\.[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "source_manifest": { "type": "string", "minLength": 1 },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["derived_from_bundle", "redistillation_comparison"],
+      "properties": {
+        "derived_from_bundle": { "type": ["string", "null"] },
+        "redistillation_comparison": { "type": ["string", "null"] }
+      }
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "promotion_budget", "promotion_policy", "router"],
+      "properties": {
+        "mode": { "enum": ["single", "pack"] },
+        "promotion_budget": { "type": ["integer", "null"], "minimum": 1 },
+        "promotion_policy": { "type": "string", "minLength": 1 },
+        "router": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["name", "description"],
+              "properties": {
+                "name": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+                "description": { "type": "string", "minLength": 1 }
+              }
+            },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["capability_id", "revision", "status", "card", "promotion", "destination", "delivery_path", "test_suite"],
+        "properties": {
+          "capability_id": { "type": "string" },
+          "revision": { "type": "integer", "minimum": 1 },
+          "status": { "enum": ["draft", "active", "deprecated", "merged", "split"] },
+          "card": { "type": "string", "minLength": 1 },
+          "promotion": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["promotion_id", "decision", "gain_hypothesis", "falsifier", "portfolio_conflicts", "rationale"],
+            "properties": {
+              "promotion_id": { "type": "string", "minLength": 1 },
+              "decision": { "enum": ["standalone-skill", "merge-into-skill", "supporting-resource", "shared-component", "defer", "reject"] },
+              "gain_hypothesis": { "type": "string", "minLength": 1 },
+              "falsifier": { "type": "string", "minLength": 1 },
+              "portfolio_conflicts": { "type": "array", "items": { "type": "string" } },
+              "rationale": { "type": "string", "minLength": 1 }
+            }
+          },
+          "destination": { "enum": ["standalone_skill", "router_only", "reference_only", "deprecated"] },
+          "delivery_path": { "type": ["string", "null"] },
+          "test_suite": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from", "type", "to", "execution_rationale"],
+        "properties": {
+          "from": { "type": "string" },
+          "type": { "enum": ["depends_on", "contrasts_with", "composes_with", "routes_to", "supersedes"] },
+          "to": { "type": "string" },
+          "execution_rationale": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_gates", "passed_gates", "open_issues"],
+      "properties": {
+        "required_gates": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+        "passed_gates": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "open_issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["issue_id", "severity", "description", "owner", "next_action"],
+            "properties": {
+              "issue_id": { "type": "string" },
+              "severity": { "enum": ["low", "medium", "high", "blocking"] },
+              "description": { "type": "string", "minLength": 1 },
+              "owner": { "type": "string", "minLength": 1 },
+              "next_action": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    }
+  }
+}

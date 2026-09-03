@@ -1,0 +1,291 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "book2skill/capability-card.schema.json",
+  "title": "book2skill capability card",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "capability_id", "revision", "status", "slug", "title", "one_liner", "source_manifest", "lineage", "selection", "routing", "ria", "relations", "compilation"],
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "active" } },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "selection": {
+            "properties": {
+              "retention_review": {
+                "properties": {
+                  "source_faithfulness": { "properties": { "passed": { "const": true } } },
+                  "executability": { "properties": { "passed": { "const": true } } },
+                  "incremental_utility": { "properties": { "status": { "const": "supported" } } },
+                  "falsifiable_boundedness": { "properties": { "passed": { "const": true } } }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "compilation": {
+            "properties": { "destination": { "const": "standalone_skill" } },
+            "required": ["destination"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "compilation": {
+            "properties": {
+              "skill_name": { "type": "string", "minLength": 1 },
+              "skill_description": { "type": "string", "minLength": 1 },
+              "test_suite": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "schema": { "const": "book2skill/capability-card@1" },
+    "capability_id": { "type": "string", "pattern": "^cap\\.[a-z0-9]+(?:-[a-z0-9]+)*\\.[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "status": { "enum": ["draft", "active", "deprecated", "merged", "split"] },
+    "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "title": { "type": "string", "minLength": 1 },
+    "one_liner": { "type": "string", "minLength": 1 },
+    "source_manifest": { "type": "string", "minLength": 1 },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_ids", "aliases", "supersedes"],
+      "properties": {
+        "candidate_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "aliases": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "supersedes": { "type": "array", "uniqueItems": true, "items": { "type": "string" } }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["atomic_user_problem", "distinctive_value", "retention_review"],
+      "properties": {
+        "atomic_user_problem": { "type": "string", "minLength": 1 },
+        "distinctive_value": { "type": "string", "minLength": 1 },
+        "retention_review": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source_faithfulness", "executability", "incremental_utility", "falsifiable_boundedness", "repetition_or_novelty"],
+          "properties": {
+            "source_faithfulness": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["passed", "evidence_ids", "rationale"],
+              "properties": {
+                "passed": { "type": "boolean" },
+                "evidence_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string" } },
+                "rationale": { "type": "string", "minLength": 1 }
+              }
+            },
+            "executability": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["passed", "rationale"],
+              "properties": {
+                "passed": { "type": "boolean" },
+                "rationale": { "type": "string", "minLength": 1 }
+              }
+            },
+            "incremental_utility": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["status", "comparison"],
+              "properties": {
+                "status": { "enum": ["hypothesis", "supported", "not_supported", "unknown"] },
+                "comparison": { "type": "string", "minLength": 1 }
+              }
+            },
+            "falsifiable_boundedness": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["passed", "rationale"],
+              "properties": {
+                "passed": { "type": "boolean" },
+                "rationale": { "type": "string", "minLength": 1 }
+              }
+            },
+            "repetition_or_novelty": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["role", "observed", "rationale"],
+              "properties": {
+                "role": { "const": "supporting_signal" },
+                "observed": { "type": "boolean" },
+                "rationale": { "type": "string", "minLength": 1 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "routing": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intents", "trigger_signals", "do_not_trigger", "neighbor_distinctions"],
+      "properties": {
+        "intents": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "trigger_signals": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "do_not_trigger": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "neighbor_distinctions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["capability_id", "use_this_when", "use_neighbor_when"],
+            "properties": {
+              "capability_id": { "type": "string" },
+              "use_this_when": { "type": "string", "minLength": 1 },
+              "use_neighbor_when": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "ria": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reading", "interpretation", "application", "execution", "boundaries"],
+      "properties": {
+        "reading": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["evidence_id", "source_id", "locator", "claim_type", "excerpt", "paraphrase", "note"],
+            "properties": {
+              "evidence_id": { "type": "string", "pattern": "^ev-[a-z0-9]+(?:-[a-z0-9]+)*$" },
+              "source_id": { "type": "string" },
+              "locator": { "type": "string", "minLength": 1 },
+              "claim_type": { "enum": ["explicit", "synthesized", "inferred", "operational_evidence"] },
+              "excerpt": { "type": ["string", "null"], "maxLength": 1200 },
+              "paraphrase": { "type": "string", "minLength": 1 },
+              "note": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "interpretation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["model", "decision_rules", "assumptions"],
+          "properties": {
+            "model": { "type": "string", "minLength": 1 },
+            "decision_rules": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+            "assumptions": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+          }
+        },
+        "application": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["past_cases", "future_scenarios"],
+          "properties": {
+            "past_cases": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["case_id", "problem", "method_use", "result", "evidence_ids"],
+                "properties": {
+                  "case_id": { "type": "string" },
+                  "problem": { "type": "string", "minLength": 1 },
+                  "method_use": { "type": "string", "minLength": 1 },
+                  "result": { "type": "string", "minLength": 1 },
+                  "evidence_ids": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+                }
+              }
+            },
+            "future_scenarios": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["scenario", "recognition_signal", "expected_use"],
+                "properties": {
+                  "scenario": { "type": "string", "minLength": 1 },
+                  "recognition_signal": { "type": "string", "minLength": 1 },
+                  "expected_use": { "type": "string", "minLength": 1 }
+                }
+              }
+            }
+          }
+        },
+        "execution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required_inputs", "steps", "outputs", "stop_conditions"],
+          "properties": {
+            "required_inputs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+            "steps": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["step_id", "action", "completion_check", "stop_if"],
+                "properties": {
+                  "step_id": { "type": "string" },
+                  "action": { "type": "string", "minLength": 1 },
+                  "completion_check": { "type": "string", "minLength": 1 },
+                  "stop_if": { "type": ["string", "null"] }
+                }
+              }
+            },
+            "outputs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+            "stop_conditions": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+          }
+        },
+        "boundaries": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["out_of_scope", "failure_modes", "limitations", "ask_user_when", "escalate_when"],
+          "properties": {
+            "out_of_scope": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+            "failure_modes": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+            "limitations": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+            "ask_user_when": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+            "escalate_when": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+          }
+        }
+      }
+    },
+    "relations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["depends_on", "contrasts_with", "composes_with", "routes_to"],
+      "properties": {
+        "depends_on": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "contrasts_with": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "composes_with": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "routes_to": { "type": "array", "uniqueItems": true, "items": { "type": "string" } }
+      }
+    },
+    "compilation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["destination", "skill_name", "skill_description", "skill_license", "allowed_tools", "test_suite"],
+      "properties": {
+        "destination": { "enum": ["standalone_skill", "router_only", "reference_only", "deprecated"] },
+        "skill_name": { "type": ["string", "null"], "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+        "skill_description": { "type": ["string", "null"] },
+        "skill_license": { "type": ["string", "null"] },
+        "allowed_tools": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "test_suite": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

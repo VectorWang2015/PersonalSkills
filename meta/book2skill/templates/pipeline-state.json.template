@@ -1,0 +1,173 @@
+{
+  "schema": "book2skill/pipeline-state@1",
+  "run_id": "run.{{book-slug}}.{{timestamp-or-uuid}}",
+  "mode": "fresh_distillation",
+  "status": "in_progress",
+  "started_at": "{{ISO-8601 timestamp}}",
+  "updated_at": "{{ISO-8601 timestamp}}",
+  "source_manifest": "source-manifest.json",
+  "target_bundle": "independent/capability-bundle.json",
+  "current_stage": "source_intake",
+  "stages": [
+    {
+      "stage_id": "source_intake",
+      "status": "in_progress",
+      "depends_on": [],
+      "started_at": "{{ISO-8601 timestamp}}",
+      "completed_at": null,
+      "artifacts": [
+        "source-manifest.json"
+      ],
+      "checks": [
+        {
+          "check_id": "source-version-and-rights",
+          "status": "pending",
+          "evidence": "{{digest, edition, rights basis, coverage review, or missing item}}"
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "stage_id": "whole_book_model",
+      "status": "pending",
+      "depends_on": [
+        "source_intake"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [
+        "overview.md"
+      ],
+      "checks": [],
+      "notes": ""
+    },
+    {
+      "stage_id": "independent_extraction",
+      "status": "pending",
+      "depends_on": [
+        "whole_book_model"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [
+        "candidates/"
+      ],
+      "checks": [],
+      "notes": ""
+    },
+    {
+      "stage_id": "candidate_verification",
+      "status": "pending",
+      "depends_on": [
+        "independent_extraction"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [
+        "rejected/"
+      ],
+      "checks": [],
+      "notes": ""
+    },
+    {
+      "stage_id": "capability_construction",
+      "status": "pending",
+      "depends_on": [
+        "candidate_verification"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [
+        "independent/capability-bundle.json",
+        "independent/cards/"
+      ],
+      "checks": [],
+      "notes": ""
+    },
+    {
+      "stage_id": "linking_and_routing",
+      "status": "pending",
+      "depends_on": [
+        "capability_construction"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [
+        "INDEX.md"
+      ],
+      "checks": [],
+      "notes": ""
+    },
+    {
+      "stage_id": "pressure_testing",
+      "status": "pending",
+      "depends_on": [
+        "linking_and_routing"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [
+        "eval-suite.json"
+      ],
+      "checks": [],
+      "notes": ""
+    },
+    {
+      "stage_id": "redistillation_comparison",
+      "status": "skipped",
+      "depends_on": [
+        "pressure_testing"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [
+        "comparison.json"
+      ],
+      "checks": [],
+      "notes": "Use for redistillation or audit_update mode; leave skipped for a fresh baseline."
+    },
+    {
+      "stage_id": "compile_and_delivery",
+      "status": "pending",
+      "depends_on": [
+        "pressure_testing",
+        "redistillation_comparison"
+      ],
+      "started_at": null,
+      "completed_at": null,
+      "artifacts": [
+        "staging/"
+      ],
+      "checks": [],
+      "notes": ""
+    }
+  ],
+  "decisions": [
+    {
+      "decision_id": "decision-01",
+      "timestamp": "{{ISO-8601 timestamp}}",
+      "stage_id": "source_intake",
+      "decision": "{{material choice that should survive a resumed run}}",
+      "rationale": "{{evidence or user instruction}}",
+      "made_by": "{{user or agent}}"
+    }
+  ],
+  "blockers": [],
+  "next_action": {
+    "stage_id": "source_intake",
+    "action": "{{single concrete next action}}",
+    "inputs_needed": [
+      "{{missing source fact, artifact, or user decision}}"
+    ]
+  },
+  "checkpoints": [
+    {
+      "timestamp": "{{ISO-8601 timestamp}}",
+      "stage_id": "source_intake",
+      "summary": "{{what is complete and what remains}}",
+      "artifacts": [
+        "source-manifest.json"
+      ]
+    }
+  ]
+}

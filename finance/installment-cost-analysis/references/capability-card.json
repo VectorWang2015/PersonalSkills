@@ -1,0 +1,249 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.kan-tou-yin-hang.installment-cost-analysis",
+  "revision": 2,
+  "status": "active",
+  "slug": "installment-cost-analysis",
+  "title": "分期贷款全成本年化",
+  "one_liner": "用实际到账和全部还款现金流计算IRR/XIRR，并将书中24xy/(x+1)严格限定为特定等额本金月度手续费的单利近似。",
+  "source_manifest": "source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "ktbank-txt-2021.qp.ch02.l287-installment-time-value",
+      "ktbank-txt-2021.qp.ch02.l294-simple-average-balance-rate"
+    ],
+    "aliases": [
+      "legacy.installment-apr-calculation"
+    ],
+    "supersedes": [
+      "legacy.installment-apr-calculation@1"
+    ]
+  },
+  "selection": {
+    "atomic_user_problem": "用户面对按期收取手续费或不规则还款的贷款报价，需要计算包含全部直接费用的可比年化成本。",
+    "distinctive_value": "同时给出实际日期XIRR、规则周期IRR和明确标注的书中单利近似，避免把表面费率、名义年化与有效年化混成一个数字。",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ktb-ch02-l287-example",
+          "ev-ktb-ch02-l288-balance",
+          "ev-ktb-ch02-l302-formula"
+        ],
+        "rationale": "书中直接给出时间加权本金思路和24xy/(x+1)公式；IRR/XIRR、全部费用与实际日期是明确标注的revision-2操作扩展。"
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "输入实际到账和每笔支付金额/日期后，确定性脚本可复算并输出错误状态、现金流口径和多种年化结果。"
+      },
+      "incremental_utility": {
+        "status": "supported",
+        "comparison": "两轮隔离评测中，候选行为分别与旧版并列97分、与旧版及无skill并列100分；确定性脚本另通过7项回归，覆盖前置费用、实际日期、复利、缺失费用和多根停止条件。"
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "费用不全、日期缺失、非传统多次符号变化或提前还款条款未知时停止精确全成本结论。"
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "公式在书中集中一次完整推导，虽非重复主张，但独立、可复算且有明确用户意图。"
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "计算信用卡或消费贷分期的真实年化成本",
+      "比较两个不同还款结构和费用结构的贷款方案",
+      "区分表面手续费率、单利年化、名义IRR与有效IRR"
+    ],
+    "trigger_signals": [
+      "用户给出本金、分期期数、每期手续费或还款额并询问年化",
+      "贷款包含前置服务费、保险费、担保费或不规则日期",
+      "用户质疑每期0.x%的费率是否等同于低年利率"
+    ],
+    "do_not_trigger": [
+      "分析银行整体净息差、手续费收入或股票估值时使用银行分析能力",
+      "只查询合同展示的年化数字而不要求复算时可直接读取合同",
+      "缺少实际到账、还款额、日期和直接费用时不输出全成本年化"
+    ],
+    "neighbor_distinctions": [
+      {
+        "capability_id": "cap.kan-tou-yin-hang.earnings-quality-normalization",
+        "use_this_when": "问题是借款人面对某一产品的现金流成本。",
+        "use_neighbor_when": "问题是银行财报如何列示分期相关收入或手续费。"
+      }
+    ]
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ktb-ch02-l287-example",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第2章 > 2.4信用卡业务 > 信用卡分期费率探讨 > TXT line 287；EPUB text/part0007.html#cha2_2_1_4",
+        "claim_type": "explicit",
+        "excerpt": "信用卡分期是所有个人消费信贷中最具迷惑性的",
+        "paraphrase": "把每期手续费率乘期数会忽略本金逐期偿还，低估实际占用资金的成本。",
+        "note": "书中以12000元、12期、每期79.2元手续费演示。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch02-l288-balance",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第2章 > 2.4 > 信用卡分期费率探讨 > TXT line 288；EPUB text/part0007.html#cha2_2_1_4",
+        "claim_type": "explicit",
+        "excerpt": "实际平均占用银行的本金只有贷款的一半多",
+        "paraphrase": "等额本金分期下，资金占用随每期还本下降，不能用初始本金承担全部期间手续费。",
+        "note": "这是书中单利平均余额近似的机制。"
+      },
+      {
+        "evidence_id": "ev-ktb-ch02-l302-formula",
+        "source_id": "src-ktbank-txt-2021",
+        "locator": "第2章 > 2.4 > 信用卡分期费率探讨 > TXT lines 294-303；EPUB text/part0007.html#cha2_2_1_4",
+        "claim_type": "explicit",
+        "excerpt": "年化利率=（L×x×y）/{［（x+1）×L］/24}=（24×x×y）/（x+1）",
+        "paraphrase": "在月度等额本金、每期按初始本金收固定手续费且无其他费用时，作者用24xy/(x+1)估算单利年化。",
+        "note": "revision 2不把该近似称为唯一真实APR。"
+      }
+    ],
+    "interpretation": {
+      "model": "贷款可比成本应由借款人实际收到的净现金与以后全部支付现金流决定。XIRR按真实日期给有效年化；周期IRR给规则周期结果；书中公式只近似固定月度等额本金手续费。",
+      "decision_rules": [
+        "正号表示借款人收到，负号表示借款人支付；同日现金流先净额。",
+        "所有与贷款直接相关的利息和费用必须进入现金流，缺一项就不能称全成本。",
+        "实际日期可得时以XIRR有效年化为主；规则周期可补充名义与有效周期IRR。",
+        "采用单利结果时明确写单利；不得与复利有效年化共用同一APR标签。",
+        "24xy/(x+1)只在formula-contract列出的全部假设成立时展示。",
+        "非传统现金流出现多次符号变化时停止IRR并说明多根/无根风险。"
+      ],
+      "assumptions": [
+        "用户确认所有直接贷款成本已纳入。",
+        "现金流采用借款人视角且日期准确。",
+        "输入金额使用同一币种和单位。"
+      ]
+    },
+    "application": {
+      "past_cases": [
+        {
+          "case_id": "case-ktb-installment-12000",
+          "problem": "12000元分12期，每期偿还1000元本金和79.2元手续费，表面总费率为7.92%。",
+          "method_use": "作者按本金占用时间加权，推导24xy/(x+1)。",
+          "result": "书中单利近似为14.62%；revision 2还应分别复算周期IRR和实际日期XIRR。",
+          "evidence_ids": [
+            "ev-ktb-ch02-l287-example",
+            "ev-ktb-ch02-l302-formula"
+          ]
+        }
+      ],
+      "future_scenarios": [
+        {
+          "scenario": "消费贷在放款日扣服务费，之后每月等额支付本金和分期费。",
+          "recognition_signal": "实际到账低于合同本金且费用按初始本金计收。",
+          "expected_use": "把前置费作为放款日负现金流，按全部月度支付计算XIRR/IRR，并与合同单利展示比较。"
+        },
+        {
+          "scenario": "两个分期方案日期、首付和尾款不同。",
+          "recognition_signal": "不能仅比较每期费率或总手续费。",
+          "expected_use": "统一借款人现金流与币种，使用XIRR比较有效年化，并单列提前结清情景。"
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "实际到账净额和到账日期",
+        "每笔还款及所有直接相关费用的金额和日期",
+        "币种与单位",
+        "是否规则周期及每年期数",
+        "提前还款、尾款和费用变化条款",
+        "用户确认全部直接贷款成本已纳入"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "建立借款人视角现金流，正号为收到、负号为支付，同日金额合并。",
+          "completion_check": "净到账、每期本息和全部费用均有日期、币种和来源。",
+          "stop_if": "全部直接费用未确认或关键日期/金额缺失。"
+        },
+        {
+          "step_id": "step-02",
+          "action": "检查现金流符号变化和还款结构；多次符号变化时停止普通IRR。",
+          "completion_check": "常规贷款只有一次正转负，或已明确需要专业多根处理。",
+          "stop_if": "现金流存在多个可能IRR且用户未提供选择准则。"
+        },
+        {
+          "step_id": "step-03",
+          "action": "运行scripts/installment_cost.py，计算实际日期XIRR；规则周期时同时计算周期IRR的名义和有效年化。",
+          "completion_check": "NPV在报告结果处接近零，所有结果标注单利/复利和日计数基础。",
+          "stop_if": "脚本无法括住唯一根或返回输入错误。"
+        },
+        {
+          "step_id": "step-04",
+          "action": "仅在月度等额本金、固定初始本金费率且无其他费用时计算书中24xy/(x+1)近似。",
+          "completion_check": "近似结果和适用假设与IRR/XIRR分栏。",
+          "stop_if": "任一书中公式假设不成立。"
+        },
+        {
+          "step_id": "step-05",
+          "action": "输出现金流、结果差异、提前还款/费用情景和缺口，不替用户作借款决定。",
+          "completion_check": "用户能复算数字并理解表面费率为何不同。",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "规范化借款人现金流表",
+        "XIRR有效年化率",
+        "规则周期IRR的名义与有效年化率（适用时）",
+        "书中单利平均余额近似及假设（适用时）",
+        "费用完整性、提前还款、多根和不确定性说明"
+      ],
+      "stop_conditions": [
+        "结果可由现金流复算且所有标签清楚时结束。",
+        "直接贷款成本不全时只输出缺口，不给全成本结论。",
+        "任务转为个人借款适当性或法律合规意见时限定或升级。"
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "不分析银行整体盈利、手续费收入或股票价值。",
+        "不把单一表面月费率直接乘12当真实年化。",
+        "不提供个性化借款批准、授信或法律意见。"
+      ],
+      "failure_modes": [
+        "遗漏放款日服务费、保险或担保费。",
+        "将合同本金而非实际到账作为唯一正现金流。",
+        "把名义年化、有效年化和书中单利近似混称APR。",
+        "不规则现金流仍套24xy/(x+1)。",
+        "多个符号变化时无视多根风险。"
+      ],
+      "limitations": [
+        "IRR是现金流可比工具，不反映产品服务、流动性、违约、征信或机会成本的全部差异。",
+        "官方年化展示规则核验截至2026-09-03，未来使用应重新核验。",
+        "提前还款费用或未来浮动费率未知时只能做情景。"
+      ],
+      "ask_user_when": [
+        "没有实际到账或全部支付日期。",
+        "未确认费用是否全部纳入。",
+        "需要比较正常还款和提前结清但条款不完整。"
+      ],
+      "escalate_when": [
+        "现金流多次变号、含复杂期权或浮动利率，需要专业估值。",
+        "用户要求判断合同是否合法、是否构成违规收费。"
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [],
+    "contrasts_with": [
+      "cap.kan-tou-yin-hang.earnings-quality-normalization"
+    ],
+    "composes_with": [],
+    "routes_to": []
+  },
+  "compilation": {
+    "destination": "standalone_skill",
+    "skill_name": "installment-cost-analysis",
+    "skill_description": "Calculate all-in annualized installment-loan cost from actual cash flows using IRR/XIRR, with the source-book shortcut only as a labeled limited approximation.",
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": "../test-prompts.json"
+  }
+}

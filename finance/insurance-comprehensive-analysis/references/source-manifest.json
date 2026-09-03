@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "title": "读懂保险股",
+  "author": "东先生",
+  "version": "中国经济出版社2021年5月第1版第1次印刷；第7版合并编译",
+  "base_directory": null,
+  "local_paths_redacted": true,
+  "portability_note": "便携清单不保留本机绝对路径；现行官方规则以带日期的一手链接记录在current-standards.md。",
+  "source_count": 2,
+  "sources": [
+    {
+      "absolute_path": null,
+      "relative_path": "读懂保险股_自由派的诗人.txt",
+      "sha256": "331242fdfa4294e896171b69faba76640ab8c8c28707c9ab9b6f8ea43cb0bd0f",
+      "bytes": 570742,
+      "format": "txt",
+      "source_id": "src-insurance-2021-txt",
+      "role": "primary",
+      "kind": "book",
+      "rights": {
+        "basis": "user-provided",
+        "redistribution": "restricted",
+        "notes": "仅用于用户授权的本地蒸馏。"
+      },
+      "extraction": {
+        "parser": "UTF-8纯文本逐行读取",
+        "parser_version": "人工复核；沿用冻结第1版指纹",
+        "text_artifact": "读懂保险股_自由派的诗人.txt",
+        "locator_scheme": "章 > 小节 > TXT绝对行号",
+        "coverage": {
+          "unit": "chapters",
+          "expected_units": 10,
+          "processed_units": 10,
+          "omitted_ranges": [
+            {
+              "range": "TXT第1-8行",
+              "reason": "转制者自述。"
+            },
+            {
+              "range": "TXT第9034-9639行",
+              "reason": "重复目录。"
+            }
+          ],
+          "notes": "第5022、6533行附近公式受损，第5227行存在分子/分母冲突，第6609-6610行乱码。"
+        }
+      }
+    },
+    {
+      "absolute_path": null,
+      "relative_path": "读懂保险股_自由派的诗人.epub",
+      "sha256": "28d1a8fb4fb5a7409ef4bd5506d2126c819e5da43029921677e5227b277c0556",
+      "bytes": 8417663,
+      "format": "epub",
+      "source_id": "src-insurance-2021-epub",
+      "role": "supplementary",
+      "kind": "book",
+      "rights": {
+        "basis": "user-provided",
+        "redistribution": "restricted",
+        "notes": "用于核对章节及受损公式、表格；便携清单已规范化文件名，原件身份以 SHA-256 为准。"
+      },
+      "extraction": {
+        "parser": "EPUB压缩包与XML结构检查",
+        "parser_version": "EPUB 3；包元数据报告calibre 8.16.1",
+        "text_artifact": "读懂保险股_自由派的诗人.txt",
+        "locator_scheme": "EPUB导航 > XHTML文件 > 映射TXT行号",
+        "coverage": {
+          "unit": "chapters",
+          "expected_units": 10,
+          "processed_units": 10,
+          "omitted_ranges": [],
+          "notes": "书名、作者和版本以纸书版权页为准。"
+        }
+      }
+    }
+  ],
+  "manifest_id": "manifest.insurance-stocks-2021",
+  "created_at": "2026-09-03T14:49:03+08:00",
+  "updated_at": "2026-09-03T14:49:03+08:00",
+  "work": {
+    "work_id": "work.insurance-stocks-2021",
+    "language": "zh-CN",
+    "publication_year": 2021,
+    "user_goal": "依据第6版聚合留出失败，强化综合金融集团归属桥、寿险三条独立桥、成本法宣告确认节点、年度资金流入证据强度和当前结论证伪点。",
+    "scope": {
+      "included": [
+        "摘要与整份报告披露层级",
+        "主要保险子公司偿付能力",
+        "母公司股利收入总额与关联方逐家确认明细",
+        "未归属差额与确认、宣告、支付、到账层级",
+        "综合金融集团业务净利润与集团归属贡献",
+        "寿险服务、营运利润及CSM三条独立桥",
+        "成本法宣告确认与年度可动用资金表证据",
+        "直接挑战当前核心结论的证伪点",
+        "税前利润至归母利润勾稽口径",
+        "第6版既有全文、关联方、偿付率、估值和紧凑硬门"
+      ],
+      "excluded": [
+        "未披露数据推算",
+        "固定历史阈值",
+        "倍数价格延伸和交易建议"
+      ]
+    }
+  },
+  "known_gaps": [
+    {
+      "gap_id": "gap-current-authority-live",
+      "description": "现行规则以实时官方网页引用。",
+      "impact": "未来修订可能使摘要过期。",
+      "resolution": "依赖规则时重新打开官方原文。"
+    },
+    {
+      "gap_id": "gap-report-search",
+      "description": "股利确认、年度可动用资金流入、现金流和EV分红可能采用不同范围与时点。",
+      "impact": "直接相减或升级证据强度会把跨口径差异误作现金或主体归属。",
+      "resolution": "按第7版分别标确认、宣告、年度资金流入、支付和到账，差异列未归属/跨口径。"
+    },
+    {
+      "gap_id": "gap-v7-evaluation",
+      "description": "第7版发布前需要新的独立留出；该预发布缺口现已关闭。",
+      "impact": "历史上曾阻止根包发布，不影响内部能力仍需逐卡归因的边界。",
+      "resolution": "匿名聚合评测结果为第7版97.5、无skill 96.5、旧实现96；发布记录见release-evaluation.md。"
+    }
+  ],
+  "readiness": {
+    "exact_version_identified": true,
+    "integrity_recorded": true,
+    "rights_reviewed": true,
+    "coverage_reviewed": true,
+    "ready_for_distillation": true
+  }
+}

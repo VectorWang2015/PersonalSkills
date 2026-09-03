@@ -1,0 +1,210 @@
+{
+  "schema": "book2skill/capability-card@1",
+  "capability_id": "cap.investment-valuation-4e.reverse-dcf-and-valuation-audit",
+  "revision": 1,
+  "status": "draft",
+  "slug": "reverse-dcf-and-valuation-audit",
+  "title": "Reverse DCF and valuation audit",
+  "one_liner": "Solve for the operating assumptions embedded in price and audit whether they are internally consistent and economically feasible.",
+  "source_manifest": "../source-manifest.json",
+  "lineage": {
+    "candidate_ids": [
+      "iv4.fw.ch23.l19298.reverse-valuation"
+    ],
+    "aliases": [],
+    "supersedes": []
+  },
+  "selection": {
+    "atomic_user_problem": "Explain what a market price requires rather than forcing a single analyst forecast.",
+    "distinctive_value": "Encodes claim, unit, growth/reinvestment, terminal, bridge and stop-condition checks that are commonly omitted in ad hoc valuation.",
+    "retention_review": {
+      "source_faithfulness": {
+        "passed": true,
+        "evidence_ids": [
+          "ev-ch23-reverse",
+          "ev-ch01-price-value",
+          "ev-ch13-story-numbers"
+        ],
+        "rationale": "Core doctrine is directly supported at the cited chapter/line anchors; workflow routing and current-data requirements are explicitly operational synthesis."
+      },
+      "executability": {
+        "passed": true,
+        "rationale": "The card has explicit inputs, ordered actions, observable outputs and hard stop conditions."
+      },
+      "incremental_utility": {
+        "status": "hypothesis",
+        "comparison": "The package-level release evaluation does not provide per-card attribution; individual behavioral evidence for this reference-only card remains pending."
+      },
+      "falsifiable_boundedness": {
+        "passed": true,
+        "rationale": "Non-use cases and invalid-input conditions alter routing or force a stop."
+      },
+      "repetition_or_novelty": {
+        "role": "supporting_signal",
+        "observed": true,
+        "rationale": "The governing consistency principles recur across multiple chapters; specific formulas remain valuable even when stated once."
+      }
+    }
+  },
+  "routing": {
+    "intents": [
+      "reverse DCF",
+      "implied growth",
+      "implied margin",
+      "audit an existing valuation"
+    ],
+    "trigger_signals": [
+      "what is priced in",
+      "justify current price",
+      "implied expectations"
+    ],
+    "do_not_trigger": [
+      "No reliable current price/enterprise value or too many unconstrained unknowns."
+    ],
+    "neighbor_distinctions": []
+  },
+  "ria": {
+    "reading": [
+      {
+        "evidence_id": "ev-ch23-reverse",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 23 > Estimation Noise > TXT lines 19298-19307",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Even a noisy valuation is useful for solving what must occur for the market price to be justified.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch01-price-value",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 1 > Pricing Versus Valuation > TXT lines 1974-1987",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "Financial asset value must be tied to expected cash flows; market price and intrinsic value are different constructs.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      },
+      {
+        "evidence_id": "ev-ch13-story-numbers",
+        "source_id": "src-investment-valuation-4e-text",
+        "locator": "Chapter 13 > From Story to Numbers > TXT lines 9165-9708",
+        "claim_type": "explicit",
+        "excerpt": null,
+        "paraphrase": "A valuation narrative must map to revenue growth, margins, reinvestment, risk and failure assumptions and be reset when facts change.",
+        "note": "Source-grounded doctrine; runtime current-data and workflow adaptations are analyst inferences."
+      }
+    ],
+    "interpretation": {
+      "model": "Solve for the operating assumptions embedded in price and audit whether they are internally consistent and economically feasible.",
+      "decision_rules": [
+        "Reconcile price to enterprise/equity value.",
+        "Hold observable inputs fixed.",
+        "Solve a bounded set of unknown drivers.",
+        "Test feasibility, non-uniqueness and consistency.",
+        "Compare implied assumptions with history, peers and market size without treating them as forecasts."
+      ],
+      "assumptions": [
+        "Current company, market, accounting and regulatory facts are obtained at runtime from authoritative sources.",
+        "Book examples illustrate mechanics and are not current defaults."
+      ]
+    },
+    "application": {
+      "past_cases": [],
+      "future_scenarios": [
+        {
+          "scenario": "Explain what a market price requires rather than forcing a single analyst forecast.",
+          "recognition_signal": "what is priced in; justify current price; implied expectations",
+          "expected_use": "Execute the steps, disclose assumptions, and stop rather than invent missing current inputs."
+        }
+      ]
+    },
+    "execution": {
+      "required_inputs": [
+        "dated market value",
+        "capital structure bridge",
+        "base financials",
+        "fixed current market inputs",
+        "one or few unknown operating drivers"
+      ],
+      "steps": [
+        {
+          "step_id": "step-01",
+          "action": "Reconcile price to enterprise/equity value.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": "A required identity, unit, claim, formula, current-data or survival input is unresolved."
+        },
+        {
+          "step_id": "step-02",
+          "action": "Hold observable inputs fixed.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-03",
+          "action": "Solve a bounded set of unknown drivers.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-04",
+          "action": "Test feasibility, non-uniqueness and consistency.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        },
+        {
+          "step_id": "step-05",
+          "action": "Compare implied assumptions with history, peers and market size without treating them as forecasts.",
+          "completion_check": "Record the result and any exception in the audit trail.",
+          "stop_if": null
+        }
+      ],
+      "outputs": [
+        "market-implied assumptions",
+        "feasibility diagnostics",
+        "audit exceptions"
+      ],
+      "stop_conditions": [
+        "Required current facts or market inputs cannot be sourced or bounded.",
+        "Cash-flow claim and discount rate cannot be made consistent.",
+        "Terminal or reverse-valuation system is mathematically invalid or underidentified."
+      ]
+    },
+    "boundaries": {
+      "out_of_scope": [
+        "fabricating current price or solving an underidentified model as if unique"
+      ],
+      "failure_modes": [
+        "Using book case numbers or U.S. historical observations as current universal defaults.",
+        "Hiding uncertainty behind a precise point value.",
+        "Continuing after unresolved entity, period, currency, unit, formula or data-vintage mismatch."
+      ],
+      "limitations": [
+        "The source is a 2025 valuation text; current accounting, tax, regulatory and market facts require separate verification.",
+        "Stage 0-1.6 validates evidence and contract design, not live-model investment performance."
+      ],
+      "ask_user_when": [
+        "Valuation purpose, claim, date, currency or control/minority perspective would materially change the model.",
+        "Several plausible narratives produce materially different values and the user must choose a scenario policy."
+      ],
+      "escalate_when": [
+        "A regulated fairness opinion, tax/legal conclusion or transaction execution is requested.",
+        "Complex derivatives, insolvency waterfall or jurisdiction-specific regulatory capital requires specialist review."
+      ]
+    }
+  },
+  "relations": {
+    "depends_on": [
+      "cap.investment-valuation-4e.valuation-input-and-identity-contract"
+    ],
+    "contrasts_with": [],
+    "composes_with": [],
+    "routes_to": []
+  },
+  "compilation": {
+    "destination": "reference_only",
+    "skill_name": null,
+    "skill_description": null,
+    "skill_license": null,
+    "allowed_tools": [],
+    "test_suite": null
+  }
+}

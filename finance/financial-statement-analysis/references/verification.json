@@ -1,0 +1,24 @@
+{
+  "schema": "book2skill/release-verification@1",
+  "status": "v3-released",
+  "behavioral_evaluation": "Released v3 aggregate: candidate 98.0, old skill 97.0, no-skill 96.5. Earlier v1/v2 rounds remain historical revision inputs. The v3 score is package-level and does not independently validate the seven internal capabilities.",
+  "checks": [
+    {"check": "source-manifest schema", "status": "passed", "result": "1/1"},
+    {"check": "capability-bundle schema", "status": "passed", "result": "1/1"},
+    {"check": "test-prompts schema", "status": "passed", "result": "1/1"},
+    {"check": "book2skill validate_skill_tree.py", "status": "passed", "result": "1 SKILL.md and 1 test JSON validated"},
+    {"check": "official skill-creator quick_validate.py", "status": "passed", "result": "Skill is valid; executed with a system Python that provides PyYAML because the default environment lacked it"},
+    {"check": "formula assertions", "status": "passed", "result": "24/24, including capex cash reference/proxy, separate EBIT/cash interest coverage and negative-base growth NM"},
+    {"check": "semantic revision guards", "status": "passed", "result": "77/77 release-aware guards passed, including seven draft internal states, exact v3 aggregate scores and the closed package-level behavioral gate"},
+    {"check": "parser input adapter synthetic fixture", "status": "passed", "result": "Detected context, validation report and one valid merged table without modifying input"},
+    {"check": "JSON syntax", "status": "passed", "result": "All JSON files parse with jq"},
+    {"check": "Markdown links", "status": "passed", "result": "validate_skill_tree found no broken relative links"},
+    {"check": "placeholder and conflict markers", "status": "passed", "result": "No unresolved placeholder or merge marker"},
+    {"check": "local path scan", "status": "passed", "result": "No /home, /tmp or Workspace path in released package"}
+  ],
+  "limitations": [
+    "Visible dev prompts are regression material and are not the v3 release holdout.",
+    "The v3 aggregate score supports only the complete released skill.",
+    "All seven internal capabilities remain draft because no per-card attribution was performed."
+  ]
+}
