@@ -50,9 +50,10 @@ D11 AI 式自动总结句 · D12 证据边界过度标注 · D13 绝对防御性
 
 ---
 
-### oe-dp-writing-skill
+### drl-marine-writing-skill
 
-动态定位（DP）/ 船舶保持位置类论文写作指南，面向 *Ocean Engineering* 及相关控制类期刊。
+DRL（深度强化学习）船舶控制类论文写作指南，面向 *Ocean Engineering* 及相关海洋控制类期刊。
+覆盖动态定位（DP）、船舶保位、轨迹跟踪等学习型控制方向。
 
 基于 6 篇精读论文整理（Øvereng 2021 OE、Gao 2022 OE、Yuan & Rui 2023 CEE、
 Lee 2020 OE、Sarda 2016 OE、Sui 2024 Remote Sens），覆盖 15 节：

@@ -1,8 +1,9 @@
-# Writing Skill: DP / Station-Keeping Papers (Ocean Engineering — OE subfield)
-*Scope: simulation-based and experimental dynamic positioning and station-keeping
-papers in Ocean Engineering and related control journals. No JMSE paper is in the
-evidence base; do not apply these observations to JMSE without first checking
-representative JMSE papers and the journal's own author guidelines.*
+# Writing Skill: DRL-Based Marine Control Papers (Ocean Engineering — OE subfield)
+*Scope: simulation-based DRL/learning-based control papers for marine vessels —
+dynamic positioning, station-keeping, trajectory tracking — targeting Ocean Engineering
+and related marine control journals. No JMSE paper is in the evidence base; do not
+apply these observations to JMSE without first checking representative JMSE papers
+and the journal's own author guidelines.*
 
 ---
 
