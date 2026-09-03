@@ -1,0 +1,3 @@
+[submodule "meta/cangjie-skill"]
+	path = meta/cangjie-skill
+	url = https://github.com/kangarooking/cangjie-skill
