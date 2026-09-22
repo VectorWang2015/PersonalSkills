@@ -75,13 +75,13 @@ discussion · conclusion · ML/RL 术语替换表 · 方程 · 表格 · 图形 
 ### 标准财报分析工作流
 
 ```text
-财报获取 → PDF结构化解析 → 行业/方法论分析 → 按需保存结果
+财报获取 → PDF结构化解析 → 行业/方法论分析 → 读者版编辑 → 按需交付
 ```
 
 1. **cninfo-report-downloader** — 从巨潮资讯下载 A 股年报、季报、半年报 PDF
 2. **financial-pdf-parser** — 将 PDF 解析为结构化文本、表格、校验报告和分析上下文
 3. 按行业选择分析入口（见下表）
-4. 用户需要时再保存 Markdown 报告，不强制产生文件副作用
+4. 用户需要报告时，用 **human-readable-equity-report** 按理解顺序编辑正文，并按需输出 Markdown / HTML / PDF；普通问答不强制产生文件
 
 > 所有分析 skill 优先接受 `financial-pdf-parser` 的输出目录，而非直接读取 PDF 长文本。
 > 如 validation 存在失败项，相关数字必须标为"待核实"，不能静默引用。
@@ -111,6 +111,14 @@ discussion · conclusion · ML/RL 术语替换表 · 方程 · 表格 · 图形 
 |---|---|
 | **investment-valuation-comprehensive-framework** | 资产、业务、项目、私人/控制权交易与并购的估值方法选择、价值和模型审计 |
 | **equity-valuation-comprehensive-analysis** | 具名上市证券的稀释后每股价值、相对定价、反向 DCF 与市场隐含预期 |
+
+### 研究写作与交付 skill
+
+| Skill | 适用场景 |
+|---|---|
+| **[human-readable-equity-report](finance/human-readable-equity-report/SKILL.md)** | 将已有研究编辑为正式、易理解的中文公司或Top10研报；解释具体因果、统一利润口径，提供模板及离线HTML/PDF导出 |
+
+该入口经过三类公司试读反馈迭代，采用“业务—本期变化—原因—风险”的开篇顺序，将估值集中到专章。包内自带脚本、样式、依赖及小型测试，可整体复制安装。详见[安装与使用](finance/human-readable-equity-report/README.md)。
 
 ---
 

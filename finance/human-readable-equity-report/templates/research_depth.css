@@ -1,0 +1,34 @@
+@page {
+  size: A4;
+  margin: 17mm 18mm;
+  @bottom-right { content: counter(page); font-family: "Noto Sans CJK SC", sans-serif; font-size: 8pt; color: #666; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; color: #222; font-family: "Noto Serif CJK SC", serif; font-size: 10.8pt; line-height: 1.7; font-synthesis: none; }
+header { font-family: "Noto Sans CJK SC", sans-serif; font-size: 8pt; color: #666; border-bottom: 1px solid #aaa; padding-bottom: 6px; margin-bottom: 18px; }
+h1, h2, h3, h4, th { font-family: "Noto Sans CJK SC", sans-serif; font-weight: 700; }
+h1, h2, h3, h4 { break-after: avoid; line-height: 1.45; }
+h1 { font-size: 21pt; margin: 0 0 20px; text-wrap: balance; }
+h2 { font-size: 15pt; margin: 24px 0 12px; }
+h3 { font-size: 12pt; margin: 18px 0 9px; }
+h4 { font-size: 11pt; margin: 15px 0 8px; }
+p { margin: 0 0 12px; orphans: 3; widows: 3; }
+strong { font-weight: 700; }
+blockquote { margin: 14px 0; padding-left: 13px; border-left: 2px solid #777; }
+ul, ol { padding-left: 1.5em; }
+li { margin: 5px 0; }
+table { width: 100%; border-collapse: collapse; border-top: 1.3px solid #333; border-bottom: 1.3px solid #333; margin: 16px 0; font-size: 9.5pt; line-height: 1.55; }
+thead { display: table-header-group; border-bottom: 1px solid #555; }
+th, td { padding: 7px 8px; vertical-align: top; overflow-wrap: anywhere; }
+tr { break-inside: avoid; }
+.figure { margin: 10px 0 5px; text-align: center; break-inside: avoid; break-after: avoid; }
+.figure + .note { break-before: avoid; }
+.report-section + .report-section { break-before: page; }
+img { max-width: 100%; max-height: 85mm; object-fit: contain; }
+.figure-caption { margin-top: 6px; font-family: "Noto Sans CJK SC", sans-serif; font-size: 9pt; line-height: 1.5; }
+.note { font-size: 9pt; color: #555; line-height: 1.6; }
+a { color: #333; text-decoration: none; overflow-wrap: anywhere; }
+code { font-size: 9.5pt; overflow-wrap: anywhere; }
+@media screen {
+  body { max-width: 850px; margin: 25px auto; padding: 30px 50px; }
+}
