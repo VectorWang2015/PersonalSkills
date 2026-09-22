@@ -600,10 +600,15 @@ control and DRL papers requires.
 ### What the source papers do [Sample]
 
 - Sa16 reports multiple field-trial runs and discusses variability between runs.
-- Ov21 reports simulation results for one trained model without multi-seed
-  statistics.
-- Yu23 and Le20 report simulation results for a single trained model.
-- None of the six papers report confidence intervals on their main results.
+- Ov21 evaluates PPO in simulation and model-scale sea trials; do not confuse
+  repeated evaluation conditions with independently trained policies.
+- Le20 §5.2, PDF p.9, explicitly reports five one-hour simulations with different
+  seeds and a 95% confidence interval in Figure 14. This is evidence of repeated
+  evaluation, not proof of five independent training runs.
+- A direct-source recheck on 2026-09-22 corrected this guide's earlier blanket
+  no-confidence-interval claim. For Yu23 and other studies, verify what was seeded
+  before assigning a training-seed count; absence of a reported count is not proof
+  of exactly one seed. A writing skill is not a substitute for the original paper.
 
 ### Recommended practice for DRL-DP papers [Recommend]
 
