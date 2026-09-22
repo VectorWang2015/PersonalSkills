@@ -1,9 +1,17 @@
-# Writing Skill: DRL-Based Marine Control Papers (Ocean Engineering — OE subfield)
-*Scope: simulation-based DRL/learning-based control papers for marine vessels —
-dynamic positioning, station-keeping, trajectory tracking — targeting Ocean Engineering
-and related marine control journals. No JMSE paper is in the evidence base; do not
-apply these observations to JMSE without first checking representative JMSE papers
-and the journal's own author guidelines.*
+---
+name: drl-marine-writing-skill
+description: "Write and review DRL marine control papers on dynamic positioning, station-keeping, and trajectory tracking. Covers engineering narrative, learning equations, evidence boundaries, results, conclusions and future work, and chapter organization, with an original OE-related evidence base and separately verified JMSE examples; sample observations are not journal requirements."
+---
+
+# Writing Skill: DRL-Based Marine Control Papers (OE / JMSE)
+*Scope: simulation-based DRL/learning-based marine control papers. The original
+six-paper OE-related evidence base is retained; a separate four-paper JMSE sample
+supports the structural and writing observations added in September 2026. These
+are observed practices and editorial recommendations, not verified journal rules.*
+
+For JMSE structure, conclusion organization, approximate lengths, and exact source
+pages, read [JMSE evidence and revision lessons](references/jmse-writing-evidence.md).
+Consult it before claiming that a section layout is typical or required by JMSE.
 
 ---
 
@@ -11,8 +19,9 @@ and the journal's own author guidelines.*
 
 Every observation in this guide is tagged with one of three labels:
 
-- **[Sample]** — observed in one or more of the six source papers; may not
-  generalise beyond this subfield.
+- **[Sample]** — observed in the explicitly named source paper(s); may not
+  generalise beyond that sample. Unqualified references to the original six
+  papers below do not include the later JMSE sample.
 - **[Practice]** — consistent with widely observed academic writing norms across
   engineering journals; not specific to JMSE or OE.
 - **[Recommend]** — author's recommendation based on the evidence; not a journal
@@ -29,10 +38,20 @@ Every observation in this guide is tagged with one of three labels:
 | Sa16 | Sarda et al. 2016 | *Ocean Engineering* 127:305–324 |
 | Su24 | Sui et al. 2024 | *Remote Sensing* 16:4142 |
 
-**Limitation**: no JMSE paper is in the sample. Observations labelled [Sample]
-apply most reliably to simulation-based DRL/control papers in *Ocean Engineering*.
-Before submitting to JMSE or a different OE subfield, consult that journal's
-current author guidelines and a few recent representative papers.
+**Additional JMSE sample (targeted section and PDF-page inspection, not a claim
+of full-paper technical replication):** Shi & Liu 2020, 8:682; Wang et al. 2021,
+9:387; Zhu et al. 2021, 9:1267; Gao et al. 2024, 12:2287. Their tasks span collision
+avoidance, roll prediction, path planning, and motion prediction; none is a
+matched stern-only DP benchmark. See the linked evidence note for titles, DOIs,
+section maps, pages, and coverage. A Sensors paper stored alongside them is not
+JMSE evidence.
+
+**Authority boundary:** published examples show what those authors did, not what
+a journal requires. In the September 2026 review, the JMSE author-guidelines page
+could not be retrieved; no official minimum section count, mandatory Discussion,
+or prescribed conclusion length was verified. Verify current instructions before
+making a compliance claim. Do not substitute another MDPI journal's instructions
+or generic template text for confirmed JMSE policy.
 
 ---
 
@@ -78,10 +97,10 @@ interpret without context. [Recommend]
 - Name the method in plain language. "Distributional off-policy deep reinforcement
   learning" is acceptable technical language; it is not plain English for a general
   marine audience, so follow it with a one-clause application-level explanation.
-- For test coverage, give enough information to be accurate. "Evaluated under 17
-  wind conditions spanning 0–360° at two wind speeds" is more precise than both
-  "a 17-condition grid" (opaque) and "a full range" (implies exhaustive or
-  continuous coverage). [Recommend]
+- Describe test coverage explicitly, e.g. "eight wind directions at each of two
+  wind speeds, together with a calm-water case" for 17 distinct conditions. Do not
+  imply continuous coverage from a discrete angular grid or count calm directions
+  as independent physical cases. [Recommend]
 - Results in physical language where possible: "lower steady-state position offset",
   "less propulsor activity to achieve the same station-keeping accuracy". If a number
   must appear, use metres for position and degrees for heading — these need no
@@ -125,8 +144,8 @@ Consistent across all five papers that have a conventional introduction:
   filler; revise to a specific engineering observation.
 - Contribution stated as "a novel method is proposed" without a result claim.
 - Citing a paper and misrepresenting what it did.
-- "Firstly … secondly … thirdly" is non-standard in English engineering writing;
-  use "First … Second … Third" or restructure as prose.
+- Prefer concise "First … Second … Third" when sequencing is useful, or remove
+  ordinal transitions when the logic is already clear. "Firstly" is not incorrect.
 - Reviewing DRL or RL theory before establishing the marine engineering context.
   Marine readers are the primary audience; DRL is the method, not the subject.
 
@@ -159,8 +178,9 @@ marine control papers.
 
 ### Section and subsection titles [Recommend]
 
-Titles are noun phrases describing the engineering content, not the research
-workflow. Observed examples from the source papers:
+Prefer noun-phrase titles describing the engineering content rather than internal
+research workflow. The following are editorial examples, not quotations from the
+source papers:
 
 | Avoid | Use instead | Source |
 |---|---|---|
@@ -215,15 +235,30 @@ Standard structure observed across the papers:
 - For multi-method comparisons, one paragraph per method, stating implementation
   differences explicitly.
 
-### Comparison controllers [Recommend]
+### Learning mechanisms and comparison controllers [Recommend]
 
-- Describe a fixed-gain PD or PID reference in terms of gains, feedback variables,
-  and what it lacks (integral term, feedforward, observer). This framing appears in
-  Le20 and Ov21.
-- In marine engineering papers the conventional PID controller is a **reference**
-  or **benchmark** — not a "baseline". Baseline is a ML community term. [Sample]
-- State the thrust allocation method used with each controller, since different
-  controllers may use different allocation schemes.
+- Give enough mathematics to explain the learning mechanism, not just an algorithm
+  name: return/value representation, targets, critic update, actor objective, and
+  update order when relevant. Define inputs/outputs and connect the expressions.
+  Do not reproduce a general RL tutorial or hide every learning equation in an
+  appendix. JMSE examples place core learning mathematics in the main text
+  [Sample: Zhu2021 pp.4–8; Shi2020 pp.13–14; Wang2021 pp.5–8].
+- Trace implementation-specific equations to the actual implementation and the
+  original algorithm paper separately. Identify material differences (e.g. current
+  versus target actor, clipped versus unclipped targets, stopped gradients,
+  cached versus updated statistics); do not claim exact reproduction by name.
+- Introduce comparison controllers by their role: conventional feedback reference,
+  alternative learning procedure, or related value-estimation method. Describe
+  what each does, rather than opening with a list of absent capabilities.
+- For PD/PID, give the feedback law, coordinate/sign conventions, gains and units,
+  and actual allocation sequence. A clipped pseudoinverse is not automatically a
+  constrained optimum; command-angle limiting after selection can change the
+  realized force without recomputing the chosen thrust.
+- Prefer "reference controller" or "comparison controller" in engineering prose;
+  "baseline" is not forbidden journal terminology. State the allocation scheme,
+  since comparisons evaluate controller–allocator combinations.
+- Describe common settings once, preferably in a table. State controlled variables
+  directly rather than asserting that the comparison is "fair".
 
 ### Evaluation metrics subsection [Recommend]
 
@@ -256,6 +291,32 @@ Standard structure observed across the papers:
 5. Sensitivity or sweep results: their own subsection with a table. Results
    described in physical metric terms, not reward values.
 
+### From numbers to engineering findings [Recommend]
+
+- Organize results by the question answered, not by the order in which experiments
+  were run. A useful sequence is aggregate accuracy/activity → initial-condition
+  and seed sensitivity → directional behavior → learning progress → reward
+  sensitivity, validation selection, and held-out evaluation.
+- Lead a paragraph with the finding, use only the numbers needed to establish it,
+  then explain its physical meaning. Do not repeatedly read every table row aloud.
+- Qualitative claims still need a named metric and comparator. "Lower cumulative
+  command magnitude than PPO" is interpretable; "more efficient" may incorrectly
+  imply measured energy or fuel. NCI is not energy, thrust work, or azimuth smoothness.
+- An aggregate positioning lead does not imply best performance in every direction
+  or every metric. Conversely, a local reversal does not erase the aggregate
+  finding. Specify which ordering persists on a separate test set.
+- State what the observation identifies: a post-transient evaluation window does
+  not establish recovery speed; early attainment of a smoothed return threshold
+  measures learning progress in simulation interactions, not formal convergence,
+  wall-clock efficiency, or position-error sample efficiency.
+- Compare reward settings using physical metrics, not returns on different reward
+  scales. Selection on validation data must remain distinct from held-out testing.
+- Separate derived physical constraints, observed behavior, and causal hypotheses.
+  Geometry can explain coupling without establishing the cause of a particular
+  learned-policy peak. Algorithm components need ablations/diagnostics for causal
+  attribution. A possible allocation failure mechanism is not proven solely by
+  a large aggregate error.
+
 ### Figures [Sample]
 
 **Trajectory plots** (Sa16 Figs. 6–8, Ov21 Fig. 8):
@@ -277,63 +338,118 @@ Standard structure observed across the papers:
   defined.
 - Label them as showing training dynamics, not physical performance.
 
-**Caption convention** [Sample: all six papers]: every caption is self-contained.
-Required elements: metric, test conditions, what error bars or shading represent,
-and for trajectory plots the initial condition and seed.
+**Caption guidance** [Recommend]: make each caption interpretable without searching
+the main text. Include the metric, test conditions, and meaning of error bars or
+shading where applicable; identify initial conditions and the selected seed/trial
+for illustrative trajectories. Schematics need their own component/flow description,
+not irrelevant statistical fields.
 
 ---
 
-## §6 Discussion
+## §6 Discussion and Future Directions
 
-### Structure observed [Sample: Ov21 §4, Ga22 §5, Le20 §5]
+### Decide the function before choosing the heading [Recommend]
 
-1. Lead with the main engineering finding — why the result has the value it does
-   and what physical mechanism explains it.
-2. Compare to prior work — where does this agree or differ, and why?
-3. Explain outliers or anomalies — directional peaks, seed variation, failure
-   cases. State the physical mechanism.
-4. Scope and limitations — what was not tested, what the results do and do not
-   generalise to. In Ov21, limitations appear in §4.3 (Discussion). [Sample: Ov21 §4.3]
-   The key point is that limitations should be discussed where the evidence for them
-   lives — either in Discussion or, for overall scope boundaries, at the end of
-   Conclusion. What does not belong in Conclusion is a first-time explanation of why
-   a result is limited; that explanation needs to follow the result in Discussion.
-5. Next steps (optional, one sentence).
+Discussion asks what the findings mean and which questions they open. It is not
+necessarily a second results summary, a compulsory limitations list, or exclusively
+a future-work section. Mechanism explanation and literature comparison are useful
+when they add knowledge; do not add them merely to fill a template.
 
-### Tone [Recommend]
+The original OE-related sample includes interpretation and scope discussion
+[Sample: Ov21 §4, Ga22 §5, Le20 §5]. In the four JMSE examples, interpretation is
+sometimes embedded in Results, and two terminal sections called Discussion also
+perform the conclusion's job. None of these four has both standalone Discussion
+and standalone Conclusions. This does not prove that having both is forbidden.
 
-- State what the data shows. Avoid hedging chains: "it may be possible that, under
-  certain conditions, the method could potentially…"
-- If a result is inconclusive, say so directly: "the available data do not
-  distinguish between X and Y."
-- Translate metric comparisons into engineering language in the Discussion: "DSAC-T
-  required 49% less propulsor activity than PPO to maintain the same station" is
-  more informative than citing raw index values alone.
+### A forward-looking discussion [Recommend]
+
+Use **finding → implication → unresolved question → targeted future direction**.
+A limitation should explain why the question remains open, rather than merely list
+things not done. Examples for simulation-based DP papers:
+
+- Reward sensitivity → relation between the objective and physical accuracy →
+  task-specific position/heading tolerances and acceptable actuator usage.
+- Direction-dependent performance under steady loads → responses to changing
+  loads remain untested → time-varying wind/current and irregular waves, including
+  separation of low-frequency positioning deviations from wave-frequency motion.
+- Simulation evidence → actual plant/measurement conditions remain untested →
+  hardware-in-the-loop and controlled vessel trials assessing model mismatch,
+  actuator response, sensor noise, and delay.
+
+These are possible directions, not mandatory experiments for every manuscript.
+Do not write deployment plans as commitments unless they actually exist.
+Material interpretation boundaries (e.g. command activity is not energy) must remain
+accurate even when they do not motivate a future experiment.
+
+### Avoid duplicated endings [Recommend]
+
+- If Results already contains interpretation and the remaining Discussion consists
+  mainly of future work, consider **Conclusions and Future Work** rather than
+  maintaining two sections just to satisfy a generic outline.
+- If substantial mechanism/literature synthesis warrants its own Discussion,
+  retain it and use a short Conclusions section to close the contribution.
+- A two-sentence lead plus three short thematic paragraphs can suit a standalone
+  future-oriented Discussion; it is an editorial option, not a JMSE sample norm.
+- Keep caveats close to the affected claim, without "we do not claim" lists.
+  Do not append an "although" exception merely to counterbalance every positive
+  finding when the metric and comparison scope already make it accurate.
+- A concise new statement of an overall limitation may legitimately introduce
+  future work in the closing section. Do not introduce new experimental evidence
+  or a previously unsupported explanation there.
 
 ---
 
-## §7 Conclusion
+## §7 Conclusions and Combined Endings
 
-### Structure observed [Sample: all six papers]
+### Organize rhetorical functions, not a table recap [Recommend]
 
-One to two paragraphs, 150–300 words.
+A useful engineering sequence is:
 
-1. Restate the main findings as factual sentences, in the same order as the
-   contributions listed in the Introduction.
-2. Scope boundary (one sentence): what vessel, disturbance type, and simulation
-   fidelity the conclusions apply to.
-3. Future work (one sentence): a specific, actionable next step. Present in all
-   six papers. [Sample]
+1. **Specific motivation/problem:** one sentence on the engineering difficulty,
+   not a miniature Introduction.
+2. **Method and contribution:** what this study actually did. Applying an existing
+   algorithm is not inventing it; do not repeat its component equations to create
+   an impression of algorithmic novelty.
+3. **Qualitative findings:** what the evidence establishes, with metric and
+   comparator explicit. Numbers are optional; select only indispensable anchors.
+   Avoid re-awarding every comparator its best metric or restating all tables.
+4. **Engineering value:** the capability, design insight, or named application
+   scenario this work informs. Potential is legitimate when grounded and scoped;
+   simulation evidence is not proof of full-scale safety or deployability.
 
-### What the Conclusion must not do [Practice]
+This sequence is informed by the JMSE closing-section analysis, not a journal
+requirement. Wang2021 moves from problem through method capability and validation
+to application; Zhu2021 recalls method contributions, staged validation, results,
+and a specific limitation-to-future-work transition.
 
-- Introduce information not present in Results.
-- Repeat the abstract verbatim.
-- Overstate scope: if only one vessel model and one disturbance type were tested,
-  do not claim generality.
-- Vague significance endings: "demonstrates the potential", "lays the groundwork",
-  "confirms X is a promising approach". Replace with a factual finding or a
-  specific future-work statement.
+### Length and paragraph organization [Sample / Recommend]
+
+The actual JMSE endings are approximately: Shi2020 Discussion **110 words**;
+Gao2024 Discussion **306 words**; Wang2021 Conclusions **190 words**;
+Zhu2021 Conclusions and Future Work **290 words**. Each is one natural paragraph
+(Gao's crosses a page). The first two are not separately titled Conclusions, so
+do not present all four as one uniform conclusion convention. PDF tokenization
+makes the counts approximate; these are sample sizes, not prescribed limits.
+
+For a combined ending, **about 280–330 words in two paragraphs** is a useful
+project-tested option: first summarize the contribution and value, then give
+focused future directions. Do not concatenate an entire Discussion with an entire
+Conclusion. A standalone contribution-focused conclusion can be shorter, e.g.
+170–220 words, when scope and future directions already appear elsewhere.
+Neither range is a general JMSE rule.
+
+### Keep impact concrete [Recommend]
+
+- Prefer a named use case or design decision over generic "high engineering value".
+  "A simulation-based basis for evaluating control when bow thrusters are
+  unavailable" says more than "a promising approach".
+- Words such as "potential", "basis", or "foundation" are not prohibited. Remove
+  them when empty or repetitive, not simply because they occur. Do not turn
+  defensiveness cleanup into a ban on a legitimate contribution statement.
+- Do not repeat the abstract verbatim, introduce new results, rank incompatible
+  cross-study metrics, or convert a positioning advantage into universal superiority.
+- If future work is already integrated here, do not add another limitations or
+  future-work section saying the same thing.
 
 ---
 
@@ -391,18 +507,38 @@ its mean — …"
 - State matrix dimensions on first use. [Sample: Ov21 §2.1]
 - Subscript discipline: if subscript *r* denotes "relative" in one equation, do
   not use it for "reference" in another. [Recommend]
+- Distinguish physical and normalized quantities, commanded and applied actuator
+  states, raw and clipped errors, and radians and degrees. Unit-correct notation
+  must preserve the actual implementation, including rate normalization. [Practice]
+- Keep an equation on one line at normal size when it fits. Measure/render before
+  splitting or shrinking; source line breaks do not determine display width.
+  Reflow at mathematical structure when a split is needed. [Recommend]
+- Define each acronym at first use in the abstract and independently in the main
+  text; a later glossary is not a substitute. Do not expand the same acronym at
+  every subsection, and spell out rare abbreviations instead. [Recommend]
 
 ---
 
 ## §10 Tables
 
-- Column headers include units without exception: "Position error (m)", not
-  "Position error". [Sample: all six papers]
-- Parameter tables: parameter name, symbol, value, units — four columns. Cite
-  the source of each parameter group in a footnote or caption. [Sample: Sa16
-  Tables 2–3, Le20 Tables 1–2]
-- Results tables: align numerical columns to the decimal point. Bold or shade the
-  best value in each metric column. [Sample: Ga22 Table 2, Ov21 Table 3]
+- Make units explicit for dimensional columns, e.g. "Position error (m)";
+  dimensionless indices should be identified as such, not assigned invented units.
+  Compact parameter tables may place units with values. [Recommend]
+- Parameter tables should identify name/symbol, value, and unit, using separate
+  columns when helpful rather than imposing four columns on every table. Cite
+  parameter sources. [Sample: Sa16 Tables 2–3, Le20 Tables 1–2; Recommend]
+- Bold/shaded best entries occur in the original sample [Sample: Ga22 Table 2,
+  Ov21 Table 3], but emphasis must match the question and comparison group.
+  Do not bold entire preferred-method rows by default. [Recommend]
+- Preserve a compact Mean (SD) column when useful. A lowest mean and a lowest SD
+  convey different findings: emphasize only the intended number within a cell,
+  not both automatically. Do not highlight individual seed minima as though
+  training seeds were competing methods. In a parameter sweep, a selected setting
+  is not necessarily the winner for every metric. [Recommend]
+- Do not invent an obligatory "bold indicates best" note; follow journal rules if
+  verified, otherwise explain emphasis only when necessary for interpretation or
+  requested. Preserve statistical notes. Formatting changes must not change values
+  or aggregation. [Recommend]
 - Algorithm settings tables: group parameters by function (architecture, learning
   rates, buffer, training schedule) with ruled separators. Do not mix physical
   vessel parameters with training settings in the same table. [Recommend]
@@ -411,14 +547,14 @@ its mean — …"
 
 ## §11 Figures
 
-- Every figure caption is self-contained. Required: metric, test conditions, what
-  error bars or shading represent. [Sample: all six papers]
+- Make captions self-contained for the figure type: identify metrics, test
+  conditions and uncertainty/colour encodings where relevant; explain components
+  and flow for schematics. [Recommend]
 - Axis labels with units on every plot. No axis should be unlabelled. [Practice]
 - Legend entries match the prose: if you call the method "DSAC-T" in the text, the
   legend says "DSAC-T", not "Proposed" or "Ours". [Recommend]
 - Use colourblind-safe palettes and encode state with more than hue alone (pair
-  with shape, pattern, or label). Ensure interactive hit targets are at least
-  44 px. [Practice]
+  with shape, pattern, or label). Check lettering at final printed size. [Practice]
 
 ---
 
@@ -478,6 +614,18 @@ control and DRL papers requires.
 - Separate seed variability from condition variability in reported statistics.
   A table that mixes both without labelling which axis is which is uninterpretable.
 - State the exact seed values used so results can be reproduced independently.
+- Compute SD from unrounded seed-level aggregates, not rounded table cells; state
+  the convention and distinguish SD from SE. Extra seeds for one method are a
+  sensitivity study, not a newly balanced comparison with all methods.
+- Trace time windows and aggregation in the generating evaluator, not just column
+  names. A full-episode activity field cannot silently become a steady-window NCI;
+  do not rescale it by a duration ratio without the time history.
+- Label illustrative single-seed diagnostics with their condition subset, window,
+  and statistic so they are not mistaken for main-table aggregates. A mean of
+  per-run quantiles is not a quantile of pooled samples.
+- Withheld evaluation angles may remain within randomized training support. State
+  what was held out from evaluation/selection separately from what lies outside
+  the training distribution.
 
 **Checkpoint and model selection**
 - State which checkpoint was selected for evaluation and why (best validation
@@ -527,8 +675,8 @@ Based on the patterns in the source papers and general OE/control review practic
 These are not confirmed editorial policies; they are common points that careful
 authors address proactively.
 
-- **Undefined symbols**: the single most common technical complaint in
-  mathematics-heavy papers. Define every symbol.
+- **Undefined symbols**: a recurring clarity problem in mathematical descriptions.
+  Define every symbol; no reviewer-frequency ranking is established here.
 - **Single-seed or best-of-N results**: reviewers in control journals increasingly
   expect statistical evidence for DRL claims.
 - **Missing comparison**: if a classical controller exists for the same scenario,
@@ -540,5 +688,55 @@ authors address proactively.
 - **Missing thruster dynamics**: if actuator lag or slew limits are included,
   state the model and its parameters. If they are not included, state that
   explicitly and note the implication.
-- **No discussion of failure cases**: a direction or condition where the method
-  performs poorly should be reported and explained, not omitted.
+- **No discussion of failure cases**: report directions or conditions where a
+  method performs poorly. Explain supported mechanisms, but do not invent a cause
+  when the available diagnostics do not identify it.
+
+---
+
+## §16 Chapter Architecture and Revision Workflow
+
+### Choose boundaries by reader questions [Recommend]
+
+- Count numbered main sections, not subsections or References. The four inspected
+  JMSE papers contain two four-section and two five-section structures. One
+  31-page paper keeps methods and the ship model together in a long second section.
+  Four main sections are not intrinsically too few. [Sample: see evidence note]
+- Audit what each section must accomplish before splitting: physical plant and
+  environment; control objective and algorithm; training and comparison procedure;
+  evaluation; results; final contribution and future directions.
+- A plant/environment → control/training/evaluation boundary can clarify a large
+  methods section without implying a new algorithm. A method → experimental-design
+  boundary is also possible, but keep common training settings and comparator
+  definitions coherent across it. Do not aim for equal page counts at the cost of
+  logical dependencies.
+- Do not add Related Work, an RL tutorial, or a standalone Discussion solely to
+  reach five sections. An algorithm-invention paper's component/prior-work split
+  may be inappropriate for an application-and-evaluation contribution.
+- Preserve semantic labels and update cross-references, overview sentences, floats,
+  and numbering when an approved restructuring is implemented. A proposed split
+  is not permission to change the manuscript.
+
+### Review and delivery [Recommend]
+
+1. Read the current manuscript and actual target-journal examples; separate their
+   literal headings/paragraphs from your inferred rhetorical functions.
+2. Agree on the engineering narrative and draft wording before substantive edits
+   when the author requests discussion-first collaboration. Do not silently expand
+   a wording approval into a methods or experimental redesign.
+3. Audit equations, values, units, statistical hierarchy and scope against retained
+   evidence. Keep provenance/audit notes outside the manuscript rather than turning
+   them into reviewer-facing prose.
+4. Compile after editing; inspect rendered affected pages and neighbors, including
+   shifted floats/back matter. Check overflows, references, caption attachment,
+   equation fit, table order, and stranded headings. A clean build is not a visual
+   review or a scientific validation.
+5. Keep output paths and review coverage explicit. Commit only intended changes,
+   preserve unrelated work, and synchronize the installed skill and its source
+   repository when updating reusable guidance. Verify the actual remote and pushed
+   commit rather than assuming a project backup is GitHub.
+
+**Editorial lesson:** be confident about findings with clear metrics/comparators,
+concrete about engineering potential, and restrained about causal attribution.
+Do not turn a preferred style, a short sample, or one author's approved wording
+into a universal journal rule.

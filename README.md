@@ -52,19 +52,27 @@ D11 AI 式自动总结句 · D12 证据边界过度标注 · D13 绝对防御性
 
 ### drl-marine-writing-skill
 
-DRL（深度强化学习）船舶控制类论文写作指南，面向 *Ocean Engineering* 及相关海洋控制类期刊。
-覆盖动态定位（DP）、船舶保位、轨迹跟踪等学习型控制方向。
+DRL（深度强化学习）船舶控制类论文写作指南，覆盖动态定位（DP）、船舶保位、
+轨迹跟踪，以及 *Ocean Engineering* / JMSE 相关论文的工程叙事与证据边界。
 
-基于 6 篇精读论文整理（Øvereng 2021 OE、Gao 2022 OE、Yuan & Rui 2023 CEE、
-Lee 2020 OE、Sarda 2016 OE、Sui 2024 Remote Sens），覆盖 15 节：
+保留原有 6 篇 OE 及相关期刊的精读基础，并补充 **4 篇 JMSE 论文的定向章节核查**
+（Shi & Liu 2020、Wang 2021、Zhu 2021、Gao 2024），不将定向检查等同于全文技术审计。
+详见 [JMSE 范文结构、结尾篇幅与写作经验](academic/drl-marine-writing-skill/references/jmse-writing-evidence.md)。
 
-abstract · introduction · notation · materials & methods · results ·
-discussion · conclusion · ML/RL 术语替换表 · 方程 · 表格 · 图形 ·
-引用规范 · 单位 · 可重复性报告规范 · 常见审稿意见
+覆盖摘要、引言、符号、方法、结果、讨论、结论与未来工作、术语、方程、表格、图形、
+引用、单位、统计复现、常见审稿关注及章节组织/修改流程。新增重点包括：
 
-每条规则标注置信度：`[Sample]` 样本观察 · `[Practice]` 通用惯例 · `[Recommend]` 建议
+- 核心学习方程与实际实现一致，不以算法名称替代机制解释；
+- 从数字比较提炼工程发现，区分指令活动与能耗、观察与因果归因；
+- 结论按“具体动机—方法贡献—定性结果—工程价值”收束；
+- 未来方向由发现与未解决问题引出，可合并为 Conclusions and Future Work；
+- 分章依据内容功能而非凑章节数，范文观察不等于期刊要求；
+- 精确强调表格数值、保留统计口径，并编译检查实际页面。
 
-> **注意**：样本中无 JMSE 论文，投稿 JMSE 前请另行核查该期刊指南和近期代表性文章。
+证据分为 `[Sample]` 样本观察、`[Practice]` 通用惯例、`[Recommend]` 编辑建议。
+JMSE 官方章节/篇幅要求尚未在此次核查中确认，投稿前仍需核对当前作者指南。
+安装时请复制或链接**整个 skill 目录（含 references/）**；入口包含 name/description
+frontmatter，可直接用于项目级 `.dsh/skills/` 安装。
 
 ---
 
