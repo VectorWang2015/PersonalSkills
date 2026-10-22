@@ -74,6 +74,16 @@ JMSE 官方章节/篇幅要求尚未在此次核查中确认，投稿前仍需�
 安装时请复制或链接**整个 skill 目录（含 references/）**；入口包含 name/description
 frontmatter，可直接用于项目级 `.dsh/skills/` 安装。
 
+### chinese-technical-writing
+
+面向中文技术方案、设计说明、科研报告与论文的起草和改稿，重点处理遣词造句、主谓安排、句间衔接和段落组织。先保留技术含义与证据强度，再改善中文表达；结合语境处理英翻中、含混用语和防御性旁白，不实行机械禁词替换。
+
+- 区分只检查、仅给草稿、直接修改，遵守不写入或不编译等本轮约定
+- 提供泛化改写示例、12 个行为回归场景和无外部依赖的包结构测试
+- 宿主无关，可单独安装，不固定调用外部模型、编译器或审稿流程
+
+入口：[SKILL.md](academic/chinese-technical-writing/SKILL.md) · [安装与使用](academic/chinese-technical-writing/README.md)。
+
 ---
 
 ## 金融类 (`finance/`)
