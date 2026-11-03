@@ -46,6 +46,19 @@ class SkillContractTests(unittest.TestCase):
             self.assertIsInstance(case["checks"], list)
             self.assertGreaterEqual(len(case["checks"]), 2)
 
+    def test_reader_context_regression_cases_present(self):
+        """检查场景清单不丢失；不对生成文本做词频或语言评分。"""
+        data = json.loads((ROOT / "evals/cases.json").read_text(encoding="utf-8"))
+        ids = {case["id"] for case in data["cases"]}
+        required = {
+            "abstract-body-independent-organization",
+            "first-use-model-reference-context",
+            "section-entry-before-formulas",
+            "main-results-coverage",
+            "positive-model-definition",
+        }
+        self.assertTrue(required.issubset(ids), required - ids)
+
     def test_no_local_project_paths(self):
         for relative in ("SKILL.md", "README.md", "references/examples.md", "evals/cases.json"):
             text = (ROOT / relative).read_text(encoding="utf-8")
