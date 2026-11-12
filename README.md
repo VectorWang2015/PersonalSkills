@@ -9,6 +9,7 @@
 ```
 PersonalSkills/
 ├── academic/          学术写作与论文分析
+├── engineering/       工程仿真与可追溯自动化
 ├── finance/           金融分析与投资方法论
 └── meta/              元技能：用于生产或管理其他 skill
 ```
@@ -83,6 +84,21 @@ frontmatter，可直接用于项目级 `.dsh/skills/` 安装。
 - 宿主无关，可单独安装，不固定调用外部模型、编译器或审稿流程
 
 入口：[SKILL.md](academic/chinese-technical-writing/SKILL.md) · [安装与使用](academic/chinese-technical-writing/README.md)。
+
+---
+
+## 工程类 (`engineering/`)
+
+### starccm-engineering
+
+STAR-CCM+工程自动化：源与几何网格核查、安装版API与实际设置验证、有限预算托管、正常检查点及GPU故障恢复、科学结论边界、真实场图和分级归档。
+
+- 薄入口＋5个按阶段读取的模块，不把案例参数或权限当通用默认。
+- 区分编译成功、流场推进、统计充分、数值敏感性与实验验证。
+- 不附自动开算脚本、许可证或私有节点配置；由当前任务授权确定可执行范围。
+- 支持事件触发的证据提炼与主管审定维护，附包结构检查及行为审阅场景。
+
+入口：[SKILL.md](<engineering/starccm-engineering/SKILL.md>) · [安装与使用](<engineering/starccm-engineering/README.md>)。
 
 ---
 
