@@ -59,6 +59,18 @@ class SkillContractTests(unittest.TestCase):
         }
         self.assertTrue(required.issubset(ids), required - ids)
 
+    def test_direct_statement_regression_cases_present(self):
+        """仅保护场景覆盖；句式与证据保留仍由行为试读评价。"""
+        data = json.loads((ROOT / "evals/cases.json").read_text(encoding="utf-8"))
+        ids = {case["id"] for case in data["cases"]}
+        required = {
+            "direct-statements-with-evidence-scope",
+            "formal-declarative-with-genre-contrast",
+            "handoff-material-to-reader-prose",
+            "necessary-negative-and-safety-restraint",
+        }
+        self.assertTrue(required.issubset(ids), required - ids)
+
     def test_no_local_project_paths(self):
         for relative in ("SKILL.md", "README.md", "references/examples.md", "evals/cases.json"):
             text = (ROOT / relative).read_text(encoding="utf-8")
