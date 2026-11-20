@@ -1,0 +1,587 @@
+#!/usr/bin/env python3
+"""List, install, remove, and diagnose local skill links using the standard library."""
+
+import argparse
+from dataclasses import dataclass
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+
+class SkillError(Exception):
+    """An actionable catalog, frontmatter, or installation error."""
+
+
+def scalar(value, path, number):
+    """Parse the supported YAML string subset.
+
+    :param value: Scalar source text.
+    :param path: Source file for diagnostics.
+    :param number: Source line number.
+    :return: Decoded string.
+    """
+    def fail():
+        raise SkillError(f"{path}:{number}: unsupported or invalid scalar: {value!r}")
+
+    value = value.strip()
+    if not value:
+        fail()
+    if value.startswith('"'):
+        # YAML double-quoted strings share these escapes with JSON. YAML-only
+        # escapes are rejected rather than being silently reinterpreted.
+        match = re.fullmatch(r'("(?:[^"\\]|\\.)*")(?:\s+#.*)?', value)
+        if not match:
+            fail()
+        try:
+            result = json.loads(match[1])
+        except ValueError:
+            fail()
+        return result
+    if value.startswith("'"):
+        match = re.fullmatch(r"'((?:[^']|'')*)'(?:\s+#.*)?", value)
+        if not match:
+            fail()
+        return match[1].replace("''", "'")
+    value = re.split(r"\s+#", value, maxsplit=1)[0].rstrip()
+    if (not value or value[0] in "[]{}&*!|>@`#%" or value in {"-", "?", ":"}
+            or re.search(r":(?:\s|$)", value)):
+        fail()
+    return value
+
+
+def read_frontmatter(path):
+    """Read required fields and dependency lists without a YAML dependency.
+
+    :param path: Path to a skill entrypoint.
+    :return: Dictionary containing name, description, manual, and requires.
+    """
+    try:
+        lines = path.read_text(encoding="utf-8-sig").splitlines()
+    except (OSError, UnicodeError) as error:
+        raise SkillError(f"{path}: {error}") from error
+
+    def fail(number, message):
+        raise SkillError(f"{path}:{number}: {message}")
+
+    if not lines or lines[0] != "---":
+        fail(1, "missing frontmatter opening ---")
+    try:
+        end = lines.index("---", 1)
+    except ValueError:
+        fail(1, "missing frontmatter closing ---")
+    fields, metadata, requires = {}, {}, []
+    in_metadata = False
+    in_requires = False
+    index = 1
+    while index < end:
+        line = lines[index]
+        number = index + 1
+        index += 1
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        if "\t" in line[:len(line) - len(line.lstrip())]:
+            fail(number, "tabs are not supported for indentation")
+        indent = len(line) - len(line.lstrip(" "))
+        if indent == 4 and in_requires:
+            match = re.fullmatch(r"    - (.+)", line)
+            if not match:
+                fail(number, "expected a requires list item: - name")
+            requires.append(scalar(match[1], path, number))
+            continue
+        match = re.fullmatch(r"([A-Za-z0-9_./-]+):(?: +(.*))?", line[indent:])
+        if not match or indent not in (0, 2):
+            fail(number, "unsupported frontmatter structure")
+        key, value = match[1], match[2]
+        if indent == 0:
+            in_metadata = key == "metadata"
+            in_requires = False
+            destination = fields
+        elif in_metadata:
+            destination = metadata
+            in_requires = key == "requires"
+        else:
+            fail(number, "unexpected nested field")
+        if key in destination:
+            fail(number, f"duplicate field: {key}")
+        if indent == 0 and key == "metadata":
+            if value is not None and not value.startswith("#"):
+                fail(number, "metadata must be an indented mapping")
+            destination[key] = metadata
+            continue
+        if indent == 2 and key == "requires":
+            if value is not None and not value.startswith("#"):
+                fail(number, "requires must use indented - name items")
+            destination[key] = requires
+            continue
+        if indent == 0 and key == "disable-model-invocation" and value not in {"true", "false"}:
+            fail(number, "disable-model-invocation must be an unquoted true or false")
+        if value in {">-", ">", "|-", "|"}:
+            if indent != 0 or key != "description":
+                fail(number, "block scalars are supported only for description")
+            block = []
+            while index < end and (not lines[index].strip() or lines[index].startswith("  ")):
+                part = lines[index]
+                if part.strip() and (not part.startswith("  ") or part.startswith("   ")):
+                    fail(index + 1, "description block must use two-space indentation")
+                block.append(part[2:] if part.strip() else "")
+                index += 1
+            if value.startswith(">"):
+                text = "".join(part + (" " if position + 1 < len(block) and block[position + 1] else "")
+                               if part else "\n" for position, part in enumerate(block))
+            else:
+                text = "\n".join(block)
+            destination[key] = text.rstrip("\n") + ("" if value.endswith("-") else "\n")
+        else:
+            destination[key] = scalar(value or "", path, number)
+    for key in ("name", "description"):
+        if not isinstance(fields.get(key), str) or not fields[key].strip():
+            fail(1, f"missing or empty required field: {key}")
+    validate_name(fields["name"], str(path))
+    for dependency in requires:
+        validate_name(dependency, str(path))
+    invocation = fields.get("disable-model-invocation", "false")
+    if invocation not in {"true", "false"}:
+        fail(1, "disable-model-invocation must be true or false")
+    return {
+        "name": fields["name"], "description": fields["description"],
+        "manual": invocation == "true", "requires": requires,
+    }
+
+
+def validate_name(name, source="argument"):
+    """Reject names that could escape the target directory.
+
+    :param name: Skill identifier.
+    :param source: Diagnostic source.
+    """
+    if (name in {".", ".."} or not name or any(char in name for char in "/\\\x00\n\r")):
+        raise SkillError(f"{source}: unsafe skill name: {name!r}")
+
+
+@dataclass
+class Skill:
+    """Parsed skill and its catalog or target location."""
+
+    name: str
+    description: str
+    manual: bool
+    requires: list
+    path: Path
+    category: str
+    external: bool = False
+
+
+def git(directory, *arguments):
+    """Run Git without changing user configuration or repository content.
+
+    :param directory: Working directory.
+    :param arguments: Git arguments.
+    :return: Captured process result.
+    """
+    return subprocess.run(
+        ["git", "-C", str(directory), *arguments], capture_output=True, text=True,
+    )
+
+
+def default_catalog():
+    """Find the repository containing the real script.
+
+    :return: Repository root.
+    """
+    for directory in Path(__file__).resolve().parents:
+        if (directory / ".git").exists():
+            return directory
+    raise SkillError("cannot find the catalog repository; pass --catalog DIR")
+
+
+def load_catalog(root):
+    """Discover skill directories while excluding Git internals and submodules.
+
+    :param root: Catalog root.
+    :return: Name-to-skill mapping and diagnostic errors.
+    """
+    if not root.is_dir():
+        raise SkillError(f"{root}: catalog is not a directory")
+    excluded = set()
+    if (root / ".gitmodules").exists():
+        result = git(root, "config", "--file", str(root / ".gitmodules"),
+                     "--get-regexp", r"^submodule\..*\.path$")
+        if result.returncode not in (0, 1):
+            raise SkillError(f"{root / '.gitmodules'}: {result.stderr.strip()}")
+        excluded = {(root / line.split(None, 1)[1]).resolve()
+                    for line in result.stdout.splitlines()}
+    skills, errors = {}, []
+
+    def walk_error(error):
+        errors.append(str(error))
+
+    for directory, children, files in os.walk(root, onerror=walk_error):
+        base = Path(directory)
+        children[:] = sorted(child for child in children if child != ".git"
+                             and (base / child).resolve() not in excluded)
+        if base.resolve() in excluded or "SKILL.md" not in files:
+            continue
+        try:
+            skill = Skill(**read_frontmatter(base / "SKILL.md"), path=base,
+                          category=base.parent.relative_to(root).as_posix())
+            if skill.name in skills:
+                raise SkillError(f"duplicate catalog name {skill.name}: "
+                                 f"{skills[skill.name].path} and {base}")
+            skills[skill.name] = skill
+        except SkillError as error:
+            errors.append(str(error))
+    return skills, errors
+
+
+def scan_target(target, catalog):
+    """Read installed skills, collecting broken links and duplicate names.
+
+    :param target: Installation directory.
+    :param catalog: Catalog skills by name.
+    :return: Installed skills, all target link paths, and errors.
+    """
+    skills, links, errors = [], [], []
+    sources = {skill.path.resolve(): skill for skill in catalog.values()}
+
+    def visit(directory, ancestors):
+        try:
+            resolved = directory.resolve(strict=True)
+            if resolved in ancestors:
+                errors.append(f"{directory}: directory link cycle")
+                return
+            for entry in sorted(directory.iterdir()):
+                try:
+                    if entry.is_symlink():
+                        links.append(entry)
+                        if not entry.exists():
+                            errors.append(f"{entry}: broken link")
+                            continue
+                    if not entry.is_dir():
+                        continue
+                    document = entry / "SKILL.md"
+                    if not document.exists():
+                        visit(entry, ancestors | {resolved})
+                        continue
+                    original = sources.get(entry.resolve()) if entry.is_symlink() else None
+                    skills.append(Skill(
+                        **read_frontmatter(document), path=entry,
+                        category=original.category if original else "external",
+                        external=original is None,
+                    ))
+                except (SkillError, OSError, RuntimeError) as error:
+                    errors.append(f"{entry}: {error}")
+        except (OSError, RuntimeError) as error:
+            errors.append(f"{directory}: {error}")
+
+    if target.is_symlink() and not target.exists():
+        errors.append(f"{target}: broken target link")
+    elif target.exists():
+        if target.is_dir():
+            visit(target, set())
+        else:
+            errors.append(f"{target}: target is not a directory")
+    seen = {}
+    for skill in skills:
+        if skill.name in seen:
+            errors.append(f"duplicate installed name {skill.name}: "
+                          f"{seen[skill.name]} and {skill.path}")
+        seen[skill.name] = skill.path
+    return skills, links, errors
+
+
+def git_warnings(project, target, links):
+    """Check whether target links are ignored by the project's Git repository.
+
+    :param project: Project directory.
+    :param target: Installation directory.
+    :param links: Existing or planned links to check.
+    :return: Warnings, including suggested ignore rules.
+    """
+    result = git(project, "rev-parse", "--show-toplevel")
+    if result.returncode:
+        if "not a git repository" in result.stderr.lower():
+            return []
+        raise SkillError(f"{project}: Git lookup failed: {result.stderr.strip()}")
+    root = Path(result.stdout.strip()).resolve()
+    warnings = []
+    rules = set()
+    checked = set()
+    for link in sorted(set(links)):
+        try:
+            relative = link.relative_to(root).as_posix()
+        except ValueError:
+            continue
+        # Git tracks a symlink ancestor itself, never files reached through it.
+        candidate = link
+        for parent in reversed(link.parents):
+            if parent == root or root in parent.parents:
+                if parent.is_symlink():
+                    candidate = parent
+                    relative = parent.relative_to(root).as_posix()
+                    break
+        if candidate in checked:
+            continue
+        checked.add(candidate)
+        ignored = git(root, "check-ignore", "-q", "--", relative)
+        if ignored.returncode not in (0, 1):
+            raise SkillError(f"{link}: git check-ignore failed: {ignored.stderr.strip()}")
+        if ignored.returncode == 1:
+            tracked = git(root, "ls-files", "--error-unmatch", "--", relative)
+            detail = ("already tracked; ignore rules alone do not untrack it"
+                      if tracked.returncode == 0 else "not ignored; Git can track it")
+            warnings.append(f"{candidate}: {detail}")
+            directory = target.relative_to(root).as_posix()
+            rules.add(f"/{relative}" if candidate != link or directory == "." else f"/{directory}/")
+    for rule in sorted(rules):
+        warnings.append(f"Suggested ignore rule: {rule}; edit the project's .gitignore yourself. "
+                        "No ignore rules were changed.")
+    return warnings
+
+
+def list_skills(args, catalog, installed):
+    """Print catalog and external installed skills with optional filters.
+
+    :param args: Parsed command arguments.
+    :param catalog: Catalog mapping.
+    :param installed: Installed skills.
+    """
+    installed_sources = {skill.path.resolve() for skill in installed if not skill.external}
+    rows = []
+    for skill in [*catalog.values(), *(item for item in installed if item.external)]:
+        present = skill.external or skill.path.resolve() in installed_sources
+        if (args.manual and not skill.manual) or (args.installed and not present):
+            continue
+        rows.append({
+            "name": skill.name, "category": skill.category,
+            "invocation": "manual" if skill.manual else "auto",
+            "requires": skill.requires, "installed": present, "external": skill.external,
+            "description": skill.description[:100], "path": str(skill.path),
+        })
+    rows.sort(key=lambda row: (row["name"], row["external"]))
+    if args.json:
+        print(json.dumps(rows, ensure_ascii=False, indent=2))
+    else:
+        print("name\tcategory\tinvocation\trequires\tinstalled\tdescription")
+        for row in rows:
+            print("\t".join(str(value).replace("\n", "\\n").replace("\t", "\\t") for value in (
+                row["name"], row["category"], row["invocation"],
+                ",".join(row["requires"]) or "-", "yes" if row["installed"] else "no",
+                row["description"],
+            )))
+
+
+def install(args, catalog, project, target):
+    """Preflight and install relative links in dependency order.
+
+    :param args: Command arguments.
+    :param catalog: Catalog skills by name.
+    :param project: Project root.
+    :param target: Installation directory.
+    """
+    ordered, active, done = [], set(), set()
+
+    def visit(name):
+        if name in active:
+            raise SkillError(f"dependency cycle at {name}")
+        if name in done:
+            return
+        if name not in catalog:
+            raise SkillError(f"unknown catalog skill or dependency: {name}")
+        active.add(name)
+        for dependency in catalog[name].requires:
+            visit(dependency)
+        active.remove(name)
+        done.add(name)
+        ordered.append(catalog[name])
+
+    for name in args.names:
+        visit(name)
+    planned, skipped = [], []
+    for skill in ordered:
+        destination = target / skill.name
+        if destination.is_symlink() and destination.resolve() == skill.path.resolve():
+            skipped.append(destination)
+        elif os.path.lexists(destination):
+            raise SkillError(f"{destination}: conflict; refusing to overwrite an existing entry")
+        else:
+            planned.append((destination, os.path.relpath(skill.path.resolve(), target.resolve())))
+    # Validate the target before creating anything, including for --dry-run.
+    if target.exists() and not target.is_dir():
+        raise SkillError(f"{target}: target is not a directory")
+    if not args.dry_run and planned:
+        target.mkdir(parents=True, exist_ok=True)
+    for destination in skipped:
+        print(f"SKIP {destination.name}: already installed")
+    for destination, source in planned:
+        if not args.dry_run:
+            destination.symlink_to(source, target_is_directory=True)
+        print(f"{'WOULD LINK' if args.dry_run else 'LINK'} {destination.name}: {destination} -> {source}")
+    _, links, _ = scan_target(target, catalog)
+    for warning in git_warnings(project, target, [*links, *(item[0] for item in planned)]):
+        print(f"WARNING: {warning}", file=sys.stderr)
+    print("Discovery: use a new session to discover installed skills; "
+          "restart the host only if its discovery mechanism requires it.")
+
+
+def remove(args, catalog, installed, target):
+    """Remove only catalog links, protecting installed dependents by default.
+
+    :param args: Command arguments.
+    :param catalog: Catalog skills by name.
+    :param installed: Installed skills.
+    :param target: Installation directory.
+    """
+    sources = {skill.path.resolve(): skill.name for skill in catalog.values()}
+    paths = []
+    for name in dict.fromkeys(args.names):
+        validate_name(name)
+        path = target / name
+        if not path.is_symlink() or path.resolve() not in sources:
+            raise SkillError(f"{path}: refusing removal; not a link to this catalog")
+        paths.append(path)
+    remaining = [skill for skill in installed if skill.path not in paths]
+    removed_names = {sources[path.resolve()] for path in paths}
+    still_present = {skill.name for skill in remaining}
+    blocked = [f"{skill.name} requires {dependency}" for skill in remaining
+               for dependency in skill.requires
+               if dependency in removed_names and dependency not in still_present]
+    if blocked:
+        message = "; ".join(blocked)
+        if not args.force:
+            raise SkillError(f"dependency protection: {message}; use --force to override")
+        print(f"WARNING: forcing removal: {message}", file=sys.stderr)
+    for path in paths:
+        if not args.dry_run:
+            path.unlink()
+        print(f"{'WOULD REMOVE' if args.dry_run else 'REMOVE'} {path.name}: {path}")
+
+
+def doctor(args, installed, errors, warnings):
+    """Report errors, Git warnings, and installed automatic description costs.
+
+    :param args: Command arguments.
+    :param installed: Parsed installed skills.
+    :param errors: Catalog and target diagnostics.
+    :param warnings: Git tracking risks.
+    :return: Nonzero when an error or warning exists.
+    """
+    names = {skill.name for skill in installed}
+    errors = [*errors, *(f"{skill.path}: missing dependency {dependency} required by {skill.name}"
+                         for skill in installed for dependency in skill.requires
+                         if dependency not in names)]
+    count = sum(len(skill.description) for skill in installed if not skill.manual)
+    result = {"ok": not (errors or warnings), "errors": errors, "warnings": warnings,
+              "installed_count": len(installed), "auto_description_characters": count}
+    if args.json:
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    else:
+        print(f"Installed skills: {len(installed)}")
+        print(f"Automatic skill description characters: {count} (estimate only)")
+        for error in errors:
+            print(f"ERROR: {error}")
+        for warning in warnings:
+            print(f"WARNING: {warning}")
+        print(f"doctor: {'OK' if result['ok'] else 'FAIL'}")
+    return 0 if result["ok"] else 1
+
+
+def parser():
+    """Build command-line help and argument parsers.
+
+    :return: Argument parser.
+    """
+    cli = argparse.ArgumentParser(
+        description="Manage local skill links with Python 3's standard library.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""Commands:
+  list [--manual] [--installed] [--json]
+      Show name, category, manual/auto invocation, requires, installed status,
+      and the first 100 description characters. Include external target skills.
+  install NAME... [--dry-run]
+      Recursively install dependencies using relative symlinks. Skip correct
+      links; never overwrite conflicts. Print Git-ignore warnings without
+      editing .gitignore, then a new-session/host-discovery notice.
+  remove NAME... [--dry-run] [--force]
+      Remove only catalog symlinks, never ordinary directories. Refuse when
+      installed skills depend on them unless --force is given.
+  doctor [--json]
+      Check broken links, missing dependencies, duplicate target names,
+      frontmatter, and Git tracking risks. Exit nonzero on errors OR warnings.
+      Report automatic description characters without a pass/fail threshold.
+
+Common options may appear before or after the subcommand. Relative --target
+paths are relative to --project. Dry runs do not write files. Catalog scanning
+excludes .git and submodules declared in .gitmodules. Unsupported frontmatter
+is an error with its file path, not a silently omitted skill.
+""",
+    )
+
+    def common(destination):
+        destination.add_argument("--catalog", default=argparse.SUPPRESS, metavar="DIR",
+                                 help="catalog root (default: .git ancestor of script realpath)")
+        destination.add_argument("--project", default=argparse.SUPPRESS, metavar="DIR",
+                                 help="project root (default: current working directory)")
+        destination.add_argument("--target", default=argparse.SUPPRESS, metavar="DIR",
+                                 help="target (default: <project>/.opencode/skills)")
+
+    common(cli)
+    commands = cli.add_subparsers(dest="command", required=True)
+    listing = commands.add_parser("list", help="list catalog and external installed skills")
+    listing.add_argument("--manual", action="store_true", help="only manually invoked skills")
+    listing.add_argument("--installed", action="store_true", help="only installed skills")
+    listing.add_argument("--json", action="store_true", help="emit JSON")
+    installing = commands.add_parser("install", help="install relative links and dependencies")
+    removing = commands.add_parser("remove", help="remove catalog links with dependency protection")
+    for command in (installing, removing):
+        command.add_argument("names", nargs="+", metavar="NAME")
+        command.add_argument("--dry-run", action="store_true", help="show the plan without writing")
+    removing.add_argument("--force", action="store_true", help="override dependent-skill protection only")
+    diagnosing = commands.add_parser("doctor", help="check installed skills and Git ignore coverage")
+    diagnosing.add_argument("--json", action="store_true", help="emit JSON diagnostics")
+    for command in (listing, installing, removing, diagnosing):
+        common(command)
+    return cli
+
+
+def main(argv=None):
+    """Dispatch commands and print actionable errors.
+
+    :param argv: Optional command-line argument list.
+    :return: Command exit status.
+    """
+    args = parser().parse_args(argv)
+    try:
+        root = Path(args.catalog).expanduser().resolve() if hasattr(args, "catalog") else default_catalog()
+        project = Path(getattr(args, "project", Path.cwd())).expanduser().resolve()
+        if not project.is_dir():
+            raise SkillError(f"{project}: project is not a directory")
+        supplied_target = Path(getattr(args, "target", ".opencode/skills")).expanduser()
+        target = Path(os.path.abspath(project / supplied_target))
+        catalog, errors = load_catalog(root)
+        installed, links, target_errors = scan_target(target, catalog)
+        errors.extend(target_errors)
+        if args.command == "doctor":
+            return doctor(args, installed, errors, git_warnings(project, target, links))
+        if errors:
+            raise SkillError("\n".join(errors))
+        if args.command == "list":
+            list_skills(args, catalog, installed)
+        elif args.command == "install":
+            install(args, catalog, project, target)
+        elif args.command == "remove":
+            remove(args, catalog, installed, target)
+        return 0
+    except (SkillError, OSError, RuntimeError) as error:
+        if args.command == "doctor" and args.json:
+            print(json.dumps({"ok": False, "errors": [str(error)], "warnings": [],
+                              "auto_description_characters": None}, ensure_ascii=False, indent=2))
+        else:
+            print(f"ERROR: {error}", file=sys.stderr)
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

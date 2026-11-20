@@ -11,7 +11,7 @@ PersonalSkills/
 ├── academic/          学术写作与论文分析
 ├── engineering/       工程仿真与可追溯自动化
 ├── finance/           金融分析与投资方法论
-├── meta/              元技能：用于生产或管理其他 skill
+├── meta/              元技能：生产、管理与选择 skill（含 ask-v）
 └── productivity/      需求澄清、沟通与工作流复盘
 ```
 
@@ -159,6 +159,12 @@ STAR-CCM+工程自动化：源与几何网格核查、安装版API与实际设�
 
 ## 元技能 (`meta/`)
 
+### ask-v
+
+手动调用 `/ask-v`，查看当前项目已安装的手动 skill，并根据当前处境获得使用建议；不展示自动调用项、依赖 skill 或自身。需要安装时先确认，再通过随包的标准库 Python 工具 `skillctl` 创建相对链接、递归安装依赖并检查 Git 忽略风险。
+
+入口：[SKILL.md](meta/ask-v/SKILL.md) · 工具：[skillctl](meta/ask-v/scripts/skillctl)。
+
 ### book2skill
 
 本仓库唯一启用的图书蒸馏与重蒸馏入口。它从原始书稿建立来源清单、证据账本、公式契约和能力图；刷新旧 skill 时，先在不读取旧实现的条件下独立蒸馏并冻结，再做能力级对照、证据核验和 old/new/no-skill 匿名评测。候选只有在无阻断项且相对旧版不退化时才发布；失败结果会进入下一版回归，而不会被隐藏。
@@ -185,19 +191,42 @@ STAR-CCM+工程自动化：源与几何网格核查、安装版API与实际设�
 
 ## 安装
 
-克隆本仓库后，在项目的 `.opencode/skills/`（或 `.agents/skills/`、`.dsh/skills/`）目录为需要启用的 skill 建立相对 symlink：
+推荐使用 `meta/ask-v/scripts/skillctl`，只依赖 Python 3 标准库和 Git，不需要 PyYAML。在本仓库根目录执行，将 `../your-project` 替换为目标项目：
+
+```bash
+SKILLCTL="$PWD/meta/ask-v/scripts/skillctl"
+"$SKILLCTL" --project ../your-project list --manual
+"$SKILLCTL" --project ../your-project install ask-v code-review grill-with-docs
+"$SKILLCTL" --project ../your-project list --manual --installed
+"$SKILLCTL" --project ../your-project doctor
+```
+
+- 默认 catalog 根据脚本真实位置向上查找仓库根目录，也可用 `--catalog DIR` 指定；排除 Git 子模块。
+- 默认目标为 `<project>/.opencode/skills`；其他宿主可用 `--target .agents/skills` 或 `--target .dsh/skills`。相对 target 路径以 project 为基准。
+- `install` 递归安装声明的依赖，使用相对符号链接；正确链接跳过，同名冲突报错且不覆盖。可先加 `--dry-run` 查看计划。
+- `list --json` 提供结构化清单；`remove <name>` 仅移除 catalog 链接，并保护仍被依赖的 skill。
+- `doctor` 检查失效链接、依赖、重名、头部和 Git 忽略风险；错误或警告均返回非零，并报告已安装自动 skill 的 description 总字符数。
+
+**项目里的 skill 链接是本机绑定的，不应进入该项目的 Git 仓库，建议加入项目的 `.gitignore`：**
+
+```gitignore
+.opencode/skills/
+```
+
+使用其他 target 时相应调整规则。工具只给出警告和建议，不自动修改 `.gitignore`；已经被 Git 跟踪的链接，仅新增忽略规则不会将其移出索引。安装后使用新会话发现 skill；其他宿主如要求重启，按其发现机制处理。
+
+手动链接仍可作为备选。在本仓库根目录执行，先创建目标目录，再建立相对 symlink；依赖需自行补齐，忽略规则也需自行检查：
+
+```bash
+mkdir -p ../your-project/.opencode/skills
+ln -s "$(realpath --relative-to=../your-project/.opencode/skills meta/ask-v)" ../your-project/.opencode/skills/ask-v
+```
 
 如需审查图书蒸馏上游实现，先初始化参考子模块：
 
 ```bash
 git submodule update --init --recursive
 ```
-
-```bash
-ln -s /path/to/PersonalSkills/<category>/<skill-name> .opencode/skills/<skill-name>
-```
-
-重启 agent 框架即可发现。
 
 `academic-defensive-writing-auditor` 也可直接通过 npx 安装：
 
