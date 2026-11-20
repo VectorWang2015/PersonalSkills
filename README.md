@@ -11,7 +11,8 @@ PersonalSkills/
 ├── academic/          学术写作与论文分析
 ├── engineering/       工程仿真与可追溯自动化
 ├── finance/           金融分析与投资方法论
-└── meta/              元技能：用于生产或管理其他 skill
+├── meta/              元技能：用于生产或管理其他 skill
+└── productivity/      需求澄清、沟通与工作流复盘
 ```
 
 ---
@@ -163,6 +164,22 @@ STAR-CCM+工程自动化：源与几何网格核查、安装版API与实际设�
 本仓库唯一启用的图书蒸馏与重蒸馏入口。它从原始书稿建立来源清单、证据账本、公式契约和能力图；刷新旧 skill 时，先在不读取旧实现的条件下独立蒸馏并冻结，再做能力级对照、证据核验和 old/new/no-skill 匿名评测。候选只有在无阻断项且相对旧版不退化时才发布；失败结果会进入下一版回归，而不会被隐藏。
 
 `meta/cangjie-skill` 固定为上游参考实现，目前版本为 v2.5.0。仓库吸收其 Capability Bundle、晋级门、single/compact-pack 和可回滚发布设计，但不同时安装两个同义入口，避免触发竞争与双线漂移。
+
+---
+
+## 工程与效率工作流（上游适配）
+
+以下 9 个 skill 来自 [mattpocock/skills](https://github.com/mattpocock/skills)（commit `abeeaf9`，MIT）；各目录的 `UPSTREAM.md` 记录原路径、许可和本地改动。自动调用项也可手动调用，或由其他 skill 加载。
+
+- [code-review](engineering/code-review/SKILL.md) — **手动**；单个审查子 agent 分别报告规范与需求符合性，按项目约定检查交付历史。
+- [grill-with-docs](engineering/grill-with-docs/SKILL.md) — **手动**；结合设计访谈、术语表与 ADR 记录。
+- [domain-modeling](engineering/domain-modeling/SKILL.md) — **自动**；澄清领域术语，按项目约定维护术语表与决策记录。
+- [grill-me](productivity/grill-me/SKILL.md) — **手动**；加载 grilling，逐轮澄清计划与设计。
+- [grilling](productivity/grilling/SKILL.md) — **自动**；按决策依赖树开展访谈，等待用户确认共同理解。
+- [to-questionnaire](productivity/to-questionnaire/SKILL.md) — **手动**；把待外部补充的信息整理成异步问卷。
+- [wait-what](productivity/wait-what/SKILL.md) — **手动**；用用户当前语言、短句和项目术语重新解释。
+- [retro](productivity/retro/SKILL.md) — **手动**；复盘会话中的环境、工具与 steering 文件改进点。
+- [writing-for-agents](productivity/writing-for-agents/SKILL.md) — **自动**；组织供 agent 使用的文档、上下文指针与 skill 入口。
 
 ---
 
